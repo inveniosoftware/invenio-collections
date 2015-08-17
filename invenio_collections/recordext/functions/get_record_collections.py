@@ -41,7 +41,7 @@ def _queries():
                           if c.dbquery is None)
         ))
         for collection in Collection.query.filter(
-            Collection.dbquery != None,
+            Collection.dbquery.isnot(None),
             db.not_(Collection.dbquery.like('hostedcollection:%'))
         ).all()
     )

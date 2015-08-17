@@ -1,0 +1,79 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of Invenio
+# Copyright (C) 2015 CERN
+#
+# Invenio is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# Invenio is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Invenio; if not, write to the Free Software Foundation,
+# Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+#
+# In applying this license, CERN does not waive the privileges and immunities
+# granted to it by virtue of its status as an Intergovernmental Organization
+# or submit itself to any jurisdiction.
+
+
+notifications:
+  email: false
+
+sudo: false
+
+services:
+  - mysql
+  - redis
+
+language: python
+
+cache:
+  - apt
+  - pip
+
+env:
+  - REQUIREMENTS=lowest REXTRAS=docs,tests
+  - REQUIREMENTS=release REXTRAS=docs,tests
+  - REQUIREMENTS=devel REXTRAS=docs,tests
+
+python:
+  - "2.7"
+
+before_install:
+  - "travis_retry pip install --upgrade pip"
+  - "travis_retry pip install mock twine wheel"
+  - "python requirements.py --extras=$REXTRAS --level=min > .travis-lowest-requirements.txt"
+  - "python requirements.py --extras=$REXTRAS --level=pypi > .travis-release-requirements.txt"
+  - "python requirements.py --extras=$REXTRAS --level=dev > .travis-devel-requirements.txt"
+
+install:
+  - "travis_retry pip install Invenio"
+  - "travis_retry pip install -r .travis-$REQUIREMENTS-requirements.txt --allow-all-external"
+  - "travis_retry pip install -e .[$REXTRAS]"
+
+before_script:
+  - "inveniomanage database init --yes-i-know || echo ':('"
+  - "inveniomanage database create --quiet || echo ':('"
+
+script:
+  - "sphinx-build -qnN docs docs/_build/html"
+  - "python setup.py test"
+
+after_success:
+  - coveralls
+
+deploy:
+  provider: pypi
+  user: jirikuncar
+  password:
+    secure: lgnHLH4erT/GzpT1XWY2yF4JxEP9UfXLq943hhRAY6aidZ4kZVo9a5v22mMXmWwhTJiAYVH/X5wg8+QMsURELmmxwd4Nec8OtLHpIyNnHvDcP7UlfDZ5r+JtFlSBJnRhX3SvnscgMAVQgu+4iMv9/NyZLG+HdJqwREjkzak2gUeI3aRp49Aq3iMtim7FWFh/regrR8C+pjJybJC1L5evW5J+Yed4yIlW2iQJVA4qiPUEFl7olwS5NbPdETEhXD4FL2bqkRbRDEGSNoLwTfIYemVMy4ShfBXVIooqG0nDhtZTh0Q4CJYckzEFYfYUbej9gunwgSuMOfZYAi+3fCbAI9ciaIaoQAFqfetO5jcx5pRUKXyIP2FNpNZA3xjYjPnKmWOCV69ziax2O9fCR+Y4H85CYD0emZWYP/Y6XfMpmsZKGjKNzmw8xxJGsHGTfUP6Bt9lB9MOJ0J1qVRXx1OUv5bPYjkCqIO01h9IKtoxUo0J6WqeGrAS4uChajtRBmKCOj2Uc98gc6IWhE9pbK+w6kVGXK52Cy4fZgKVY0c6FDwLStVdw3pPwpIDFSldERyOO7sivq4N9at8k7fHHrp+azmnhCkpL2LCWe6tAQ/J5E1jHPkqOZQtpTitcyhBcCHuW8Lfdkp6mj3s7ly1h9FzmTyRyu+Q5eHoKNra/gYWAmc=
+  distributions: "compile_catalog sdist bdist_wheel"
+  on:
+    tags: true
+    python: "2.7"
