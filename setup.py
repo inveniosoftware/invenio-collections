@@ -36,11 +36,15 @@ history = open('CHANGES.rst').read()
 requirements = [
     'Flask>=0.10.1',
     'six>=1.7.2',
+    'intbitset>=2.0',
     'dojson>=0.1.1',
-    'invenio-formatter>=0.1.0',
+    'invenio-formatter>=0.2.0',
+    'invenio-search>=0.1.0',
 ]
 
 test_requirements = [
+    'unittest2>=1.1.0',
+    'Flask_Testing>=0.4.1',
     'pytest>=2.7.0',
     'pytest-cov>=1.8.0',
     'pytest-pep8>=1.0.6',
