@@ -106,18 +106,6 @@ def collection_restricted_p(collection, recreate_cache_if_needed=True):
     return collection in restricted_collection_cache.cache
 
 
-def is_record_in_any_collection(recID, recreate_cache_if_needed=True):
-    """Return True if the record belongs to at least one collection.
-
-    This is a good, although not perfect, indicator to guess if webcoll has
-    already run after this record has been entered into the system.
-    """
-    from invenio_records.api import get_record
-    warnings.warn("Use record['_collections'] directly.", DeprecationWarning,
-                  stacklevel=2)
-    return bool(get_record(recID).get('_collections', []))
-
-
 class CollectionI18nNameDataCacher(DataCacher):
     """
     Provides cache for I18N collection names.  This class is not to be
