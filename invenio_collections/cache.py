@@ -28,8 +28,6 @@ from invenio.base.globals import cfg
 from invenio.legacy.miscutil.data_cacher import DataCacher, DataCacherProxy
 from invenio.utils.memoise import memoize
 
-from .models import Collection, Collectionname
-
 
 class CollectionAllChildrenDataCacher(DataCacher):
 
@@ -38,6 +36,7 @@ class CollectionAllChildrenDataCacher(DataCacher):
     def __init__(self):
         """Initilize cache."""
         def cache_filler():
+            from .models import Collection
             collections = Collection.query.all()
             collection_index = dict([(c.id, c.name) for c in collections])
 
@@ -113,6 +112,7 @@ class CollectionI18nNameDataCacher(DataCacher):
     """
     def __init__(self):
         def cache_filler():
+            from .models import Collection, Collectionname
             res = Collection.query.join(
                 Collection.collection_names
             ).filter(Collectionname.type == 'ln').values(

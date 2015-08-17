@@ -20,19 +20,19 @@
 
 import warnings
 
-from flask import (Blueprint, request, redirect, url_for, render_template,
-                   current_app, g)
-from flask_breadcrumbs import \
-    register_breadcrumb, current_breadcrumbs, default_breadcrumb_root
+from flask import Blueprint, current_app, g, redirect, render_template, \
+    request, url_for
+from flask_breadcrumbs import current_breadcrumbs, default_breadcrumb_root, \
+    register_breadcrumb
 from flask_menu import register_menu
 
+from invenio.base.decorators import templated, wash_arguments
 from invenio.base.i18n import _
-from invenio.base.decorators import wash_arguments, templated
 from invenio.ext.template.context_processor import \
     register_template_context_processor
-from invenio_formatter import format_record
-from invenio.modules.search.forms import EasySearchForm
 from invenio.utils.text import slugify
+from invenio_formatter import format_record
+from invenio_search.forms import EasySearchForm
 
 from ..models import Collection
 

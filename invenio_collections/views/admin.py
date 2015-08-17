@@ -23,9 +23,7 @@ from __future__ import unicode_literals
 
 from flask import Blueprint, abort, flash, g, redirect, render_template, \
     request, url_for
-
 from flask_breadcrumbs import register_breadcrumb
-
 from flask_login import current_user, login_required
 
 from invenio.base.decorators import templated
@@ -34,10 +32,8 @@ from invenio.ext.principal import permission_required
 from invenio.ext.sqlalchemy import db
 
 from ..forms import CollectionForm, TranslationsForm
-from ..models import (
-    Collection, CollectionCollection, CollectionPortalbox, Collectionname,
-    Portalbox
-)
+from ..models import Collection, CollectionCollection, Collectionname, \
+    CollectionPortalbox, Portalbox
 
 
 def not_guest():

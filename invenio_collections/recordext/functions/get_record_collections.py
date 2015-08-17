@@ -20,10 +20,10 @@
 """Record field function."""
 
 from invenio_records.signals import before_record_insert
-from invenio.modules.search.api import Query
-from invenio.utils.datastructures import LazyDict
-
 from six import iteritems
+
+from invenio.utils.datastructures import LazyDict
+from invenio_search.api import Query
 
 COLLECTIONS_DELETED_RECORDS = '{dbquery} AND NOT collection:"DELETED"'
 
@@ -31,7 +31,7 @@ COLLECTIONS_DELETED_RECORDS = '{dbquery} AND NOT collection:"DELETED"'
 def _queries():
     """Preprocess collection queries."""
     from invenio.ext.sqlalchemy import db
-    from invenio.modules.collections.models import Collection
+    from invenio_collections.models import Collection
     return dict(
         (collection.name, dict(
             query=Query(COLLECTIONS_DELETED_RECORDS.format(

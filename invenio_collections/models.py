@@ -21,29 +21,24 @@
 
 # General imports.
 import re
-
 from operator import itemgetter
 
 from flask import g, url_for
-
 from intbitset import intbitset
+from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy.orm.collections import attribute_mapped_collection
+from sqlalchemy.schema import Index
+from werkzeug.utils import cached_property
 
 from invenio.base.globals import cfg
 from invenio.base.i18n import _, gettext_set_language
 from invenio.ext.sqlalchemy import db
 from invenio.ext.sqlalchemy.utils import attribute_multi_dict_collection
 from invenio_formatter.registry import output_formats
-from invenio.modules.search.models import Field, Fieldvalue
-
-from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy.orm.collections import attribute_mapped_collection
-from sqlalchemy.schema import Index
-
-from werkzeug.utils import cached_property
+from invenio_search.models import Field, Fieldvalue
 
 from .cache import collection_restricted_p, get_coll_i18nname
-
 
 external_collection_mapper = attribute_multi_dict_collection(
     creator=lambda k, v: CollectionExternalcollection(type=k,

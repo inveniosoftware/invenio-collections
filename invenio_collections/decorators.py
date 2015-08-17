@@ -19,7 +19,7 @@
 
 import functools
 
-from flask import g, abort, flash, redirect, request, url_for
+from flask import abort, flash, g, redirect, request, url_for
 from flask_login import current_user
 
 from invenio.base.i18n import _

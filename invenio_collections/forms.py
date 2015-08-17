@@ -19,11 +19,12 @@
 
 """Collection form implementation."""
 
-from wtforms import TextField, HiddenField, SelectField, StringField
+from wtforms import HiddenField, SelectField, StringField, TextField
 
 from invenio.base.i18n import _
-from invenio.modules.collections.models import get_pbx_pos
 from invenio.utils.forms import InvenioBaseForm
+
+from .models import get_pbx_pos
 
 
 class CollectionForm(InvenioBaseForm):
