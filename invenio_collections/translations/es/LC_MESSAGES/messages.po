@@ -6,9 +6,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: invenio-collections 0.1.0.dev20150000\n"
+"Project-Id-Version: invenio-collections 0.1.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-08-17 09:53+0200\n"
+"POT-Creation-Date: 2015-08-25 19:57+0200\n"
 "PO-Revision-Date: 2015-08-17 09:53+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: es <LL@li.org>\n"
@@ -18,40 +18,40 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.0\n"
 
-#: invenio_collections/decorators.py:49
+#: invenio_collections/decorators.py:66
 msgid "This collection is restricted."
 msgstr ""
 
-#: invenio_collections/forms.py:34
+#: invenio_collections/forms.py:35
 msgid "Name"
 msgstr ""
 
-#: invenio_collections/forms.py:35
+#: invenio_collections/forms.py:36
 msgid "Query"
 msgstr ""
 
-#: invenio_collections/models.py:64
+#: invenio_collections/models.py:61
 msgid "default"
 msgstr ""
 
-#: invenio_collections/models.py:127
+#: invenio_collections/models.py:124
 #, python-format
 msgid "HTML %(format)s"
 msgstr ""
 
-#: invenio_collections/models.py:272
+#: invenio_collections/models.py:267
 msgid "any field"
 msgstr ""
 
-#: invenio_collections/views/admin.py:58
+#: invenio_collections/views/admin.py:54
 msgid "WebSearch"
 msgstr ""
 
-#: invenio_collections/views/admin.py:173
+#: invenio_collections/views/admin.py:169
 msgid "Collection was updated"
 msgstr ""
 
-#: invenio_collections/views/admin.py:213
+#: invenio_collections/views/admin.py:209
 msgid "Collection was updated on n languages:"
 msgstr ""
 
