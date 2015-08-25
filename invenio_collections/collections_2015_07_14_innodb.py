@@ -20,7 +20,8 @@
 """Fixes foreign key relationship."""
 
 from invenio.ext.sqlalchemy import db
-from invenio.modules.upgrader.api import op
+
+from invenio_upgrader.api import op
 
 depends_on = ['invenio_2015_03_03_tag_value']
 
