@@ -19,7 +19,10 @@
 
 """Record field function."""
 
-from invenio_records.signals import before_record_insert
+from invenio_records.signals import (
+    before_record_insert,
+    before_record_update,
+)
 from six import iteritems
 
 from invenio.utils.datastructures import LazyDict
@@ -64,5 +67,6 @@ def get_record_collections(record):
 
 
 @before_record_insert.connect
+@before_record_update.connect
 def update_collections(sender, *args, **kwargs):
     sender['_collections'] = get_record_collections(sender)
