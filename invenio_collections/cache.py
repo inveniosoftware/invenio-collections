@@ -74,9 +74,9 @@ def get_collection_nbrecs(coll):
 class RestrictedCollectionDataCacher(DataCacher):
     def __init__(self):
         def cache_filler():
-            from invenio.modules.access.control import acc_get_action_id
-            from invenio.modules.access.local_config import VIEWRESTRCOLL
-            from invenio.modules.access.models import (
+            from invenio_access.control import acc_get_action_id
+            from invenio_access.local_config import VIEWRESTRCOLL
+            from invenio_access.models import (
                 AccAuthorization, AccARGUMENT
             )
             VIEWRESTRCOLL_ID = acc_get_action_id(VIEWRESTRCOLL)

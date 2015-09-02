@@ -30,4 +30,5 @@ Invenio module for organizing metadata into collections.
 - Jiri Kuncar <jiri.kuncar@cern.ch>
 - Leonardo Rossi <leonardo.r@cern.ch>
 - Marco Neumann <marco@crepererum.net>
+- Sami Hiltunen <sami.mikael.hiltunen@cern.ch>
 - Tibor Simko <tibor.simko@cern.ch>

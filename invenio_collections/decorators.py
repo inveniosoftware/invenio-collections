@@ -55,8 +55,8 @@ def check_collection(method=None, name_getter=None, default_collection=False):
             return abort(404)
 
         if collection.is_restricted:
-            from invenio.modules.access.engine import acc_authorize_action
-            from invenio.modules.access.local_config import VIEWRESTRCOLL
+            from invenio_access.engine import acc_authorize_action
+            from invenio_access.local_config import VIEWRESTRCOLL
             (auth_code, auth_msg) = acc_authorize_action(
                 uid,
                 VIEWRESTRCOLL,
