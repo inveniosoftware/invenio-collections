@@ -40,8 +40,8 @@ requirements = [
     'dojson>=0.1.1',
     'invenio-access>=0.1.0',
     'invenio-upgrader>=0.1.0',
-    'invenio-formatter>=0.2.0',
-    'invenio-search>=0.1.0',
+    'invenio-formatter>=0.2.1',
+    'invenio-search>=0.1.3',
 ]
 
 test_requirements = [

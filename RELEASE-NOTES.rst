@@ -1,31 +1,36 @@
 ============================
- Invenio-Collections v0.1.1
+ Invenio-Collections v0.1.2
 ============================
 
-Invenio-Collections v0.1.1 was released on August 25, 2015.
+Invenio-Collections v0.1.2 was released on September 4, 2015.
 
 About
 -----
 
 Invenio module for organizing metadata into collections.
 
-*This is an experimental development preview release.*
+*This is an experimental developer preview release.*
+
+Improved features
+-----------------
+
+- Adds `_collections` key upon record update.
 
 Bug fixes
 ---------
 
-- Adds missing `invenio_upgrader` dependency and amends past upgrade
+- Adds missing `invenio_access` dependency and amends past upgrade
   recipes following its separation into standalone package.
 
 Installation
 ------------
 
-   $ pip install invenio-collections==0.1.1
+   $ pip install invenio-collections==0.1.2
 
 Documentation
 -------------
 
-   http://invenio-collections.readthedocs.org/en/v0.1.1
+   http://invenio-collections.readthedocs.org/en/v0.1.2
 
 Happy hacking and thanks for flying Invenio-Collections.
 
