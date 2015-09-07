@@ -21,121 +21,100 @@
 
 import warnings
 
-from intbitset import intbitset
-from werkzeug import cached_property
+from sqlalchemy import event
+from werkzeug.utils import cached_property
 
 from invenio.base.globals import cfg
-from invenio.legacy.miscutil.data_cacher import DataCacher, DataCacherProxy
-from invenio.utils.memoise import memoize
+from invenio.ext.cache import cache
 
+from invenio_access.models import AccAuthorization, AccARGUMENT
 
-class CollectionAllChildrenDataCacher(DataCacher):
-
-    """Cache for all children of a collection."""
-
-    def __init__(self):
-        """Initilize cache."""
-        def cache_filler():
-            from .models import Collection
-            collections = Collection.query.all()
-            collection_index = dict([(c.id, c.name) for c in collections])
-
-            return dict([
-                (c.name, map(collection_index.get, c.descendants_ids))
-                for c in collections
-            ])
-
-        def timestamp_verifier():
-            from invenio.legacy.dbquery import get_table_update_time
-            return max(get_table_update_time('collection'),
-                       get_table_update_time('collection_collection'))
-
-        DataCacher.__init__(self, cache_filler, timestamp_verifier)
-
-collection_allchildren_cache = DataCacherProxy(CollectionAllChildrenDataCacher)
+from .models import Collection, Collectionname
 
 
 def get_collection_allchildren(coll, recreate_cache_if_needed=True):
     """Return the list of all children of a collection."""
-    if recreate_cache_if_needed:
-        collection_allchildren_cache.recreate_cache_if_needed()
-    if coll not in collection_allchildren_cache.cache:
-        return []  # collection does not exist; return empty list
-    return collection_allchildren_cache.cache[coll]
+    warnings.warn('get_collection_allchildren has been deprecated.',
+                  DeprecationWarning)
+    return []
 
 
-@memoize
 def get_collection_nbrecs(coll):
     """Return number of records in collection."""
-    # FIXME
+    warnings.warn('get_collection_nbrecs has been deprecated.',
+                  DeprecationWarning)
     return 0
 
 
-class RestrictedCollectionDataCacher(DataCacher):
-    def __init__(self):
-        def cache_filler():
-            from invenio_access.control import acc_get_action_id
-            from invenio_access.local_config import VIEWRESTRCOLL
-            from invenio_access.models import (
-                AccAuthorization, AccARGUMENT
-            )
-            VIEWRESTRCOLL_ID = acc_get_action_id(VIEWRESTRCOLL)
+@cache.memoize()
+def get_restricted_collections():
+    from invenio_access.control import acc_get_action_id
+    from invenio_access.local_config import VIEWRESTRCOLL
+    VIEWRESTRCOLL_ID = acc_get_action_id(VIEWRESTRCOLL)
 
-            return [auth[0] for auth in AccAuthorization.query.join(
-                AccAuthorization.argument
-            ).filter(
-                AccARGUMENT.keyword == 'collection',
-                AccAuthorization.id_accACTION == VIEWRESTRCOLL_ID
-            ).values(AccARGUMENT.value)]
-
-        def timestamp_verifier():
-            from invenio.legacy.dbquery import get_table_update_time
-            return max(get_table_update_time('accROLE_accACTION_accARGUMENT'),
-                       get_table_update_time('accARGUMENT'))
-
-        DataCacher.__init__(self, cache_filler, timestamp_verifier)
+    return [auth[0] for auth in AccAuthorization.query.join(
+        AccAuthorization.argument
+    ).filter(
+        AccARGUMENT.keyword == 'collection',
+        AccAuthorization.id_accACTION == VIEWRESTRCOLL_ID
+    ).values(AccARGUMENT.value)]
 
 
-restricted_collection_cache = DataCacherProxy(RestrictedCollectionDataCacher)
+class RestrictedCollections(object):
+
+    cache = property(get_restricted_collections)
 
 
-def collection_restricted_p(collection, recreate_cache_if_needed=True):
-    if recreate_cache_if_needed:
-        restricted_collection_cache.recreate_cache_if_needed()
-    return collection in restricted_collection_cache.cache
+restricted_collection_cache = RestrictedCollections()
 
 
-class CollectionI18nNameDataCacher(DataCacher):
+@event.listens_for(AccARGUMENT, 'after_insert')
+@event.listens_for(AccARGUMENT, 'after_update')
+@event.listens_for(AccARGUMENT, 'after_delete')
+@event.listens_for(AccAuthorization, 'after_insert')
+@event.listens_for(AccAuthorization, 'after_update')
+@event.listens_for(AccAuthorization, 'after_delete')
+def clear_restricted_collections_cache(mapper, connection, target):
+    """Clear cache after modification of access rights."""
+    cache.delete_memoized('get_restricted_collections')
+
+
+def collection_restricted_p(collection, **kwargs):
+    return collection in get_restricted_collections()
+
+
+@cache.memoize()
+def get_i18n_collection_names():
+    """Return I18N collection names.
+
+    This function is not to be used directly; use function
+    get_coll_i18nname() instead.
     """
-    Provides cache for I18N collection names.  This class is not to be
-    used directly; use function get_coll_i18nname() instead.
-    """
-    def __init__(self):
-        def cache_filler():
-            from .models import Collection, Collectionname
-            res = Collection.query.join(
-                Collection.collection_names
-            ).filter(Collectionname.type == 'ln').values(
-                Collection.name, 'ln', 'value'
-            )
-            ret = {}
-            for c, ln, i18nname in res:
-                if i18nname:
-                    if c not in ret:
-                        ret[c] = {}
-                    ret[c][ln] = i18nname
-            return ret
-
-        def timestamp_verifier():
-            from invenio.legacy.dbquery import get_table_update_time
-            return get_table_update_time('collectionname')
-
-        DataCacher.__init__(self, cache_filler, timestamp_verifier)
-
-collection_i18nname_cache = DataCacherProxy(CollectionI18nNameDataCacher)
+    # TODO Consider storing cache per collection to avaid large data transfers
+    # between Redis and web node.
+    res = Collection.query.join(
+        Collection.collection_names
+    ).filter(Collectionname.type == 'ln').values(
+        Collection.name, 'ln', 'value'
+    )
+    ret = {}
+    for c, ln, i18nname in res:
+        if i18nname:
+            if c not in ret:
+                ret[c] = {}
+            ret[c][ln] = i18nname
+    return ret
 
 
-def get_coll_i18nname(c, ln=None, verify_cache_timestamp=True):
+@event.listens_for(Collectionname, 'after_insert')
+@event.listens_for(Collectionname, 'after_update')
+@event.listens_for(Collectionname, 'after_delete')
+def clear_collection_names_cache(mapper, connection, target):
+    """Clear caches connected to Collectionname table."""
+    cache.delete_memoized('get_i18n_collection_names')
+
+
+def get_coll_i18nname(c, ln=None):
     """Return nicely formatted collection name for given language.
 
     This function uses collection_i18nname_cache, but it verifies
@@ -151,11 +130,4 @@ def get_coll_i18nname(c, ln=None, verify_cache_timestamp=True):
     results page.
     """
     ln = ln or cfg['CFG_SITE_LANG']
-    if verify_cache_timestamp:
-        collection_i18nname_cache.recreate_cache_if_needed()
-    out = c
-    try:
-        out = collection_i18nname_cache.cache[c][ln]
-    except KeyError:
-        pass  # translation in LN does not exist
-    return out
+    return get_i18n_collection_names().get(c, {}).get(ln, c)

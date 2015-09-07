@@ -38,7 +38,6 @@ from invenio.ext.sqlalchemy.utils import attribute_multi_dict_collection
 from invenio_formatter.registry import output_formats
 from invenio_search.models import Field, Fieldvalue
 
-from .cache import collection_restricted_p, get_coll_i18nname
 
 external_collection_mapper = attribute_multi_dict_collection(
     creator=lambda k, v: CollectionExternalcollection(type=k,
@@ -137,6 +136,7 @@ class Collection(db.Model):
     @property
     def name_ln(self):
         """Name ln."""
+        from .cache import get_coll_i18nname
         return get_coll_i18nname(self.name,
                                  getattr(g, 'ln', cfg['CFG_SITE_LANG']))
         # Another possible implementation with cache memoize
@@ -172,6 +172,7 @@ class Collection(db.Model):
     # @cache.memoize(make_name=lambda fname: fname + '::' + g.ln)
     def is_restricted(self):
         """Return ``True`` if the collection is restricted."""
+        from .cache import collection_restricted_p
         return collection_restricted_p(self.name)
 
     @property
