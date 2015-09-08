@@ -62,8 +62,15 @@ def get_restricted_collections():
 
 class RestrictedCollections(object):
 
-    cache = property(get_restricted_collections)
+    @property
+    def cache(self):
+        warnings.warn('restricted_collection_cache has been deprecated.',
+                      DeprecationWarning)
+        return get_restricted_collections()
 
+    def recreate_cache_if_needed(self):
+        warnings.warn('restricted_collection_cache has been deprecated.',
+                      DeprecationWarning)
 
 restricted_collection_cache = RestrictedCollections()
 
