@@ -27,6 +27,8 @@ from werkzeug.utils import cached_property
 from invenio.base.globals import cfg
 from invenio.ext.cache import cache
 
+from invenio_access.control import acc_get_action_id
+from invenio_access.engine import acc_authorize_action
 from invenio_access.models import AccAuthorization, AccARGUMENT
 
 from .models import Collection, Collectionname
@@ -48,7 +50,6 @@ def get_collection_nbrecs(coll):
 
 @cache.memoize()
 def get_restricted_collections():
-    from invenio_access.control import acc_get_action_id
     from invenio_access.local_config import VIEWRESTRCOLL
     VIEWRESTRCOLL_ID = acc_get_action_id(VIEWRESTRCOLL)
 
@@ -73,6 +74,26 @@ class RestrictedCollections(object):
                       DeprecationWarning)
 
 restricted_collection_cache = RestrictedCollections()
+
+
+def get_permitted_restricted_collections(user_info):
+    """Return a list of restricted collection with user is authorization."""
+    from invenio_access.local_config import VIEWRESTRCOLL
+    restricted_collections = get_restricted_collections()
+
+    ret = []
+
+    auths = acc_authorize_action(
+        user_info,
+        VIEWRESTRCOLL,
+        batch_args=True,
+        collection=restricted_collections
+    )
+
+    for collection, auth in zip(restricted_collections, auths):
+        if auth[0] == 0:
+            ret.append(collection)
+    return ret
 
 
 @event.listens_for(AccARGUMENT, 'after_insert')
