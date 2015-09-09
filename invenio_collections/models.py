@@ -21,6 +21,8 @@
 
 # General imports.
 import re
+# General imports.
+from datetime import datetime
 from operator import itemgetter
 
 from flask import g, url_for
@@ -31,13 +33,16 @@ from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.schema import Index
 from werkzeug.utils import cached_property
 
-from invenio.base.globals import cfg
-from invenio.base.i18n import _, gettext_set_language
 from invenio.ext.sqlalchemy import db
 from invenio.ext.sqlalchemy.utils import attribute_multi_dict_collection
-from invenio_formatter.registry import output_formats
-from invenio_search.models import Field, Fieldvalue
+from invenio.utils.serializers import deserialize_via_marshal
 
+from invenio_base.globals import cfg
+from invenio_base.i18n import _, gettext_set_language
+from invenio_formatter.registry import output_formats
+
+# Create your models here.
+from invenio_search.models import Field, Fieldvalue
 
 external_collection_mapper = attribute_multi_dict_collection(
     creator=lambda k, v: CollectionExternalcollection(type=k,
@@ -750,6 +755,87 @@ class FacetCollection(db.Model):
             cls.facet_name == facet_name).count())
 
 
+class BsrMETHOD(db.Model):
+
+    """Represent a BsrMETHOD record."""
+
+    __tablename__ = 'bsrMETHOD'
+
+    id = db.Column(db.MediumInteger(9, unsigned=True),
+                   primary_key=True, nullable=False)
+    name = db.Column(db.String(20), nullable=False, unique=True)
+    definition = db.Column(db.String(255), nullable=False)
+    washer = db.Column(db.String(255), nullable=False)
+
+    bucket_data = association_proxy('buckets', 'data')
+
+    def get_name_ln(self, ln=None):
+        """Return localized method name."""
+        try:
+            if ln is None:
+                ln = g.ln
+            return self.names.filter_by(ln=g.ln, type='ln').one().value
+        except:
+            return self.name
+
+    @classmethod
+    def get_sorting_methods(cls):
+        """Return initialized method mapping."""
+        return dict(db.session.query(cls.name, cls.definition).all())
+
+    def get_cache(self):
+        """Return data to populate cache."""
+        if len(self.methoddata) < 1:
+            return {}
+        return dict(
+            data_dict_ordered=self.methoddata[0].ordered,
+            bucket_data=dict(self.bucket_data),
+        )
+
+    @classmethod
+    def timestamp_verifier(cls, name):
+        """Return last modification time for given sorting method."""
+        return datetime(1970, 1, 1)
+
+
+class BsrMETHODNAME(db.Model):
+
+    """Represent a BsrMETHODNAME record."""
+
+    __tablename__ = 'bsrMETHODNAME'
+
+    id_bsrMETHOD = db.Column(db.MediumInteger(9, unsigned=True),
+                             db.ForeignKey(BsrMETHOD.id),
+                             primary_key=True, nullable=False,
+                             autoincrement=False)
+    ln = db.Column(db.String(5), primary_key=True, nullable=False)
+    type = db.Column(db.String(3), primary_key=True, nullable=False)
+    value = db.Column(db.String(255), nullable=False)
+    method = db.relationship(BsrMETHOD, backref=db.backref('names',
+                                                           lazy='dynamic'))
+
+
+class Collection_bsrMETHOD(db.Model):
+
+    """Represent a Collection_bsrMETHOD record."""
+
+    __tablename__ = 'collection_bsrMETHOD'
+
+    id_collection = db.Column(db.MediumInteger(9, unsigned=True),
+                              db.ForeignKey(Collection.id),
+                              primary_key=True, nullable=False,
+                              autoincrement=False)
+    id_bsrMETHOD = db.Column(db.MediumInteger(9, unsigned=True),
+                             db.ForeignKey(BsrMETHOD.id),
+                             primary_key=True, nullable=False,
+                             autoincrement=False)
+    score = db.Column(db.TinyInteger(4, unsigned=True), server_default='0',
+                      nullable=False)
+
+    collection = db.relationship(Collection, backref='bsrMETHODs')
+    bsrMETHOD = db.relationship(BsrMETHOD, backref='collections')
+
+
 __all__ = (
     'Collection',
     'Collectionname',
@@ -764,4 +850,7 @@ __all__ = (
     'CollectionFormat',
     'CollectionFieldFieldvalue',
     'FacetCollection',
+    'BsrMETHOD',
+    'BsrMETHODNAME',
+    'Collection_bsrMETHOD',
 )
