@@ -21,28 +21,37 @@
 
 # General imports.
 import re
-# General imports.
 from datetime import datetime
+
 from operator import itemgetter
 
+from warnings import warn
+
 from flask import g, url_for
+
 from intbitset import intbitset
-from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy.orm.collections import attribute_mapped_collection
-from sqlalchemy.schema import Index
-from werkzeug.utils import cached_property
 
 from invenio.ext.sqlalchemy import db
 from invenio.ext.sqlalchemy.utils import attribute_multi_dict_collection
-from invenio.utils.serializers import deserialize_via_marshal
 
 from invenio_base.globals import cfg
 from invenio_base.i18n import _, gettext_set_language
+
 from invenio_formatter.registry import output_formats
 
 # Create your models here.
 from invenio_search.models import Field, Fieldvalue
+
+from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.ext.orderinglist import ordering_list
+
+from sqlalchemy.orm import validates
+from sqlalchemy.orm.collections import attribute_mapped_collection
+
+from sqlalchemy.schema import Index
+
+from werkzeug.utils import cached_property
+
 
 external_collection_mapper = attribute_multi_dict_collection(
     creator=lambda k, v: CollectionExternalcollection(type=k,
@@ -77,6 +86,31 @@ class Collection(db.Model):
     dbquery = db.Column(
         db.Text().with_variant(db.Text(20), 'mysql'),
         nullable=True)
+
+    @validates('name')
+    def validate_name(self, key, name):
+        """Validate name.
+
+        Name should not contain '/'-character. Root collection's name should
+        equal CFG_SITE_NAME. Non-root collections should not have name equal to
+        CFG_SITE_NAME.
+        """
+        if '/' in name:
+            raise ValueError("collection name shouldn't contain '/'-character")
+
+        if not self.is_root and name == cfg['CFG_SITE_NAME']:
+            raise ValueError(("only root collection can "
+                              "be named equal to the site's name"))
+
+        if self.is_root and name != cfg['CFG_SITE_NAME']:
+            warn('root collection name should be equal to the site name')
+
+        return name
+
+    @property
+    def is_root(self):
+        """Check whether the collection is a root collection."""
+        return self.id == 1
 
     @property
     def nbrecs(self):
@@ -775,7 +809,7 @@ class BsrMETHOD(db.Model):
             if ln is None:
                 ln = g.ln
             return self.names.filter_by(ln=g.ln, type='ln').one().value
-        except:
+        except Exception:
             return self.name
 
     @classmethod
