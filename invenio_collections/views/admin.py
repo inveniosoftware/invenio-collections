@@ -26,8 +26,8 @@ from flask import Blueprint, abort, flash, g, redirect, render_template, \
 from flask_breadcrumbs import register_breadcrumb
 from flask_login import current_user, login_required
 
-from invenio.base.decorators import templated
-from invenio.base.i18n import _, language_list_long
+from invenio_base.decorators import templated
+from invenio_base.i18n import _, language_list_long
 from invenio.ext.principal import permission_required
 from invenio.ext.sqlalchemy import db
 

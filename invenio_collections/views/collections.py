@@ -26,8 +26,8 @@ from flask_breadcrumbs import current_breadcrumbs, default_breadcrumb_root, \
     register_breadcrumb
 from flask_menu import register_menu
 
-from invenio.base.decorators import templated, wash_arguments
-from invenio.base.i18n import _
+from invenio_base.decorators import templated, wash_arguments
+from invenio_base.i18n import _
 from invenio.ext.template.context_processor import \
     register_template_context_processor
 from invenio.utils.text import slugify

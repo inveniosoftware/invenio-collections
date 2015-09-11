@@ -24,7 +24,7 @@ import warnings
 from sqlalchemy import event
 from werkzeug.utils import cached_property
 
-from invenio.base.globals import cfg
+from invenio_base.globals import cfg
 from invenio.ext.cache import cache
 
 from invenio_access.control import acc_get_action_id

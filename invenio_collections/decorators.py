@@ -22,7 +22,7 @@ import functools
 from flask import abort, flash, g, redirect, request, url_for
 from flask_login import current_user
 
-from invenio.base.i18n import _
+from invenio_base.i18n import _
 
 from .models import Collection
 
