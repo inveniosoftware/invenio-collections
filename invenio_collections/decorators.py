@@ -17,9 +17,12 @@
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
+"""Decorators for collections."""
+
 import functools
 
 from flask import abort, flash, g, redirect, request, url_for
+
 from flask_login import current_user
 
 from invenio.base.i18n import _
@@ -44,7 +47,6 @@ def check_collection(method=None, name_getter=None, default_collection=False):
 
     @functools.wraps(method)
     def decorated(*args, **kwargs):
-        uid = current_user.get_id()
         name = name_getter()
         if name:
             g.collection = collection = Collection.query.filter(
@@ -54,21 +56,12 @@ def check_collection(method=None, name_getter=None, default_collection=False):
         else:
             return abort(404)
 
-        if collection.is_restricted:
-            from invenio_access.engine import acc_authorize_action
-            from invenio_access.local_config import VIEWRESTRCOLL
-            (auth_code, auth_msg) = acc_authorize_action(
-                uid,
-                VIEWRESTRCOLL,
-                collection=collection.name
-            )
-            if auth_code:
-                flash(_('This collection is restricted.'), 'error')
-            if auth_code and current_user.is_guest:
+        if not collection.can_be_viewed_by(current_user):
+            flash(_('This collection is restricted.'), 'error')
+            if current_user.is_guest:
                 return redirect(url_for('webaccount.login',
                                         referer=request.url))
-            elif auth_code:
-                return abort(401)
+            return abort(401)
 
         return method(collection, *args, **kwargs)
     return decorated

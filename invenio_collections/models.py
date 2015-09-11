@@ -26,23 +26,30 @@ from datetime import datetime
 from operator import itemgetter
 
 from flask import g, url_for
+
 from intbitset import intbitset
-from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy.orm.collections import attribute_mapped_collection
-from sqlalchemy.schema import Index
-from werkzeug.utils import cached_property
 
 from invenio.ext.sqlalchemy import db
 from invenio.ext.sqlalchemy.utils import attribute_multi_dict_collection
-from invenio.utils.serializers import deserialize_via_marshal
+
+from invenio_access.engine import acc_authorize_action
+from invenio_access.local_config import VIEWRESTRCOLL
 
 from invenio_base.globals import cfg
 from invenio_base.i18n import _, gettext_set_language
+
 from invenio_formatter.registry import output_formats
 
 # Create your models here.
 from invenio_search.models import Field, Fieldvalue
+
+from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy.orm.collections import attribute_mapped_collection
+
+from sqlalchemy.schema import Index
+
+from werkzeug.utils import cached_property
 
 external_collection_mapper = attribute_multi_dict_collection(
     creator=lambda k, v: CollectionExternalcollection(type=k,
@@ -359,6 +366,14 @@ class Collection(db.Model):
                 return map(lambda obj: obj.bsrMETHOD, methods)
 
         return BsrMETHOD.query.order_by(BsrMETHOD.name).all()
+
+    def can_be_viewed_by(self, user_info):
+        """Check if the user has sufficient rights to view the collection."""
+        if not self.is_restricted():
+            return True
+        (auth_code, auth_msg) = acc_authorize_action(
+            user_info, VIEWRESTRCOLL, collection=self.name)
+        return auth_code == 0
 
     def get_collectionbox_name(self, ln=None, box_type="r"):
         """Return collection-specific labelling subtrees.
@@ -775,7 +790,7 @@ class BsrMETHOD(db.Model):
             if ln is None:
                 ln = g.ln
             return self.names.filter_by(ln=g.ln, type='ln').one().value
-        except:
+        except Exception:
             return self.name
 
     @classmethod
