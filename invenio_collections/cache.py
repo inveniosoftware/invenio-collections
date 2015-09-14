@@ -104,7 +104,7 @@ def get_permitted_restricted_collections(user_info):
 @event.listens_for(AccAuthorization, 'after_delete')
 def clear_restricted_collections_cache(mapper, connection, target):
     """Clear cache after modification of access rights."""
-    cache.delete_memoized('get_restricted_collections')
+    cache.delete_memoized(get_restricted_collections)
 
 
 def collection_restricted_p(collection, **kwargs):
@@ -139,7 +139,7 @@ def get_i18n_collection_names():
 @event.listens_for(Collectionname, 'after_delete')
 def clear_collection_names_cache(mapper, connection, target):
     """Clear caches connected to Collectionname table."""
-    cache.delete_memoized('get_i18n_collection_names')
+    cache.delete_memoized(get_i18n_collection_names)
 
 
 def get_coll_i18nname(c, ln=None):
