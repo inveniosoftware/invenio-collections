@@ -377,9 +377,6 @@ class Collection(db.Model):
         Note: Noth sorting methods and ranking methods are now defined via
         the sorter.
         """
-        from invenio.modules.sorter.models import BsrMETHOD, \
-            Collection_bsrMETHOD
-
         for coll_id in (self.id, 1):
             methods = Collection_bsrMETHOD.query.filter_by(
                 id_collection=coll_id
