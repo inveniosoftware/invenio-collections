@@ -33,7 +33,7 @@ COLLECTIONS_DELETED_RECORDS = '{dbquery} AND NOT collection:"DELETED"'
 
 def _queries():
     """Preprocess collection queries."""
-    from invenio.ext.sqlalchemy import db
+    from invenio_ext.sqlalchemy import db
     from invenio_collections.models import Collection
     return dict(
         (collection.name, dict(
