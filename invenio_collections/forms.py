@@ -22,7 +22,7 @@
 from wtforms import HiddenField, SelectField, StringField, TextField
 
 from invenio_base.i18n import _
-from invenio.utils.forms import InvenioBaseForm
+from invenio_utils.forms import InvenioBaseForm
 
 from .models import get_pbx_pos
 

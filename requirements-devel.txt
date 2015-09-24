@@ -28,3 +28,4 @@
 -e git+git://github.com/inveniosoftware/invenio-formatter.git#egg=invenio-formatter
 -e git+git://github.com/inveniosoftware/invenio-search.git#egg=invenio-search
 -e git+git://github.com/inveniosoftware/invenio-upgrader.git#egg=invenio-upgrader
+-e git+git://github.com/inveniosoftware/invenio-utils.git#egg=invenio-utils

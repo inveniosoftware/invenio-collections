@@ -43,6 +43,7 @@ requirements = [
     'invenio-formatter>=0.2.1',
     'invenio-search>=0.1.3',
     'invenio-upgrader>=0.1.0',
+    'invenio-utils>=0.1.1',
 ]
 
 test_requirements = [
