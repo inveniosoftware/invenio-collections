@@ -28,7 +28,7 @@ from flask_menu import register_menu
 
 from invenio_base.decorators import templated, wash_arguments
 from invenio_base.i18n import _
-from invenio.ext.template.context_processor import \
+from invenio_ext.template.context_processor import \
     register_template_context_processor
 from invenio_utils.text import slugify
 from invenio_formatter import format_record

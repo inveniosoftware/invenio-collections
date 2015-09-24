@@ -31,8 +31,8 @@ from flask import g, url_for
 
 from intbitset import intbitset
 
-from invenio.ext.sqlalchemy import db
-from invenio.ext.sqlalchemy.utils import attribute_multi_dict_collection
+from invenio_ext.sqlalchemy import db
+from invenio_ext.sqlalchemy.utils import attribute_multi_dict_collection
 
 from invenio_base.globals import cfg
 from invenio_base.i18n import _, gettext_set_language

@@ -28,8 +28,8 @@ from flask_login import current_user, login_required
 
 from invenio_base.decorators import templated
 from invenio_base.i18n import _, language_list_long
-from invenio.ext.principal import permission_required
-from invenio.ext.sqlalchemy import db
+from invenio_ext.principal import permission_required
+from invenio_ext.sqlalchemy import db
 
 from ..forms import CollectionForm, TranslationsForm
 from ..models import Collection, CollectionCollection, Collectionname, \

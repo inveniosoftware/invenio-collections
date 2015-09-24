@@ -35,15 +35,16 @@ history = open('CHANGES.rst').read()
 
 requirements = [
     'Flask>=0.10.1',
-    'six>=1.7.2',
-    'intbitset>=2.0',
     'dojson>=0.1.1',
+    'intbitset>=2.0',
     'invenio-access>=0.1.0',
     'invenio-base>=0.1.0',
+    'invenio-ext>=0.2.1',
     'invenio-formatter>=0.2.1',
     'invenio-search>=0.1.3',
     'invenio-upgrader>=0.1.0',
     'invenio-utils>=0.1.1',
+    'six>=1.7.2',
 ]
 
 test_requirements = [
