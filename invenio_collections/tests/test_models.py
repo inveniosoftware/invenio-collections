@@ -26,7 +26,7 @@
 
 from invenio.base.wrappers import lazy_import
 
-from invenio.testsuite import InvenioTestCase
+from invenio_testing import InvenioTestCase
 
 Collection = lazy_import('invenio_collections.models:Collection')
 cfg = lazy_import('invenio_base.globals:cfg')
