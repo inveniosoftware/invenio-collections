@@ -40,6 +40,7 @@ requirements = [
     'dojson>=0.1.1',
     'invenio-access>=0.1.0',
     'invenio-base>=0.1.0',
+    'invenio-ext>=0.1.0',
     'invenio-formatter>=0.2.1',
     'invenio-search>=0.1.3',
     'invenio-upgrader>=0.1.0',
