@@ -17,21 +17,14 @@
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
-"""Invenio module for organizing metadata into collections."""
+from sqlalchemy.event import listens_for
 
-from dojson import utils
-from dojson.contrib.marc21 import marc21
-
-from .receivers import new_collection
+from .models import Collection
 
 
-@marc21.over('collections', '^980..')
-@utils.for_each_value
-@utils.filter_values
-def collections(record, key, value):
-    """Parse custom MARC tag 980."""
-    return {
-        'primary': value.get('a'),
-        'secondary': value.get('b'),
-        'deleted': value.get('c'),
-    }
+# FIXME add after_delete
+@listens_for(Collection, 'after_insert')
+@listens_for(Collection, 'after_update')
+def new_collection(mapper, connection, target):
+    if target.dbquery is not None:
+        index_collection_percolator.delay(target.name, target.dbquery)
