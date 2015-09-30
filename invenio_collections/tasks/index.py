@@ -17,21 +17,18 @@
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
-"""Invenio module for organizing metadata into collections."""
-
-from dojson import utils
-from dojson.contrib.marc21 import marc21
-
-from .receivers import new_collection
+from invenio_celery import celery
+from invenio_ext.es import es
 
 
-@marc21.over('collections', '^980..')
-@utils.for_each_value
-@utils.filter_values
-def collections(record, key, value):
-    """Parse custom MARC tag 980."""
-    return {
-        'primary': value.get('a'),
-        'secondary': value.get('b'),
-        'deleted': value.get('c'),
-    }
+@celery.task
+def index_collection_percolator(name, dbquery):
+    """Create an elasticsearch percolator for a given query."""
+    from invenio_search.api import Query
+    from invenio_search.walkers.elasticsearch import ElasticSearchDSL
+    es.index(
+        index='records',
+        doc_type='.percolator',
+        body={'query': Query(dbquery).query.accept(ElasticSearchDSL())},
+        id=name
+    )
