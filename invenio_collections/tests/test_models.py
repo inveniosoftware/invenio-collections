@@ -24,7 +24,7 @@
 
 """Model test cases."""
 
-from invenio.base.wrappers import lazy_import
+from invenio_base.wrappers import lazy_import
 
 from invenio_testing import InvenioTestCase
 
