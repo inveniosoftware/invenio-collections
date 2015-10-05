@@ -16,5 +16,22 @@
 # You should have received a copy of the GNU General Public License
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+# -*- coding: utf-8 -*-
+#
+# In applying this licence, CERN does not waive the privileges and immunities
+# granted to it by virtue of its status as an Intergovernmental Organization
+# or submit itself to any jurisdiction.
 
-"""Invenio module for organizing metadata into collections."""
+from dojson.contrib.marc21 import marc21
+
+def test_invenio_collection_marc21_tag():
+    """Test invenio-collection marc21 tag."""
+    data = marc21.do({'980__': {'a': 'colla', 'b': 'collb'}})
+
+    assert data['collections'][0]['primary'] == 'colla'
+    assert data['collections'][0]['secondary'] == 'collb'
+
+    data = marc21.do({'980__': [{'a': 'colla'}, {'a': 'collaa'}]})
+
+    assert data['collections'][0]['primary'] == 'colla'
+    assert data['collections'][1]['primary'] == 'collaa'

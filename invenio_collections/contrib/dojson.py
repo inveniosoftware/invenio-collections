@@ -17,4 +17,21 @@
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
-"""Invenio module for organizing metadata into collections."""
+"""DoJSON collection related rules."""
+
+from __future__ import absolute_import
+
+from dojson import utils
+from dojson.contrib.marc21 import marc21
+
+
+@marc21.over('collections', '^980..')
+@utils.for_each_value
+@utils.filter_values
+def collections(record, key, value):
+    """Parse custom MARC tag 980."""
+    return {
+        'primary': value.get('a'),
+        'secondary': value.get('b'),
+        'deleted': value.get('c'),
+    }
