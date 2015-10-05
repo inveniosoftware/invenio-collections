@@ -60,8 +60,8 @@ install:
   - "travis_retry pip install -e .[$REXTRAS]"
 
 before_script:
-  - "inveniomanage database init --yes-i-know || echo ':('"
-  - "inveniomanage database create --quiet || echo ':('"
+  - "inveniomanage database init --yes-i-know"
+  - "inveniomanage database create --quiet"
 
 script:
   - "check-manifest --ignore .travis-\\*-requirements.txt"
