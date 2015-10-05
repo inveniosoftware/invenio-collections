@@ -1,8 +1,8 @@
 ============================
- Invenio-Collections v0.1.2
+ Invenio-Collections v0.2.0
 ============================
 
-Invenio-Collections v0.1.2 was released on September 4, 2015.
+Invenio-Collections v0.2.0 was released on October 5, 2015.
 
 About
 -----
@@ -11,26 +11,43 @@ Invenio module for organizing metadata into collections.
 
 *This is an experimental developer preview release.*
 
-Improved features
------------------
+Incompatible changes
+--------------------
 
-- Adds `_collections` key upon record update.
+- Removes `recordext/functions` folder in favor of `invenio-records`.
+- Removes legacy search extensions.
+- Deprecates usage of `restricted_collection_cache`.
+- Replaces legacy DataCachers with functions decorated by memoize
+  method from Flask-Cache.  (#7)
+
+New features
+------------
+
+- Ports get_permitted_restricted_collections function from
+  `invenio_search` package.
+- Adds simple admin interface to edit collection name and query. (#1)
 
 Bug fixes
 ---------
 
-- Adds missing `invenio_access` dependency and amends past upgrade
-  recipes following its separation into standalone package.
+- Upgrades invenio-base minimum version to 0.3.0 and fixes an
+  incorrect import.
+- Removes calls to PluginManager consider_setuptools_entrypoints()
+  removed in PyTest 2.8.0.
+- Adds validation for collection names. Validation will be performed
+  each time the name is set. (#10)
+- Adds missing `invenio_base` dependency.
+- Moves upgrade recipes into the right folder to be auto discovered.
 
 Installation
 ------------
 
-   $ pip install invenio-collections==0.1.2
+   $ pip install invenio-collections==0.2.0
 
 Documentation
 -------------
 
-   http://invenio-collections.readthedocs.org/en/v0.1.2
+   http://invenio-collections.readthedocs.org/en/v0.2.0
 
 Happy hacking and thanks for flying Invenio-Collections.
 
