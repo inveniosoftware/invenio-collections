@@ -24,6 +24,16 @@
 Changes
 =======
 
+Version 0.3.0 (released 2015-10-09)
+-----------------------------------
+
+Incompatible changes
+~~~~~~~~~~~~~~~~~~~~
+
+- Moves automatically loaded rule for MARC field 980 to
+  contrib/dojson.py and adds the corresponding entry point for it so
+  dojson can collect it.
+
 Version 0.2.0 (released 2015-10-05)
 -----------------------------------
 
