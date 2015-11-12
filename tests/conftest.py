@@ -22,12 +22,46 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-"""Invenio module for organizing metadata into collections."""
+
+"""Pytest configuration."""
 
 from __future__ import absolute_import, print_function
 
-from .ext import InvenioCollections
-from .receivers import get_record_collections
-from .version import __version__
+import pytest
+import os
 
-__all__ = ('__version__', 'InvenioCollections', 'get_record_collections')
+from flask import Flask
+from flask_menu import Menu as FlaskMenu
+from flask.ext import breadcrumbs
+from flask_cli import FlaskCLI
+
+from invenio_db import InvenioDB, db
+from invenio_collections.views import blueprint
+
+
+@pytest.fixture()
+def app(request):
+    """Flask application fixture."""
+    app = Flask('testapp')
+    FlaskMenu(app)
+    FlaskCLI(app)
+    breadcrumbs.Breadcrumbs(app=app)
+    InvenioDB(app)
+    app.config.update(
+        TESTING=True,
+        SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI',
+                                          'sqlite://'),
+    )
+
+    app.register_blueprint(blueprint)
+
+    def teardown():
+        with app.app_context():
+            db.drop_all()
+
+    request.addfinalizer(teardown)
+
+    with app.app_context():
+        db.create_all()
+
+    return app

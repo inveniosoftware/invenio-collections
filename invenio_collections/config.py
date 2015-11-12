@@ -17,39 +17,23 @@
 # along with Invenio; if not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
-"""Fixes foreign key relationship."""
+"""Invenio Collections configuration."""
 
-from invenio_ext.sqlalchemy import db
+from __future__ import unicode_literals
 
-from invenio_upgrader.api import op
+import pkg_resources
 
-depends_on = ['invenio_2015_03_03_tag_value']
+COLLECTIONS_QUERY_PARSER = 'invenio_query_parser.parser:Main'
 
+COLLECTIONS_QUERY_WALKERS = [
+    'invenio_query_parser.walkers.pypeg_to_ast:PypegConverter',
+]
 
-def info():
-    """Return upgrade recipe information."""
-    return "Fixes foreign key relationship."
+try:
+    pkg_resources.get_distribution('invenio_search')
 
-
-def do_upgrade():
-    """Carry out the upgrade."""
-    op.alter_column(
-        table_name='facet_collection',
-        column_name='id_collection',
-        type_=db.MediumInteger(9, unsigned=True)
-    )
-
-
-def estimate():
-    """Estimate running time of upgrade in seconds (optional)."""
-    return 1
-
-
-def pre_upgrade():
-    """Pre-upgrade checks."""
-    pass
-
-
-def post_upgrade():
-    """Post-upgrade checks."""
+    from invenio_search.config import \
+        SEARCH_QUERY_PARSER as COLLECTIONS_QUERY_PARSER, \
+        SEARCH_QUERY_WALKERS as COLLECTIONS_QUERY_WALKERS
+except pkg_resources.DistributionNotFound:  # pragma: no cover
     pass

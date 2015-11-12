@@ -22,12 +22,43 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-"""Invenio module for organizing metadata into collections."""
+
+"""Minimal Flask application example for development.
+
+Run example development server:
+
+.. code-block:: console
+
+   $ cd examples
+   $ python app.py
+"""
 
 from __future__ import absolute_import, print_function
 
-from .ext import InvenioCollections
-from .receivers import get_record_collections
-from .version import __version__
+import os
 
-__all__ = ('__version__', 'InvenioCollections', 'get_record_collections')
+from flask import Flask
+from flask_babelex import Babel
+from flask_menu import Menu as FlaskMenu
+from flask.ext import breadcrumbs
+from flask_cli import FlaskCLI
+
+from invenio_db import InvenioDB
+from invenio_collections import InvenioCollections
+
+# Create Flask application
+app = Flask(__name__)
+Babel(app)
+InvenioCollections(app)
+FlaskMenu(app)
+FlaskCLI(app)
+breadcrumbs.Breadcrumbs(app=app)
+InvenioDB(app)
+app.config.update(
+    TESTING=True,
+    SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI',
+                                      'sqlite://'),
+)
+
+if __name__ == "__main__":
+    app.run()

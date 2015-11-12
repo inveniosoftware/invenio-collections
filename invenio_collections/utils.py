@@ -22,12 +22,28 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-"""Invenio module for organizing metadata into collections."""
+"""Utilities."""
 
 from __future__ import absolute_import, print_function
 
-from .ext import InvenioCollections
-from .receivers import get_record_collections
-from .version import __version__
+import six
 
-__all__ = ('__version__', 'InvenioCollections', 'get_record_collections')
+from flask import current_app
+from werkzeug.utils import import_string
+
+
+def parser():
+    """Return search query parser."""
+    query_parser = current_app.config['COLLECTIONS_QUERY_PARSER']
+    if isinstance(query_parser, six.string_types):
+        query_parser = import_string(query_parser)
+        return query_parser
+
+
+def query_walkers():
+    """Return query walker instances."""
+    return [
+        import_string(walker)() if isinstance(walker, six.string_types)
+        else walker() for walker in current_app.config[
+            'COLLECTIONS_QUERY_WALKERS']
+    ]

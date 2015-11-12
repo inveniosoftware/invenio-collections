@@ -27,39 +27,56 @@
 import os
 import sys
 
-from setuptools import setup
+from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
 readme = open('README.rst').read()
 history = open('CHANGES.rst').read()
 
-requirements = [
-    'Flask>=0.10.1',
-    'intbitset>=2.0',
-    'invenio-access>=0.2.0',
-    'invenio-base>=0.3.1',
-    'invenio-ext>=0.3.1',
-    'invenio-formatter>=0.2.2.post1',
-    'invenio-search>=0.1.4',
-    'invenio-upgrader>=0.2.0',
-    'invenio-utils>=0.2.0',
-    'six>=1.7.2',
-]
-
-test_requirements = [
-    'Flask_Testing>=0.4.1',
-    'coverage>=4.0.0',
-    'dojson>=0.2.0',
-    'invenio-testing>=0.1.1',
-    'pytest-cov>=2.1.0',
+tests_require = [
+    'check-manifest>=0.25',
+    'coverage>=4.0',
+    'isort>=4.2.2',
+    'pep257>=0.7.0',
+    'pytest-cache>=1.0',
+    'pytest-cov>=1.8.0',
     'pytest-pep8>=1.0.6',
     'pytest>=2.8.0',
-    'unittest2>=1.1.0',
 ]
+
+extras_require = {
+    ':python_version=="2.7"': ['dojson>=0.4.0'],
+    'docs': [
+        "Sphinx>=1.3",
+    ],
+    'tests': tests_require,
+}
+
+extras_require['all'] = []
+for name, reqs in extras_require.items():
+    if name[0] == ':':
+        continue
+    extras_require['all'].extend(reqs)
+
+setup_requires = [
+    'Babel>=1.3',
+]
+
+install_requires = [
+    'Flask>=0.10.1',
+    'Flask-BabelEx>=0.9.2',
+    'Flask-Breadcrumbs>=0.3.0',
+    'invenio-access>=1.0.0a2',
+    'invenio-db>=1.0.0a6',
+    'invenio-records>=1.0.0a5',
+    'invenio-search>=1.0.0a1',  # FIXME
+    'sqlalchemy_mptt>=0.2',
+]
+
+packages = find_packages()
 
 
 class PyTest(TestCommand):
-
     """PyTest Test."""
 
     user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
@@ -79,8 +96,11 @@ class PyTest(TestCommand):
     def finalize_options(self):
         """Finalize pytest."""
         TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
+        if hasattr(self, '_test_args'):
+            self.test_suite = ''
+        else:
+            self.test_args = []
+            self.test_suite = True
 
     def run_tests(self):
         """Run tests."""
@@ -100,25 +120,36 @@ setup(
     version=version,
     description=__doc__,
     long_description=readme + '\n\n' + history,
-    keywords='invenio TODO',
+    keywords='invenio collections',
     license='GPLv2',
     author='CERN',
     author_email='info@invenio-software.org',
     url='https://github.com/inveniosoftware/invenio-collections',
-    packages=[
-        'invenio_collections',
-    ],
+    packages=packages,
     zip_safe=False,
     include_package_data=True,
     platforms='any',
-    install_requires=requirements,
-    extras_require={
-        'docs': [
-            'Sphinx>=1.3',
-            'sphinx_rtd_theme>=0.1.7'
+    entry_points={
+        'dojson.contrib.marc21': [
+            'collections = invenio_collections.contrib.dojson',
         ],
-        'tests': test_requirements
+        'invenio_base.apps': [
+            'invenio_collections = invenio_collections:InvenioCollections',
+        ],
+        'invenio_base.blueprints': [
+            'invenio_collections = invenio_collections.views:blueprint',
+        ],
+        'invenio_db.models': [
+            'invenio_collections = invenio_collections.models'
+        ],
+        'invenio_i18n.translations': [
+            'invenio_collections = invenio_collections'
+        ]
     },
+    extras_require=extras_require,
+    install_requires=install_requires,
+    setup_requires=setup_requires,
+    tests_require=tests_require,
     classifiers=[
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
@@ -128,18 +159,12 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Programming Language :: Python :: 2',
-        # 'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        # 'Programming Language :: Python :: 3',
-        # 'Programming Language :: Python :: 3.3',
-        # 'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Development Status :: 1 - Planning',
     ],
-    tests_require=test_requirements,
     cmdclass={'test': PyTest},
-    entry_points={
-        'dojson.contrib.marc21': [
-            'collections = invenio_collections.contrib.dojson'
-        ]
-    }
 )

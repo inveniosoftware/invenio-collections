@@ -26,8 +26,28 @@
 
 from __future__ import absolute_import, print_function
 
-from .ext import InvenioCollections
-from .receivers import get_record_collections
-from .version import __version__
+from . import config
 
-__all__ = ('__version__', 'InvenioCollections', 'get_record_collections')
+
+class InvenioCollections(object):
+    """Invenio-Collections extension."""
+
+    def __init__(self, app=None):
+        """Extension initialization."""
+        if app:
+            self.init_app(app)
+
+    def init_app(self, app):
+        """Flask application initialization."""
+        self.init_config(app)
+        app.extensions['invenio-collections'] = self
+
+    def init_config(self, app):
+        """Initialize configuration."""
+        app.config.setdefault(
+            "COLLECTIONS_BASE_TEMPLATE",
+            app.config.get("BASE_TEMPLATE",
+                           "invenio_collections/base.html"))
+        for k in dir(config):
+            if k.startswith('COLLECTIONS_'):
+                app.config.setdefault(k, getattr(config, k))

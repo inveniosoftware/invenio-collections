@@ -43,7 +43,7 @@
 
 Invenio module for organizing metadata into collections.
 
-*This is an experimental development preview release.*
+*This is an experimental developer preview release.*
 
 * Free software: GPLv2 license
-* Documentation: https://invenio-collections.readthedocs.org.
+* Documentation: https://pythonhosted.org/invenio-collections/

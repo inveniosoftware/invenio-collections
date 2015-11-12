@@ -22,14 +22,4 @@
     as an Intergovernmental Organization or submit itself to any jurisdiction.
 
 
-Authors
-=======
-
-Invenio module for organizing metadata into collections.
-
-- Esteban J. G. Gabancho <esteban.gabancho@gmail.com>
-- Jiri Kuncar <jiri.kuncar@cern.ch>
-- Leonardo Rossi <leonardo.r@cern.ch>
-- Marco Neumann <marco@crepererum.net>
-- Sami Hiltunen <sami.mikael.hiltunen@cern.ch>
-- Tibor Simko <tibor.simko@cern.ch>
+.. include:: ../CHANGES.rst

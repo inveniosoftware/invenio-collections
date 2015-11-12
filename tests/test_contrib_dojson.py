@@ -22,16 +22,25 @@
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
 
-from dojson.contrib.marc21 import marc21
+"""Test dojson."""
 
-def test_invenio_collection_marc21_tag():
-    """Test invenio-collection marc21 tag."""
-    data = marc21.do({'980__': {'a': 'colla', 'b': 'collb'}})
+import pkg_resources
 
-    assert data['collections'][0]['primary'] == 'colla'
-    assert data['collections'][0]['secondary'] == 'collb'
+try:
+    pkg_resources.get_distribution('dojson')
+except pkg_resources.DistributionNotFound:
+    pass
+else:
+    from dojson.contrib.marc21 import marc21
 
-    data = marc21.do({'980__': [{'a': 'colla'}, {'a': 'collaa'}]})
+    def test_invenio_collection_marc21_tag():
+        """Test invenio-collection marc21 tag."""
+        data = marc21.do({'980__': {'a': 'colla', 'b': 'collb'}})
 
-    assert data['collections'][0]['primary'] == 'colla'
-    assert data['collections'][1]['primary'] == 'collaa'
+        assert data['collections'][0]['primary'] == 'colla'
+        assert data['collections'][0]['secondary'] == 'collb'
+
+        data = marc21.do({'980__': [{'a': 'colla'}, {'a': 'collaa'}]})
+
+        assert data['collections'][0]['primary'] == 'colla'
+        assert data['collections'][1]['primary'] == 'collaa'
