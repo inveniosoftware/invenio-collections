@@ -23,11 +23,20 @@ from __future__ import unicode_literals
 
 import pkg_resources
 
+COLLECTIONS_DELETED_RECORDS = '{dbquery} AND NOT collection:"DELETED"'
+"""Enhance collection query to exclude deleted records."""
+
 COLLECTIONS_QUERY_PARSER = 'invenio_query_parser.parser:Main'
 
 COLLECTIONS_QUERY_WALKERS = [
     'invenio_query_parser.walkers.pypeg_to_ast:PypegConverter',
 ]
+
+COLLECTIONS_CACHE_KEY = 'DynamicCollections::'
+"""Key prefix added before all keys in cache server."""
+
+COLLECTIONS_REGISTER_RECORD_SIGNALS = True
+"""Catch record insert/update signals and update the `_collections` field."""
 
 try:
     pkg_resources.get_distribution('invenio_search')

@@ -27,7 +27,7 @@
 from __future__ import absolute_import, print_function
 
 from .ext import InvenioCollections
-from .receivers import get_record_collections
+from .proxies import current_collections
 from .version import __version__
 
-__all__ = ('__version__', 'InvenioCollections', 'get_record_collections')
+__all__ = ('__version__', 'InvenioCollections', 'current_collections')

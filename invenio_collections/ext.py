@@ -27,20 +27,52 @@
 from __future__ import absolute_import, print_function
 
 from . import config
+from .receivers import update_collections
+
+
+class _AppState(object):
+    """State for storing collections."""
+
+    def __init__(self, app, cache=None):
+        """Initialize state."""
+        self.app = app
+        self.cache = cache
+
+    @property
+    def collections(self):
+        """Get list of collections."""
+        # if cache server is configured, load collection from there
+        if self.cache:
+            return self.cache.get(
+                self.app.config['COLLECTIONS_CACHE_KEY'])
+
+    @collections.setter
+    def collections(self, values):
+        """Set list of collections."""
+        # if cache server is configured, save collection list
+        if self.cache:
+            self.cache.set(
+                self.app.config['COLLECTIONS_CACHE_KEY'], values)
 
 
 class InvenioCollections(object):
     """Invenio-Collections extension."""
 
-    def __init__(self, app=None):
+    def __init__(self, app=None, **kwargs):
         """Extension initialization."""
         if app:
-            self.init_app(app)
+            self.init_app(app, **kwargs)
 
-    def init_app(self, app):
+    def init_app(self, app, **kwargs):
         """Flask application initialization."""
         self.init_config(app)
-        app.extensions['invenio-collections'] = self
+        state = _AppState(app=app, cache=kwargs.get('cache'))
+        app.extensions['invenio-collections'] = state
+
+        if app.config['COLLECTIONS_REGISTER_RECORD_SIGNALS']:
+            from invenio_records import signals
+            signals.before_record_insert.connect(update_collections)
+            signals.before_record_update.connect(update_collections)
 
     def init_config(self, app):
         """Initialize configuration."""

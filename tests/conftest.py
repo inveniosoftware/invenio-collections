@@ -27,15 +27,15 @@
 
 from __future__ import absolute_import, print_function
 
-import pytest
 import os
 
+import pytest
 from flask import Flask
-from flask_menu import Menu as FlaskMenu
 from flask.ext import breadcrumbs
 from flask_cli import FlaskCLI
-
+from flask_menu import Menu as FlaskMenu
 from invenio_db import InvenioDB, db
+
 from invenio_collections.views import blueprint
 
 

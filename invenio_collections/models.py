@@ -20,7 +20,10 @@
 """Database models for collections."""
 
 from invenio_db import db
+from sqlalchemy.event import listen
 from sqlalchemy_mptt.mixins import BaseNestedSets
+
+from .proxies import current_collections
 
 
 class Collection(db.Model, BaseNestedSets):
@@ -38,6 +41,21 @@ class Collection(db.Model, BaseNestedSets):
 
     dbquery = db.Column(db.Text, nullable=True)
 
-    reference = db.Column(db.Integer, db.ForeignKey('collection.id'))
+
+def collection_removed_or_inserted(mapper, connection, target):
+    """Invalidate cache on collection insert or delete."""
+    current_collections.collections = None
+
+
+def collection_attribute_changed(target, value, oldvalue, initiator):
+    """Invalidate cache if dbquery change."""
+    if value != oldvalue:
+        current_collections.collections = None
+
+
+listen(Collection, 'after_insert', collection_removed_or_inserted)
+listen(Collection, 'after_delete', collection_removed_or_inserted)
+listen(Collection.dbquery, 'set', collection_attribute_changed)
+listen(Collection.parent_id, 'set', collection_attribute_changed)
 
 __all__ = ('Collection', )

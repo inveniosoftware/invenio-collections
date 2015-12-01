@@ -38,12 +38,12 @@ from __future__ import absolute_import, print_function
 import os
 
 from flask import Flask
-from flask_babelex import Babel
-from flask_menu import Menu as FlaskMenu
 from flask.ext import breadcrumbs
+from flask_babelex import Babel
 from flask_cli import FlaskCLI
-
+from flask_menu import Menu as FlaskMenu
 from invenio_db import InvenioDB
+
 from invenio_collections import InvenioCollections
 
 # Create Flask application

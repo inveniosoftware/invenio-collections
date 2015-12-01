@@ -22,37 +22,14 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
+"""Helper proxy to the state object."""
 
-root = true
+from __future__ import absolute_import, print_function
 
-[*]
-indent_style = space
-end_of_line = lf
-insert_final_newline = true
-trim_trailing_whitespace = true
-charset = utf-8
+from flask import current_app
+from werkzeug.local import LocalProxy
 
-# Python files
-[*.py]
-indent_size = 4
-# isort plugin configuration
-known_first_party = invenio_collections
-known_third_party = invenio_db, invenio_query_parser, invenio_records
-multi_line_output = 2
-default_section = THIRDPARTY
-
-# RST files (used by sphinx)
-[*.rst]
-indent_size = 4
-
-# CSS, HTML, JS, JSON, YML
-[*.{css,html,js,json,yml}]
-indent_size = 2
-
-# Matches the exact files either package.json or .travis.yml
-[{package.json,.travis.yml}]
-indent_size = 2
-
-# Dockerfile
-[Dockerfile]
-indent_size = 4
+current_collections = LocalProxy(
+    lambda: current_app.extensions['invenio-collections']
+)
+"""Helper proxy to access state object."""

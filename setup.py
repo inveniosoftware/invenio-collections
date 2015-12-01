@@ -45,7 +45,10 @@ tests_require = [
 ]
 
 extras_require = {
-    ':python_version=="2.7"': ['dojson>=0.4.0'],
+    ':python_version=="2.7"': [
+        'dojson>=0.4.0',
+        'functools32>=3.2.3',
+    ],
     'docs': [
         "Sphinx>=1.3",
     ],
