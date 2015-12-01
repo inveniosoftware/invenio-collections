@@ -53,6 +53,9 @@ extras_require = {
         "Sphinx>=1.3",
     ],
     'tests': tests_require,
+    'search': [
+        'invenio-search>=1.0.0a1',
+    ]
 }
 
 extras_require['all'] = []
@@ -66,13 +69,16 @@ setup_requires = [
 ]
 
 install_requires = [
-    'Flask>=0.10.1',
     'Flask-BabelEx>=0.9.2',
     'Flask-Breadcrumbs>=0.3.0',
+    'Flask-CLI>=0.2.1',
+    'Flask>=0.10.1',
+    'asciitree>=0.3.1',
     'invenio-access>=1.0.0a2',
     'invenio-db>=1.0.0a6',
+    'invenio-query-parser>=0.4.1',
     'invenio-records>=1.0.0a5',
-    'invenio-search>=1.0.0a1',  # FIXME
+    'pyPEG2>=2.15.1',
     'sqlalchemy_mptt>=0.2',
 ]
 
@@ -143,10 +149,10 @@ setup(
             'invenio_collections = invenio_collections.views:blueprint',
         ],
         'invenio_db.models': [
-            'invenio_collections = invenio_collections.models'
+            'invenio_collections = invenio_collections.models',
         ],
         'invenio_i18n.translations': [
-            'invenio_collections = invenio_collections'
+            'invenio_collections = invenio_collections',
         ]
     },
     extras_require=extras_require,

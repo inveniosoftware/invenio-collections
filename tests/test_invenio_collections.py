@@ -22,18 +22,16 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-
 """Module tests."""
 
 from __future__ import absolute_import, print_function
 
 from flask import Flask, url_for
-from flask_babelex import Babel
+from flask_cli import FlaskCLI
 from invenio_db import db
 
 from invenio_collections import InvenioCollections
 from invenio_collections.models import Collection
-from invenio_collections.views import blueprint
 
 
 def test_version():
@@ -45,10 +43,12 @@ def test_version():
 def test_init():
     """Test extension initialization."""
     app = Flask('testapp')
+    FlaskCLI(app)
     ext = InvenioCollections(app)
     assert 'invenio-collections' in app.extensions
 
     app = Flask('testapp')
+    FlaskCLI(app)
     ext = InvenioCollections()
     assert 'invenio-collections' not in app.extensions
     ext.init_app(app)
@@ -57,12 +57,7 @@ def test_init():
 
 def test_view(app):
     """Test view."""
-    Babel(app)
-    InvenioCollections(app)
-    app.config['SERVER_NAME'] = 'localhost:5000'
-    app.register_blueprint(blueprint)
-
-    with app.app_context():
+    with app.test_request_context():
         index_url = url_for('invenio_collections.index')
         view_url = url_for('invenio_collections.collection')
         view_test_url = url_for('invenio_collections.collection', name='Test')

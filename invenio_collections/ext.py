@@ -27,6 +27,7 @@
 from __future__ import absolute_import, print_function
 
 from . import config
+from .cli import collections as collections_cmd
 from .receivers import update_collections
 
 
@@ -68,6 +69,7 @@ class InvenioCollections(object):
         self.init_config(app)
         state = _AppState(app=app, cache=kwargs.get('cache'))
         app.extensions['invenio-collections'] = state
+        app.cli.add_command(collections_cmd)
 
         if app.config['COLLECTIONS_REGISTER_RECORD_SIGNALS']:
             from invenio_records import signals

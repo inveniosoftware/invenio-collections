@@ -21,8 +21,11 @@
 
 from invenio_db import db
 from sqlalchemy.event import listen
+from sqlalchemy.orm import validates
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy_mptt.mixins import BaseNestedSets
 
+from .errors import CollectionError
 from .proxies import current_collections
 
 
@@ -37,9 +40,18 @@ class Collection(db.Model, BaseNestedSets):
                 'dbquery: {0.dbquery}>'.format(self))
 
     id = db.Column(db.Integer, primary_key=True)
+
     name = db.Column(db.String(255), unique=True, index=True, nullable=False)
 
     dbquery = db.Column(db.Text, nullable=True)
+
+    @validates('parent_id')
+    def validate_parent_id(self, key, parent_id):
+        """Parent has to be different from itself."""
+        id_ = getattr(self, 'id', None)
+        if id_ is not None and parent_id is not None:
+            assert id_ != parent_id, 'Can not be attached to itself.'
+        return parent_id
 
 
 def collection_removed_or_inserted(mapper, connection, target):

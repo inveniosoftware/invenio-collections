@@ -31,11 +31,13 @@ import os
 
 import pytest
 from flask import Flask
-from flask.ext import breadcrumbs
+from flask_babelex import Babel
+from flask_breadcrumbs import Breadcrumbs
 from flask_cli import FlaskCLI
-from flask_menu import Menu as FlaskMenu
+from flask_menu import Menu
 from invenio_db import InvenioDB, db
 
+from invenio_collections import InvenioCollections
 from invenio_collections.views import blueprint
 
 
@@ -43,15 +45,17 @@ from invenio_collections.views import blueprint
 def app(request):
     """Flask application fixture."""
     app = Flask('testapp')
-    FlaskMenu(app)
-    FlaskCLI(app)
-    breadcrumbs.Breadcrumbs(app=app)
-    InvenioDB(app)
     app.config.update(
         TESTING=True,
         SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI',
                                           'sqlite://'),
     )
+    FlaskCLI(app)
+    Babel(app)
+    Menu(app)
+    Breadcrumbs(app)
+    InvenioDB(app)
+    InvenioCollections(app)
 
     app.register_blueprint(blueprint)
 

@@ -22,48 +22,10 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
+"""Invenio module for organizing metadata into collections."""
 
-"""Minimal Flask application example for development.
+from __future__ import absolute_import
 
-Create database and tables:
 
-.. code-block:: console
-
-    $ cd examples
-    $ flask -a app.py db init
-    $ flask -a app.py db create
-
-You can find the database in `examples/app.db`.
-
-Run the development server:
-
-.. code-block:: console
-
-    $ flask -a app.py run -p 5000 -h '0.0.0.0'
-"""
-
-from __future__ import absolute_import, print_function
-
-import os
-
-from flask import Flask
-from flask_babelex import Babel
-from flask_breadcrumbs import Breadcrumbs
-from flask_cli import FlaskCLI
-from flask_menu import Menu
-from invenio_db import InvenioDB
-
-from invenio_collections import InvenioCollections
-
-# Create Flask application
-app = Flask(__name__)
-app.config.update(
-    SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI',
-                                      'sqlite:///app.db'),
-)
-FlaskCLI(app)
-Babel(app)
-Menu(app)
-Breadcrumbs(app)
-InvenioDB(app)
-InvenioCollections(app)
+class CollectionError(Exception):
+    """Error generated when try to manage collections."""
