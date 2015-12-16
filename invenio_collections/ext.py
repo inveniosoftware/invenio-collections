@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -26,9 +26,10 @@
 
 from __future__ import absolute_import, print_function
 
+from invenio_records import signals
+from sqlalchemy.event import contains, listen, remove
+
 from . import config
-from .cli import collections as collections_cmd
-from .receivers import update_collections
 
 
 class _AppState(object):
@@ -38,6 +39,8 @@ class _AppState(object):
         """Initialize state."""
         self.app = app
         self.cache = cache
+        if self.app.config['COLLECTIONS_REGISTER_RECORD_SIGNALS']:
+            self.register_signals()
 
     @property
     def collections(self):
@@ -55,6 +58,45 @@ class _AppState(object):
             self.cache.set(
                 self.app.config['COLLECTIONS_CACHE_KEY'], values)
 
+    def register_signals(self):
+        """Register signals."""
+        from .models import Collection
+        from .receivers import CollectionUpdater
+
+        if self.app.config['COLLECTIONS_USE_PERCOLATOR']:
+            from .percolator import collection_inserted_percolator, \
+                collection_removed_percolator, \
+                collection_updated_percolator
+            # Register collection signals to update percolators
+            listen(Collection, 'after_insert',
+                   collection_inserted_percolator)
+            listen(Collection, 'after_update',
+                   collection_updated_percolator)
+            listen(Collection, 'after_delete',
+                   collection_removed_percolator)
+        # Register Record signals to update record['_collections']
+        self.update_function = CollectionUpdater(app=self.app)
+        signals.before_record_insert.connect(self.update_function,
+                                             weak=False)
+        signals.before_record_update.connect(self.update_function,
+                                             weak=False)
+
+    def unregister_signals(self):
+        """Unregister signals."""
+        from .models import Collection
+        from .percolator import collection_inserted_percolator, \
+            collection_removed_percolator, collection_updated_percolator
+        # Unregister Record signals
+        if hasattr(self, 'update_function'):
+            signals.before_record_insert.disconnect(self.update_function)
+            signals.before_record_update.disconnect(self.update_function)
+        # Unregister collection signals
+        if contains(Collection, 'after_insert',
+                    collection_inserted_percolator):
+            remove(Collection, 'after_insert', collection_inserted_percolator)
+            remove(Collection, 'after_update', collection_updated_percolator)
+            remove(Collection, 'after_delete', collection_removed_percolator)
+
 
 class InvenioCollections(object):
     """Invenio-Collections extension."""
@@ -66,15 +108,12 @@ class InvenioCollections(object):
 
     def init_app(self, app, **kwargs):
         """Flask application initialization."""
+        from .cli import collections as collections_cmd
+
         self.init_config(app)
         state = _AppState(app=app, cache=kwargs.get('cache'))
         app.extensions['invenio-collections'] = state
         app.cli.add_command(collections_cmd)
-
-        if app.config['COLLECTIONS_REGISTER_RECORD_SIGNALS']:
-            from invenio_records import signals
-            signals.before_record_insert.connect(update_collections)
-            signals.before_record_update.connect(update_collections)
 
     def init_config(self, app):
         """Initialize configuration."""

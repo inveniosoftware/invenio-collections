@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2011, 2012, 2013, 2014, 2015 CERN.
+# Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -22,10 +22,8 @@
 from invenio_db import db
 from sqlalchemy.event import listen
 from sqlalchemy.orm import validates
-from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy_mptt.mixins import BaseNestedSets
 
-from .errors import CollectionError
 from .proxies import current_collections
 
 
@@ -65,9 +63,11 @@ def collection_attribute_changed(target, value, oldvalue, initiator):
         current_collections.collections = None
 
 
+# update cache with list of collections
 listen(Collection, 'after_insert', collection_removed_or_inserted)
 listen(Collection, 'after_delete', collection_removed_or_inserted)
 listen(Collection.dbquery, 'set', collection_attribute_changed)
 listen(Collection.parent_id, 'set', collection_attribute_changed)
+
 
 __all__ = ('Collection', )

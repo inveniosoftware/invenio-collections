@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -26,11 +26,9 @@
 
 from __future__ import absolute_import, print_function
 
-from flask import Blueprint, current_app, g, redirect, render_template, \
-    request, url_for
+from flask import Blueprint, redirect, render_template, url_for
 from flask_babelex import gettext as _
-from flask_breadcrumbs import current_breadcrumbs, default_breadcrumb_root, \
-    register_breadcrumb
+from flask_breadcrumbs import default_breadcrumb_root, register_breadcrumb
 from flask_menu import register_menu
 
 from .models import Collection

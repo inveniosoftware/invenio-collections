@@ -1,0 +1,15 @@
+{
+  "mappings": {
+    "record": {
+      "_source" : { "enabled" : true },
+      "properties" : {
+        "title": {
+          "type": "string"
+        },
+         "body": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

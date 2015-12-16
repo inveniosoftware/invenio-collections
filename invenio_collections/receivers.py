@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -28,7 +28,7 @@ from .query import Query
 
 try:
     from functools import lru_cache
-except ImportError:
+except ImportError:  # pragma: no cover
     from functools32 import lru_cache
 
 
@@ -56,9 +56,22 @@ def _build_cache():
             query=query.format(dbquery=collection.dbquery),
             ancestors=set(_ancestors(collection)),
         )
+    raise StopIteration
 
 
-def get_record_collections(record):
+def _find_matching_collections_internally(collections, record):
+    """Find matching collections with internal engine.
+
+    :param collections: set of collections where search
+    :param record: record to match
+    """
+    for name, data in iteritems(collections):
+        if _build_query(data['query']).match(record):
+            yield data['ancestors']
+    raise StopIteration
+
+
+def get_record_collections(record, matcher):
     """Return list of collections to which record belongs to.
 
     :record: Record instance
@@ -66,17 +79,30 @@ def get_record_collections(record):
     """
     collections = current_collections.collections
     if collections is None:
+        # build collections cache
         collections = current_collections.collections = dict(_build_cache())
 
     output = set()
 
-    for name, data in iteritems(collections):
-        if _build_query(data['query']).match(record):
-            output.add(name)
-            output |= data['ancestors']
+    for collections in matcher(collections, record):
+        output |= collections
+
     return list(output)
 
 
-def update_collections(sender, *args, **kwargs):
-    """Update the list of collections to which the record belongs."""
-    sender['_collections'] = get_record_collections(sender)
+class CollectionUpdater(object):
+    """Return the right update collections function."""
+
+    def __init__(self, app=None):
+        """Init."""
+        app = app or current_app
+        if not app.config['COLLECTIONS_USE_PERCOLATOR']:
+            self.matcher = _find_matching_collections_internally
+        else:
+            from .percolator import _find_matching_collections_externally
+            self.matcher = _find_matching_collections_externally
+
+    def __call__(self, record, **kwargs):
+        """Update collections list."""
+        record['_collections'] = get_record_collections(record=record,
+                                                        matcher=self.matcher)

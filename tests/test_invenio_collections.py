@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -30,7 +30,7 @@ from flask import Flask, url_for
 from flask_cli import FlaskCLI
 from invenio_db import db
 
-from invenio_collections import InvenioCollections
+from invenio_collections import InvenioCollections, current_collections
 from invenio_collections.models import Collection
 
 
@@ -46,6 +46,8 @@ def test_init():
     FlaskCLI(app)
     ext = InvenioCollections(app)
     assert 'invenio-collections' in app.extensions
+    with app.app_context():
+        current_collections.unregister_signals()
 
     app = Flask('testapp')
     FlaskCLI(app)
@@ -53,11 +55,14 @@ def test_init():
     assert 'invenio-collections' not in app.extensions
     ext.init_app(app)
     assert 'invenio-collections' in app.extensions
+    with app.app_context():
+        current_collections.unregister_signals()
 
 
 def test_view(app):
     """Test view."""
-    with app.test_request_context():
+    with app.app_context():
+        current_collections.unregister_signals()
         index_url = url_for('invenio_collections.index')
         view_url = url_for('invenio_collections.collection')
         view_test_url = url_for('invenio_collections.collection', name='Test')
@@ -67,10 +72,10 @@ def test_view(app):
         assert res.status_code == 404
 
     with app.app_context():
-        collection = Collection(name='Test')
-        db.session.add(collection)
+        with db.session.begin_nested():
+            collection = Collection(name='Test')
+            db.session.add(collection)
         db.session.commit()
-
         assert 1 == collection.id
         assert 'Collection <id: 1, name: Test, dbquery: None>' == repr(
             collection)
@@ -84,3 +89,6 @@ def test_view(app):
 
         res = client.get(view_test_url)
         assert res.status_code == 200
+
+    with app.app_context():
+        current_collections.unregister_signals()

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -46,3 +46,9 @@ try:
         SEARCH_QUERY_WALKERS as COLLECTIONS_QUERY_WALKERS
 except pkg_resources.DistributionNotFound:  # pragma: no cover
     pass
+
+COLLECTIONS_USE_PERCOLATOR = False
+"""Define which percolator you want to use.
+
+Default value is `False` to use the internal percolator.
+You can also set True to use elasticsearch to provide percolator resolver."""

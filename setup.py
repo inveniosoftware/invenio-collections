@@ -54,7 +54,8 @@ extras_require = {
     ],
     'tests': tests_require,
     'search': [
-        'invenio-search>=1.0.0a1',
+        'invenio-search>=1.0.0a2',
+        'invenio-indexer>=1.0.0a1',
     ]
 }
 
@@ -77,7 +78,7 @@ install_requires = [
     'invenio-access>=1.0.0a2',
     'invenio-db>=1.0.0a9',
     'invenio-query-parser>=0.4.1',
-    'invenio-records>=1.0.0a5',
+    'invenio-records>=1.0.0a8',
     'pyPEG2>=2.15.1',
     'sqlalchemy_mptt>=0.2',
 ]

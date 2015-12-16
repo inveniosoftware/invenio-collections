@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -26,41 +26,14 @@
 
 from __future__ import unicode_literals
 
-import os
-
-from flask import Flask
-from flask_cli import FlaskCLI
-from invenio_db import InvenioDB, db
-from invenio_records import InvenioRecords
+from invenio_db import db
 from invenio_records.api import Record
 
-from invenio_collections import InvenioCollections
 from invenio_collections.models import Collection
 
 
-def test_collection_tree_matcher(request):
+def test_collection_tree_matcher(app):
     """Test database backend."""
-    app = Flask(__name__)
-    app.config.update(
-        SQLALCHEMY_DATABASE_URI=os.getenv(
-            'SQLALCHEMY_DATABASE_URI', 'sqlite://'),
-        TESTING=True,
-        SECRET_KEY='TEST',
-    )
-    FlaskCLI(app)
-    InvenioDB(app)
-    InvenioRecords(app)
-    InvenioCollections(app)
-
-    with app.app_context():
-        db.create_all()
-
-    def teardown():
-        with app.app_context():
-            db.drop_all()
-
-    request.addfinalizer(teardown)
-
     #                               a
     #                             (None)
     #            +------------------+--------------------+
@@ -73,7 +46,7 @@ def test_collection_tree_matcher(request):
     # (title:Test0) (title:Test1)     (title:Test2)    (None)       (None)
     #                                                    |            |
     #                                                    i            j
-    #                                             (title:Test3) (title:Test4)
+    #                                             (title:Test3) (title:Test4))
 
     with app.test_request_context():
         a = Collection(name="a")
@@ -88,17 +61,13 @@ def test_collection_tree_matcher(request):
         i = Collection(name="i", dbquery="title:Test3", parent=g)
         j = Collection(name="j", dbquery="title:Test4", parent=h)
 
-        db.session.add(a)
-        db.session.add(b)
-        db.session.add(c)
-        db.session.add(d)
-        db.session.add(e)
-        db.session.add(f)
-        db.session.add(g)
-        db.session.add(h)
-        db.session.add(i)
-        db.session.add(j)
+        with db.session.begin_nested():
+            for coll in [a, b, c, d, e, f, g, h, i, j]:
+                db.session.add(coll)
+
         db.session.commit()
+
+        # start tests
 
         schema = {
             'type': 'object',

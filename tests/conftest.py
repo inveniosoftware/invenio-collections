@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -36,8 +36,9 @@ from flask_breadcrumbs import Breadcrumbs
 from flask_cli import FlaskCLI
 from flask_menu import Menu
 from invenio_db import InvenioDB, db
+from invenio_records import InvenioRecords
 
-from invenio_collections import InvenioCollections
+from invenio_collections import InvenioCollections, current_collections
 from invenio_collections.views import blueprint
 
 
@@ -49,19 +50,23 @@ def app(request):
         TESTING=True,
         SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI',
                                           'sqlite://'),
+        SEARCH_AUTOINDEX=[],
+        SERVER_NAME='localhost',
     )
-    FlaskCLI(app)
     Babel(app)
     Menu(app)
     Breadcrumbs(app)
+    FlaskCLI(app)
     InvenioDB(app)
     InvenioCollections(app)
+    InvenioRecords(app)
 
     app.register_blueprint(blueprint)
 
     def teardown():
         with app.app_context():
             db.drop_all()
+            current_collections.unregister_signals()
 
     request.addfinalizer(teardown)
 
