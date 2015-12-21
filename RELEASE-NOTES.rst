@@ -1,7 +1,7 @@
-Invenio-Collections v1.0.0a1
+Invenio-Collections v1.0.0a2
 ============================
 
-Invenio-Collections v1.0.0a1 was released on December 21, 2015.
+Invenio-Collections v1.0.0a2 was released on February 4, 2016.
 
 About
 -----
@@ -18,7 +18,7 @@ What's new
 Installation
 ------------
 
-   $ pip install invenio-collections==1.0.0a1
+   $ pip install invenio-collections==1.0.0a2
 
 Documentation
 -------------
