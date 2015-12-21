@@ -1,7 +1,7 @@
-Invenio-Collections v1.0.0
-==========================
+Invenio-Collections v1.0.0a1
+============================
 
-Invenio-Collections v1.0.0 was released on TBD, 2015.
+Invenio-Collections v1.0.0a1 was released on December 21, 2015.
 
 About
 -----
@@ -13,12 +13,12 @@ Invenio module for organizing metadata into collections.
 What's new
 ----------
 
-- Initial public release.
+- Package refactoring for Invenio 3.
 
 Installation
 ------------
 
-   $ pip install invenio-collections==1.0.0
+   $ pip install invenio-collections==1.0.0a1
 
 Documentation
 -------------
