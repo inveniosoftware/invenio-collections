@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -32,15 +32,15 @@ except pkg_resources.DistributionNotFound:
     pass
 else:
     from dojson.contrib.marc21 import marc21
+    from dojson.contrib.to_marc21 import to_marc21
 
     def test_invenio_collection_marc21_tag():
         """Test invenio-collection marc21 tag."""
-        data = marc21.do({'980__': {'a': 'colla', 'b': 'collb'}})
+        source = {'980__': [{'a': 'colla'}, {'b': 'collb'}]}
+        data = marc21.do(source)
 
         assert data['collections'][0]['primary'] == 'colla'
-        assert data['collections'][0]['secondary'] == 'collb'
+        assert data['collections'][1]['secondary'] == 'collb'
 
-        data = marc21.do({'980__': [{'a': 'colla'}, {'a': 'collaa'}]})
-
-        assert data['collections'][0]['primary'] == 'colla'
-        assert data['collections'][1]['primary'] == 'collaa'
+        original = to_marc21.do(data)
+        assert source['980__'] == original['980__']

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2016 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -75,7 +75,7 @@ install_requires = [
     'Flask>=0.10.1',
     'asciitree>=0.3.1',
     'invenio-access>=1.0.0a2',
-    'invenio-db>=1.0.0a6',
+    'invenio-db>=1.0.0a9',
     'invenio-query-parser>=0.4.1',
     'invenio-records>=1.0.0a5',
     'pyPEG2>=2.15.1',
@@ -141,6 +141,9 @@ setup(
     entry_points={
         'dojson.contrib.marc21': [
             'collections = invenio_collections.contrib.dojson',
+        ],
+        'dojson.contrib.to_marc21': [
+            '980 = invenio_collections.contrib.dojson',
         ],
         'invenio_base.apps': [
             'invenio_collections = invenio_collections:InvenioCollections',

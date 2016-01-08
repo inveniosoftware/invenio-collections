@@ -350,9 +350,12 @@ def test_delete(app):
             for coll in ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']:
                 assert Collection.query.filter_by(
                     name=coll).first() is not None
+            db.session.expunge_all()
 
             result = runner.invoke(cmd, ['delete', 'j'], obj=script_info)
             assert 0 == result.exit_code
+
+            db.session.expunge_all()
             for coll in ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']:
                 assert Collection.query.filter_by(
                     name=coll).first() is not None
