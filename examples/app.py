@@ -120,6 +120,7 @@ from __future__ import absolute_import, print_function
 
 import os
 
+import pkg_resources
 from flask import Flask, jsonify, request
 from flask_cli import FlaskCLI
 from invenio_db import InvenioDB
@@ -128,6 +129,13 @@ from invenio_search import InvenioSearch
 
 from invenio_collections import InvenioCollections
 from invenio_collections.models import Collection
+
+try:
+    pkg_resources.get_distribution('invenio_admin')
+    from invenio_admin import InvenioAdmin
+    INVENIO_ADMIN_AVAILABLE = True
+except pkg_resources.DistributionNotFound:
+    INVENIO_ADMIN_AVAILABLE = False
 
 # Create Flask application
 app = Flask(__name__)
@@ -141,6 +149,11 @@ FlaskCLI(app)
 InvenioDB(app)
 InvenioRecords(app)
 InvenioCollections(app)
+
+if INVENIO_ADMIN_AVAILABLE:
+    InvenioAdmin(app, permission_factory=lambda x: x,
+                 view_class_factory=lambda x: x)
+
 search = InvenioSearch(app)
 
 

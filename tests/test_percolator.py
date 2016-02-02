@@ -35,6 +35,7 @@ from invenio_collections.models import Collection
 
 def test_percolator(app, request):
     """Test percolator."""
+
     def teardown():
         with app.app_context():
             list(current_search.delete())
@@ -78,9 +79,9 @@ def _try_populate_collections():
     schema = {
         'type': 'object',
         'properties': {
-                'title': {'type': 'string'},
-                'field': {'type': 'boolean'},
-            },
+            'title': {'type': 'string'},
+            'field': {'type': 'boolean'},
+        },
         'required': ['title'],
     }
 

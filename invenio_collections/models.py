@@ -69,5 +69,4 @@ listen(Collection, 'after_delete', collection_removed_or_inserted)
 listen(Collection.dbquery, 'set', collection_attribute_changed)
 listen(Collection.parent_id, 'set', collection_attribute_changed)
 
-
 __all__ = ('Collection', )

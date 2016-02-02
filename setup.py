@@ -49,6 +49,9 @@ extras_require = {
         'dojson>=0.4.0',
         'functools32>=3.2.3',
     ],
+    'admin': [
+        'invenio-admin>=1.0.0a2',
+    ],
     'docs': [
         "Sphinx>=1.3",
     ],
@@ -119,6 +122,7 @@ class PyTest(TestCommand):
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
 
+
 # Get the version string. Cannot be done with import!
 g = {}
 with open(os.path.join('invenio_collections', 'version.py'), 'rt') as fp:
@@ -140,6 +144,10 @@ setup(
     include_package_data=True,
     platforms='any',
     entry_points={
+        'invenio_admin.views': [
+            'invenio_collections = '
+            'invenio_collections.admin:collection_adminview',
+        ],
         'dojson.contrib.marc21': [
             'collections = invenio_collections.contrib.dojson',
         ],
