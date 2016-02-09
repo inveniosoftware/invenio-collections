@@ -50,7 +50,6 @@ def app(request):
         TESTING=True,
         SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI',
                                           'sqlite://'),
-        SEARCH_AUTOINDEX=[],
         SERVER_NAME='localhost',
     )
     Babel(app)

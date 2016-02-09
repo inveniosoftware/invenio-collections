@@ -54,7 +54,7 @@ extras_require = {
     ],
     'tests': tests_require,
     'search': [
-        'invenio-search>=1.0.0a2',
+        'invenio-search>=1.0.0a4',
         'invenio-indexer>=1.0.0a1',
     ]
 }
