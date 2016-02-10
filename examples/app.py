@@ -94,7 +94,7 @@ You can find the database in `examples/app.db`.
 
 .. code-block:: console
 
-    $ dojson do -i $demomarc21pathname -l marcxml marc21 > records.json
+    $ dojson -i $demomarc21pathname -l marcxml do marc21 > records.json
 
 
 8. Load the file in the application importing the json file:
