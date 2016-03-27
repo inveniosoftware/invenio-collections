@@ -75,7 +75,6 @@ install_requires = [
     'Flask-CLI>=0.2.1',
     'Flask>=0.10.1',
     'asciitree>=0.3.1',
-    'invenio-access>=1.0.0a2',
     'invenio-db>=1.0.0a9',
     'invenio-query-parser>=0.4.1',
     'invenio-records>=1.0.0a8',

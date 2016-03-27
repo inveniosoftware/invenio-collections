@@ -43,4 +43,4 @@ else:
         assert data['collections'][1]['secondary'] == 'collb'
 
         original = to_marc21.do(data)
-        assert source['980__'] == original['980__']
+        assert source['980__'] == list(original['980__'])
