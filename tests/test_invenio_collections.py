@@ -63,12 +63,11 @@ def test_view(app):
     """Test view."""
     with app.app_context():
         current_collections.unregister_signals()
-        index_url = url_for('invenio_collections.index')
         view_url = url_for('invenio_collections.collection')
         view_test_url = url_for('invenio_collections.collection', name='Test')
 
     with app.test_client() as client:
-        res = client.get(index_url)
+        res = client.get(view_url)
         assert res.status_code == 404
 
     with app.app_context():
@@ -81,11 +80,8 @@ def test_view(app):
             collection)
 
     with app.test_client() as client:
-        res = client.get(index_url)
-        assert res.status_code == 200
-
         res = client.get(view_url)
-        assert res.status_code == 302
+        assert res.status_code == 200
 
         res = client.get(view_test_url)
         assert res.status_code == 200

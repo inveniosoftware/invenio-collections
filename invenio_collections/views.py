@@ -26,10 +26,7 @@
 
 from __future__ import absolute_import, print_function
 
-from flask import Blueprint, redirect, render_template, url_for
-from flask_babelex import gettext as _
-from flask_breadcrumbs import default_breadcrumb_root, register_breadcrumb
-from flask_menu import register_menu
+from flask import Blueprint, render_template
 
 from .models import Collection
 
@@ -41,22 +38,6 @@ blueprint = Blueprint(
 )
 
 
-default_breadcrumb_root(blueprint, '.')
-
-
-@blueprint.route('/', methods=['GET', 'POST'])
-@register_menu(blueprint, 'main.collection', _('Home'), order=1)
-@register_breadcrumb(blueprint, '.', _('Home'))
-def index():
-    """Render the root collection."""
-    collection = Collection.query.get_or_404(1)
-
-    return render_template(
-        "invenio_collections/index.html",
-        collection=collection,
-    )
-
-
 @blueprint.route('/collection/', methods=['GET', 'POST'])
 @blueprint.route('/collection/<name>', methods=['GET', 'POST'])
 def collection(name=None):
@@ -64,13 +45,13 @@ def collection(name=None):
 
     It renders it either with a collection specific template (aka
     collection_{collection_name}.html) or with the default collection
-    template (collection.html)
+    template (collection.html).
     """
     if name is None:
-        return redirect(url_for('.index'))
-
-    collection = Collection.query.filter(
-        Collection.name == name).first_or_404()
+        collection = Collection.query.get_or_404(1)
+    else:
+        collection = Collection.query.filter(
+            Collection.name == name).first_or_404()
 
     # TODO add breadcrumbs
     # breadcrumbs = current_breadcrumbs + collection.breadcrumbs(ln=g.ln)[1:]
