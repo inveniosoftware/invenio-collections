@@ -29,6 +29,7 @@ from __future__ import absolute_import, print_function
 from flask import Blueprint, render_template
 
 from .models import Collection
+from .utils import slugify
 
 blueprint = Blueprint(
     'invenio_collections',
@@ -58,7 +59,6 @@ def collection(name=None):
 
     return render_template([
         'invenio_collections/collection_{0}.html'.format(collection.id),
-        # TODO support sugified templated name
-        # 'invenio_collections/collection_{0}.html'.format(slugify(name, '_')),
+        'invenio_collections/collection_{0}.html'.format(slugify(name, '_')),
         "invenio_collections/index.html",
     ], collection=collection)
