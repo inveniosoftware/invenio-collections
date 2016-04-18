@@ -20,21 +20,20 @@
 """Percolator."""
 
 from invenio_indexer.api import RecordIndexer
+from invenio_query_parser.contrib.elasticsearch import IQ
 from invenio_search import current_search, current_search_client
-from invenio_search.api import Query
-from invenio_search.walkers.elasticsearch import ElasticSearchDSL
 
 
 def new_collection_percolator(target):
     """Create new percolator associated with the new collection."""
-    query = Query(target.dbquery).query.accept(ElasticSearchDSL())
+    query = IQ(target.dbquery)
     for name in current_search.mappings.keys():
         if target.name and target.dbquery:
             current_search.client.index(
                 index=name,
                 doc_type='.percolator',
                 id='collection-{}'.format(target.name),
-                body={'query': query}
+                body={'query': query.to_dict()}
             )
 
 

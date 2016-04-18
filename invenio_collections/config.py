@@ -21,8 +21,6 @@
 
 from __future__ import unicode_literals
 
-import pkg_resources
-
 COLLECTIONS_DELETED_RECORDS = '{dbquery} AND NOT collection:"DELETED"'
 """Enhance collection query to exclude deleted records."""
 
@@ -37,15 +35,6 @@ COLLECTIONS_CACHE_KEY = 'DynamicCollections::'
 
 COLLECTIONS_REGISTER_RECORD_SIGNALS = True
 """Catch record insert/update signals and update the `_collections` field."""
-
-try:
-    pkg_resources.get_distribution('invenio_search')
-
-    from invenio_search.config import \
-        SEARCH_QUERY_PARSER as COLLECTIONS_QUERY_PARSER, \
-        SEARCH_QUERY_WALKERS as COLLECTIONS_QUERY_WALKERS
-except pkg_resources.DistributionNotFound:  # pragma: no cover
-    pass
 
 COLLECTIONS_USE_PERCOLATOR = False
 """Define which percolator you want to use.
