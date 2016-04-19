@@ -35,7 +35,6 @@ from flask_cli import with_appcontext
 from invenio_db import db
 from sqlalchemy.orm.exc import NoResultFound
 
-from .errors import CollectionError
 from .models import Collection
 
 
