@@ -26,7 +26,7 @@
 
 from __future__ import absolute_import, print_function
 
-from flask import Blueprint, render_template
+from flask import Blueprint, current_app, render_template
 
 from .models import Collection
 from .utils import slugify
@@ -56,9 +56,8 @@ def collection(name=None):
 
     # TODO add breadcrumbs
     # breadcrumbs = current_breadcrumbs + collection.breadcrumbs(ln=g.ln)[1:]
-
     return render_template([
         'invenio_collections/collection_{0}.html'.format(collection.id),
         'invenio_collections/collection_{0}.html'.format(slugify(name, '_')),
-        "invenio_collections/index.html",
+        current_app.config['COLLECTIONS_DEFAULT_TEMPLATE']
     ], collection=collection)
