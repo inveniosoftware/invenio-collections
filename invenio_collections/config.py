@@ -41,3 +41,6 @@ COLLECTIONS_USE_PERCOLATOR = False
 
 Default value is `False` to use the internal percolator.
 You can also set True to use elasticsearch to provide percolator resolver."""
+
+COLLECTIONS_DEFAULT_TEMPLATE = 'invenio_collections/index.html'
+"""Template to be used as default for collection landing pages."""
