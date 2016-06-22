@@ -50,7 +50,7 @@ extras_require = {
         'functools32>=3.2.3',
     ],
     'docs': [
-        "Sphinx>=1.4",
+        "Sphinx>=1.4.2",
     ],
     'tests': tests_require,
     'search': [
