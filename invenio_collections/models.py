@@ -38,10 +38,13 @@ class Collection(db.Model, BaseNestedSets):
                 'dbquery: {0.dbquery}>'.format(self))
 
     id = db.Column(db.Integer, primary_key=True)
+    """Collection identifier."""
 
     name = db.Column(db.String(255), unique=True, index=True, nullable=False)
+    """Collection name."""
 
     dbquery = db.Column(db.Text, nullable=True)
+    """Query that returns all records that belong to this collection.."""
 
     @validates('parent_id')
     def validate_parent_id(self, key, parent_id):

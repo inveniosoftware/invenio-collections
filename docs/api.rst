@@ -25,6 +25,40 @@
 API Docs
 ========
 
-invenio_collections
--------------------
+.. automodule:: invenio_collections.ext
+   :members:
 
+Configuration
+-------------
+.. automodule:: invenio_collections.config
+   :members:
+
+Models
+------
+.. automodule:: invenio_collections.models
+   :members:
+
+Percolator
+----------
+.. automodule:: invenio_collections.percolator
+   :members:
+
+Query
+-----
+.. automodule:: invenio_collections.query
+   :members:
+
+Receivers
+---------
+.. automodule:: invenio_collections.receivers
+   :members:
+
+Utilities
+---------
+.. automodule:: invenio_collections.utils
+   :members:
+
+Errors
+------
+.. automodule:: invenio_collections.errors
+   :members:

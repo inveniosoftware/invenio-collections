@@ -74,8 +74,9 @@ def _find_matching_collections_internally(collections, record):
 def get_record_collections(record, matcher):
     """Return list of collections to which record belongs to.
 
-    :record: Record instance
-    :return: list of collection names
+    :param record: Record instance.
+    :param matcher: Function used to check if a record belongs to a collection.
+    :return: list of collection names.
     """
     collections = current_collections.collections
     if collections is None:
@@ -94,7 +95,10 @@ class CollectionUpdater(object):
     """Return the right update collections function."""
 
     def __init__(self, app=None):
-        """Init."""
+        """Initilise the CollectionUpdater.
+
+        :param app: Flask application.
+        """
         app = app or current_app
         if not app.config['COLLECTIONS_USE_PERCOLATOR']:
             self.matcher = _find_matching_collections_internally

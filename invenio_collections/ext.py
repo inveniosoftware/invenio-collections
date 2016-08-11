@@ -102,7 +102,12 @@ class InvenioCollections(object):
     """Invenio-Collections extension."""
 
     def __init__(self, app=None, **kwargs):
-        """Extension initialization."""
+        """Extension initialization.
+
+        :param app: Flask application object.
+        :param cache: Cache system to store the result of the queries. None or
+            not set to avoid the use of a cache system.
+        """
         if app:
             self.init_app(app, **kwargs)
 

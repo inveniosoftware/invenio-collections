@@ -34,12 +34,19 @@ class Query(object):
 
     @property
     def query(self):
-        """Parse query string using given grammar."""
+        """Parse query string using given grammar.
+
+        :returns: AST that represents the query in the given grammar.
+        """
         tree = pypeg2.parse(self._query, parser(), whitespace="")
         for walker in query_walkers():
             tree = tree.accept(walker)
         return tree
 
     def match(self, record):
-        """Return True if record match the query."""
+        """Check if the record match the query.
+
+        :param record: Record to test.
+        :returns: True if record match the query.
+        """
         return self.query.accept(MatchUnit(record))

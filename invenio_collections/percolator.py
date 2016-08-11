@@ -25,7 +25,10 @@ from invenio_search import current_search, current_search_client
 
 
 def new_collection_percolator(target):
-    """Create new percolator associated with the new collection."""
+    """Create new percolator associated with the new collection.
+
+    :param target: Collection where the percolator will be atached.
+    """
     query = IQ(target.dbquery)
     for name in current_search.mappings.keys():
         if target.name and target.dbquery:
@@ -38,7 +41,10 @@ def new_collection_percolator(target):
 
 
 def delete_collection_percolator(target):
-    """Delete percolator associated with the new collection."""
+    """Delete percolator associated with the new collection.
+
+    :param target: Collection where the percolator was attached.
+    """
     for name in current_search.mappings.keys():
         if target.name and target.dbquery:
             current_search.client.delete(
@@ -50,20 +56,35 @@ def delete_collection_percolator(target):
 
 
 def collection_inserted_percolator(mapper, connection, target):
-    """Create percolator when collection is created."""
+    """Create percolator when collection is created.
+
+    :param mapper: Not used. It keeps the function signature.
+    :param connection: Not used. It keeps the function signature.
+    :param target: Collection where the percolator will be inserted.
+    """
     if target.dbquery is not None:
         new_collection_percolator(target)
 
 
 def collection_updated_percolator(mapper, connection, target):
-    """Create percolator when collection is created."""
+    """Create percolator when collection is created.
+
+    :param mapper: Not used. It keeps the function signature.
+    :param connection: Not used. It keeps the function signature.
+    :param target: Collection where the percolator should be updated.
+    """
     delete_collection_percolator(target)
     if target.dbquery is not None:
         new_collection_percolator(target)
 
 
 def collection_removed_percolator(mapper, connection, target):
-    """Delete percolator when collection is deleted."""
+    """Delete percolator when collection is deleted.
+
+    :param mapper: Not used. It keeps the function signature.
+    :param connection: Not used. It keeps the function signature.
+    :param target: Collection where the percolator should be removed.
+    """
     if target.dbquery is not None:
         delete_collection_percolator(target)
 

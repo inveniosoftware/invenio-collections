@@ -25,10 +25,12 @@ COLLECTIONS_DELETED_RECORDS = '{dbquery} AND NOT collection:"DELETED"'
 """Enhance collection query to exclude deleted records."""
 
 COLLECTIONS_QUERY_PARSER = 'invenio_query_parser.parser:Main'
+"""User search query lexical parser."""
 
 COLLECTIONS_QUERY_WALKERS = [
     'invenio_query_parser.walkers.pypeg_to_ast:PypegConverter',
 ]
+"""Modules to create the query AST."""
 
 COLLECTIONS_CACHE_KEY = 'DynamicCollections::'
 """Key prefix added before all keys in cache server."""
