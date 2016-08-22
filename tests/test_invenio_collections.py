@@ -27,7 +27,6 @@
 from __future__ import absolute_import, print_function
 
 from flask import Flask, url_for
-from flask_cli import FlaskCLI
 from invenio_db import db
 
 from invenio_collections import InvenioCollections, current_collections
@@ -43,14 +42,12 @@ def test_version():
 def test_init():
     """Test extension initialization."""
     app = Flask('testapp')
-    FlaskCLI(app)
     ext = InvenioCollections(app)
     assert 'invenio-collections' in app.extensions
     with app.app_context():
         current_collections.unregister_signals()
 
     app = Flask('testapp')
-    FlaskCLI(app)
     ext = InvenioCollections()
     assert 'invenio-collections' not in app.extensions
     ext.init_app(app)

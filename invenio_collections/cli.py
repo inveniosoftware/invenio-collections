@@ -31,7 +31,7 @@ from functools import wraps
 import click
 from asciitree import LeftAligned
 from asciitree.traversal import AttributeTraversal as _AT
-from flask_cli import with_appcontext
+from flask.cli import with_appcontext
 from invenio_db import db
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -126,15 +126,15 @@ def path(name):
             traverse=CollTraversalPathToRoot(coll.path_to_root().all()))
         click.echo(tr(coll))
     except NoResultFound:
-        raise click.UsageError("Collection {} not found".format(name))
+        raise click.UsageError('Collection {0} not found'.format(name))
 
 
 @collections.command()
 @click.argument('name')
 @click.option('-q', '--query', default=None,
-              help="Specify query for the collection")
+              help='Specify query for the collection')
 @click.option('-p', '--parent', default=None,
-              help="Parent collection name")
+              help='Parent collection name')
 @click.option('-n', '--dry-run', default=False, is_flag=True)
 @click.option('-v', '--verbose', default=False, is_flag=True)
 @with_appcontext
@@ -146,7 +146,7 @@ def create(name, dry_run, verbose, query=None, parent=None):
     collection = Collection(name=name, dbquery=query, parent_id=parent)
     db.session.add(collection)
     if verbose:
-        click.secho("New collection: {}".format(collection))
+        click.secho('New collection: {0}'.format(collection))
 
 
 @collections.command()
@@ -160,7 +160,7 @@ def delete(name, dry_run, verbose):
     collection = Collection.query.filter_by(name=name).one()
     if verbose:
         tr = LeftAligned(traverse=AttributeTraversal())
-        click.secho(tr(collection), fg="red")
+        click.secho(tr(collection), fg='red')
     db.session.delete(collection)
 
 

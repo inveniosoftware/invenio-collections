@@ -121,7 +121,6 @@ from __future__ import absolute_import, print_function
 import os
 
 from flask import Flask, jsonify, request
-from flask_cli import FlaskCLI
 from invenio_db import InvenioDB
 from invenio_records import InvenioRecords
 from invenio_search import InvenioSearch
@@ -137,7 +136,6 @@ app.config.update(
                                       'sqlite:///app.db'),
 )
 
-FlaskCLI(app)
 InvenioDB(app)
 InvenioRecords(app)
 InvenioCollections(app)

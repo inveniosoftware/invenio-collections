@@ -33,7 +33,6 @@ import pytest
 from flask import Flask
 from flask_babelex import Babel
 from flask_breadcrumbs import Breadcrumbs
-from flask_cli import FlaskCLI
 from flask_menu import Menu
 from invenio_db import InvenioDB, db
 from invenio_records import InvenioRecords
@@ -55,7 +54,6 @@ def app(request):
     Babel(app)
     Menu(app)
     Breadcrumbs(app)
-    FlaskCLI(app)
     InvenioDB(app)
     InvenioCollections(app)
     InvenioRecords(app)
