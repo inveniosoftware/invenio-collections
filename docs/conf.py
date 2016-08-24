@@ -140,9 +140,9 @@ html_theme_options = {
     'show_powered_by': False,
     'extra_nav_links': {
         'invenio-collections@GitHub':
-            'http://github.com/inveniosoftware/invenio-collections',
+            'https://github.com/inveniosoftware/invenio-collections',
         'invenio-collections@PyPI':
-            'http://pypi.python.org/pypi/invenio-collections/',
+            'https://pypi.python.org/pypi/invenio-collections/',
     }
 }
 
