@@ -23,7 +23,7 @@ Installation
 Documentation
 -------------
 
-   http://pythonhosted.org/invenio-collections/
+   http://invenio-collections.readthedocs.io/
 
 Happy hacking and thanks for flying Invenio-Collections.
 
