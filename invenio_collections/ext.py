@@ -26,8 +26,10 @@
 
 from __future__ import absolute_import, print_function
 
+import six
 from invenio_records import signals
 from sqlalchemy.event import contains, listen, remove
+from werkzeug.utils import cached_property, import_string
 
 from . import config
 
@@ -38,9 +40,16 @@ class _AppState(object):
     def __init__(self, app, cache=None):
         """Initialize state."""
         self.app = app
-        self.cache = cache
+        self._cache = cache
         if self.app.config['COLLECTIONS_REGISTER_RECORD_SIGNALS']:
             self.register_signals()
+
+    @cached_property
+    def cache(self):
+        """Return a cache instance."""
+        cache = self._cache or self.app.config.get('COLLECTIONS_CACHE')
+        return import_string(cache) if isinstance(cache, six.string_types) \
+            else cache
 
     @property
     def collections(self):

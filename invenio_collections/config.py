@@ -32,6 +32,9 @@ COLLECTIONS_QUERY_WALKERS = [
 ]
 """Modules to create the query AST."""
 
+COLLECTIONS_CACHE = None
+"""A cache instance or an importable string pointing to the cache instance."""
+
 COLLECTIONS_CACHE_KEY = 'DynamicCollections::'
 """Key prefix added before all keys in cache server."""
 
