@@ -44,8 +44,7 @@ def test_init():
     app = Flask('testapp')
     ext = InvenioCollections(app)
     assert 'invenio-collections' in app.extensions
-    with app.app_context():
-        current_collections.unregister_signals()
+    ext.unregister_signals()
 
     app = Flask('testapp')
     ext = InvenioCollections()

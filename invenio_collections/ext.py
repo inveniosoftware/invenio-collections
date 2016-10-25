@@ -109,23 +109,25 @@ class InvenioCollections(object):
             not set to avoid the use of a cache system.
         """
         if app:
-            self.init_app(app, **kwargs)
+            self._state = self.init_app(app, **kwargs)
 
     def init_app(self, app, **kwargs):
         """Flask application initialization."""
-        from .cli import collections as collections_cmd
-
         self.init_config(app)
         state = _AppState(app=app, cache=kwargs.get('cache'))
         app.extensions['invenio-collections'] = state
-        app.cli.add_command(collections_cmd)
+        return state
 
     def init_config(self, app):
         """Initialize configuration."""
         app.config.setdefault(
-            "COLLECTIONS_BASE_TEMPLATE",
-            app.config.get("BASE_TEMPLATE",
-                           "invenio_collections/base.html"))
+            'COLLECTIONS_BASE_TEMPLATE',
+            app.config.get('BASE_TEMPLATE',
+                           'invenio_collections/base.html'))
         for k in dir(config):
             if k.startswith('COLLECTIONS_'):
                 app.config.setdefault(k, getattr(config, k))
+
+    def __getattr__(self, name):
+        """Proxy to state object."""
+        return getattr(self._state, name, None)

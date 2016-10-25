@@ -112,6 +112,9 @@ setup(
         'dojson.contrib.to_marc21': [
             '980 = invenio_collections.contrib.dojson',
         ],
+        'flask.commands': [
+            'collections = invenio_collections.cli:collections',
+        ],
         'invenio_base.apps': [
             'invenio_collections = invenio_collections:InvenioCollections',
         ],
