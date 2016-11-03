@@ -41,6 +41,9 @@ COLLECTIONS_CACHE_KEY = 'DynamicCollections::'
 COLLECTIONS_REGISTER_RECORD_SIGNALS = True
 """Catch record insert/update signals and update the `_collections` field."""
 
+COLLECTIONS_MATCHER = None
+"""A matcher function or an importable string pointing to one."""
+
 COLLECTIONS_USE_PERCOLATOR = False
 """Define which percolator you want to use.
 
