@@ -1,7 +1,7 @@
-Invenio-Collections v1.0.0a3
+Invenio-Collections v1.0.0a4
 ============================
 
-Invenio-Collections v1.0.0a3 was released on July 29, 2016.
+Invenio-Collections v1.0.0a4 was released on November 4, 2016.
 
 About
 -----
@@ -18,7 +18,7 @@ What's new
 Installation
 ------------
 
-   $ pip install invenio-collections==1.0.0a3
+   $ pip install invenio-collections==1.0.0a4
 
 Documentation
 -------------

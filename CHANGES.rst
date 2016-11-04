@@ -24,6 +24,15 @@
 Changes
 =======
 
+Version 1.0.0a4 (released 2016-11-04)
+-------------------------------------
+
+- Addition of the ``COLLECTIONS_CACHE`` configuration variable, containing an
+  instance of a cache, or an importable string of one.
+
+- Addition of the ``COLLECTIONS_MATCHER`` configuration variable, containing a
+  matcher function, or an importable string of one.
+
 Version 1.0.0a3 (released 2016-07-29)
 -------------------------------------
 
