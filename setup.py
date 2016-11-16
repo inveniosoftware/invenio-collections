@@ -25,18 +25,19 @@
 """Invenio module for organizing metadata into collections."""
 
 import os
-import sys
 
 from setuptools import find_packages, setup
-from setuptools.command.test import test as TestCommand
 
 readme = open('README.rst').read()
 history = open('CHANGES.rst').read()
 
 tests_require = [
+    'SQLAlchemy-Continuum>=1.2.1',
     'check-manifest>=0.25',
     'coverage>=4.0',
+    'dojson>=1.1.0',
     'isort>=4.2.2',
+    'mock>=1.3.0',
     'pydocstyle>=1.0.0',
     'pytest-cache>=1.0',
     'pytest-cov>=1.8.0',
@@ -46,22 +47,31 @@ tests_require = [
 
 extras_require = {
     ':python_version=="2.7"': [
-        'dojson>=0.4.0',
         'functools32>=3.2.3',
     ],
     'docs': [
-        "Sphinx>=1.4.2",
+        'Sphinx>=1.4.2',
+    ],
+    'mysql': [
+        'invenio-db[mysql]>=1.0.0b3',
+    ],
+    'postgresql': [
+        'invenio-db[postgresql]>=1.0.0b3',
+    ],
+    'sqlite': [
+        'invenio-db>=1.0.0b3',
     ],
     'tests': tests_require,
     'search': [
-        'invenio-search>=1.0.0a4',
-        'invenio-indexer>=1.0.0a1',
+        'celery>=3.1.19,<4.0',
+        'invenio-search>=1.0.0a9',
+        'invenio-indexer>=1.0.0a8',
     ]
 }
 
 extras_require['all'] = []
 for name, reqs in extras_require.items():
-    if name[0] == ':':
+    if name[0] == ':' or name in ('mysql', 'postgresql', 'sqlite'):
         continue
     extras_require['all'].extend(reqs)
 
@@ -75,9 +85,10 @@ install_requires = [
     'Flask-Breadcrumbs>=0.3.0',
     'Flask>=0.11.1',
     'asciitree>=0.3.1',
-    'invenio-db>=1.0.0a9',
+    'elasticsearch>=2.0.0,<3.0.0',
+    'elasticsearch-dsl>=2.0.0,<3.0.0',
     'invenio-query-parser>=0.6.0',
-    'invenio-records>=1.0.0a8',
+    'invenio-records>=1.0.0b1',
     'pyPEG2>=2.15.1',
     'sqlalchemy_mptt>=0.2',
 ]
@@ -121,6 +132,9 @@ setup(
         'invenio_base.blueprints': [
             'invenio_collections = invenio_collections.views:blueprint',
         ],
+        'invenio_db.alembic': [
+            'invenio_collections = invenio_collections:alembic',
+        ],
         'invenio_db.models': [
             'invenio_collections = invenio_collections.models',
         ],
@@ -146,6 +160,6 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
-        'Development Status :: 1 - Planning',
+        'Development Status :: 3 - Alpha',
     ],
 )

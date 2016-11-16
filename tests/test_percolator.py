@@ -37,6 +37,7 @@ def test_percolator(app, request):
     """Test percolator."""
     def teardown():
         with app.app_context():
+            current_collections.unregister_signals()
             list(current_search.delete())
 
     request.addfinalizer(teardown)

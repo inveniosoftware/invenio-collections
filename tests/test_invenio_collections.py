@@ -26,6 +26,7 @@
 
 from __future__ import absolute_import, print_function
 
+import pytest
 from flask import Flask, url_for
 from invenio_db import db
 
@@ -53,6 +54,26 @@ def test_init():
     assert 'invenio-collections' in app.extensions
     with app.app_context():
         current_collections.unregister_signals()
+
+
+def test_alembic(app):
+    """Test alembic recipes."""
+    ext = app.extensions['invenio-db']
+
+    with app.app_context():
+        if db.engine.name == 'sqlite':
+            raise pytest.skip('Upgrades are not supported on SQLite.')
+
+        assert not ext.alembic.compare_metadata()
+        db.drop_all()
+        ext.alembic.upgrade()
+
+        assert not ext.alembic.compare_metadata()
+        ext.alembic.stamp()
+        ext.alembic.downgrade(target='96e796392533')
+        ext.alembic.upgrade()
+
+        assert not ext.alembic.compare_metadata()
 
 
 def test_view(app):

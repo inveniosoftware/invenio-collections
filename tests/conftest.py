@@ -36,6 +36,8 @@ from flask_breadcrumbs import Breadcrumbs
 from flask_menu import Menu
 from invenio_db import InvenioDB, db
 from invenio_records import InvenioRecords
+from sqlalchemy_utils.functions import create_database, database_exists, \
+    drop_database
 
 from invenio_collections import InvenioCollections, current_collections
 from invenio_collections.views import blueprint
@@ -60,10 +62,16 @@ def app(request):
 
     app.register_blueprint(blueprint)
 
+    with app.app_context():
+        if str(db.engine.url) != 'sqlite://' and \
+                not database_exists(str(db.engine.url)):
+            create_database(str(db.engine.url))
+        db.create_all()
+
     def teardown():
         with app.app_context():
-            db.drop_all()
-            current_collections.unregister_signals()
+            if str(db.engine.url) != 'sqlite://':
+                drop_database(str(db.engine.url))
 
     request.addfinalizer(teardown)
 
