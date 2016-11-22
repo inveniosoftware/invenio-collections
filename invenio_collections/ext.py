@@ -37,10 +37,11 @@ from . import config
 class _AppState(object):
     """State for storing collections."""
 
-    def __init__(self, app, cache=None):
+    def __init__(self, app, cache=None, matcher=None):
         """Initialize state."""
         self.app = app
         self._cache = cache
+        self._matcher = matcher
         if self.app.config['COLLECTIONS_REGISTER_RECORD_SIGNALS']:
             self.register_signals()
 
@@ -66,6 +67,13 @@ class _AppState(object):
         if self.cache:
             self.cache.set(
                 self.app.config['COLLECTIONS_CACHE_KEY'], values)
+
+    @cached_property
+    def matcher(self):
+        """Return a matcher function."""
+        matcher = self._matcher or self.app.config.get('COLLECTIONS_MATCHER')
+        return import_string(matcher) if isinstance(
+            matcher, six.string_types) else matcher
 
     def register_signals(self):
         """Register signals."""

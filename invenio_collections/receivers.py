@@ -100,7 +100,9 @@ class CollectionUpdater(object):
         :param app: Flask application.
         """
         app = app or current_app
-        if not app.config['COLLECTIONS_USE_PERCOLATOR']:
+        if app.config['COLLECTIONS_MATCHER']:
+            self.matcher = current_collections.matcher
+        elif not app.config['COLLECTIONS_USE_PERCOLATOR']:
             self.matcher = _find_matching_collections_internally
         else:
             from .percolator import _find_matching_collections_externally
