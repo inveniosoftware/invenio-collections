@@ -46,11 +46,8 @@ tests_require = [
 ]
 
 extras_require = {
-    ':python_version=="2.7"': [
-        'functools32>=3.2.3',
-    ],
     'docs': [
-        'Sphinx>=1.4.2',
+        'Sphinx>=1.5.2',
     ],
     'mysql': [
         'invenio-db[mysql]>=1.0.0b3',
@@ -87,6 +84,7 @@ install_requires = [
     'asciitree>=0.3.1',
     'elasticsearch>=2.0.0,<3.0.0',
     'elasticsearch-dsl>=2.0.0,<3.0.0',
+    'functools32>=3.2.3-2;python_version=="2.7"',
     'invenio-query-parser>=0.6.0',
     'invenio-records>=1.0.0b1',
     'pyPEG2>=2.15.1',
