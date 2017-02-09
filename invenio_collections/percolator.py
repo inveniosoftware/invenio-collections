@@ -19,6 +19,8 @@
 
 """Percolator."""
 
+from elasticsearch.exceptions import TransportError
+
 from invenio_indexer.api import RecordIndexer
 from invenio_query_parser.contrib.elasticsearch import IQ
 from invenio_search import current_search, current_search_client
@@ -32,12 +34,16 @@ def new_collection_percolator(target):
     query = IQ(target.dbquery)
     for name in current_search.mappings.keys():
         if target.name and target.dbquery:
-            current_search.client.index(
-                index=name,
-                doc_type='.percolator',
-                id='collection-{}'.format(target.name),
-                body={'query': query.to_dict()}
-            )
+            try:
+                current_search.client.index(
+                    index=name,
+                    doc_type='.percolator',
+                    id='collection-{}'.format(target.name),
+                    body={'query': query.to_dict()}
+                )
+            except TransportError:
+                # The percolator query is not compatible with this index
+                pass
 
 
 def delete_collection_percolator(target):
