@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015, 2017 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -177,17 +177,25 @@ def test_tree(app):
         result = runner.invoke(cmd, ['tree'], obj=script_info)
         assert 0 == result.exit_code
         aspected = (
-            "Collection <id: 1, name: a, dbquery: None>\n "
-            "+-- Collection <id: 2, name: b, dbquery: None>\n "
-            "|   +-- Collection <id: 4, name: c, dbquery: title:Test0>\n "
-            "|   +-- Collection <id: 5, name: d, dbquery: title:Test1>\n "
+            "Collection <id: 1, name: a, dbquery: None, override: False>\n "
+            "+-- Collection <id: 2, name: b, dbquery: None, "
+            "override: False>\n "
+            "|   +-- Collection <id: 4, name: c, dbquery: title:Test0, "
+            "override: False>\n "
+            "|   +-- Collection <id: 5, name: d, dbquery: title:Test1, "
+            "override: False>\n "
             "+-- Collection <id: 3, name: e, dbquery: "
-            "title:Test2 OR title:Test3>\n "
-            "    +-- Collection <id: 6, name: f, dbquery: title:Test2>\n "
-            "    +-- Collection <id: 7, name: g, dbquery: None>\n "
-            "    |   +-- Collection <id: 9, name: i, dbquery: title:Test3>\n "
-            "    +-- Collection <id: 8, name: h, dbquery: None>\n "
-            "        +-- Collection <id: 10, name: j, dbquery: title:Test4>\n"
+            "title:Test2 OR title:Test3, override: False>\n "
+            "    +-- Collection <id: 6, name: f, dbquery: title:Test2, "
+            "override: False>\n "
+            "    +-- Collection <id: 7, name: g, dbquery: None, "
+            "override: False>\n "
+            "    |   +-- Collection <id: 9, name: i, dbquery: title:Test3, "
+            "override: False>\n "
+            "    +-- Collection <id: 8, name: h, dbquery: None, "
+            "override: False>\n "
+            "        +-- Collection <id: 10, name: j, dbquery: title:Test4, "
+            "override: False>\n"
         )
         assert result.output == aspected
 
@@ -195,26 +203,37 @@ def test_tree(app):
         assert 0 == result.exit_code
         aspected = (
             "Collection <id: 3, name: e, dbquery: "
-            "title:Test2 OR title:Test3>\n "
-            "+-- Collection <id: 6, name: f, dbquery: title:Test2>\n "
-            "+-- Collection <id: 7, name: g, dbquery: None>\n "
-            "|   +-- Collection <id: 9, name: i, dbquery: title:Test3>\n "
-            "+-- Collection <id: 8, name: h, dbquery: None>\n "
-            "    +-- Collection <id: 10, name: j, dbquery: title:Test4>\n"
+            "title:Test2 OR title:Test3, override: False>\n "
+            "+-- Collection <id: 6, name: f, dbquery: title:Test2, "
+            "override: False>\n "
+            "+-- Collection <id: 7, name: g, dbquery: None, "
+            "override: False>\n "
+            "|   +-- Collection <id: 9, name: i, dbquery: title:Test3, "
+            "override: False>\n "
+            "+-- Collection <id: 8, name: h, dbquery: None, "
+            "override: False>\n "
+            "    +-- Collection <id: 10, name: j, dbquery: title:Test4, "
+            "override: False>\n"
         )
         assert result.output == aspected
 
         result = runner.invoke(cmd, ['tree', 'e', 'd'], obj=script_info)
         assert 0 == result.exit_code
         aspected = (
-            "Collection <id: 5, name: d, dbquery: title:Test1>\n"
+            "Collection <id: 5, name: d, dbquery: title:Test1, "
+            "override: False>\n"
             "Collection <id: 3, name: e, dbquery: "
-            "title:Test2 OR title:Test3>\n "
-            "+-- Collection <id: 6, name: f, dbquery: title:Test2>\n "
-            "+-- Collection <id: 7, name: g, dbquery: None>\n "
-            "|   +-- Collection <id: 9, name: i, dbquery: title:Test3>\n "
-            "+-- Collection <id: 8, name: h, dbquery: None>\n "
-            "    +-- Collection <id: 10, name: j, dbquery: title:Test4>\n"
+            "title:Test2 OR title:Test3, override: False>\n "
+            "+-- Collection <id: 6, name: f, dbquery: title:Test2, "
+            "override: False>\n "
+            "+-- Collection <id: 7, name: g, dbquery: None, "
+            "override: False>\n "
+            "|   +-- Collection <id: 9, name: i, dbquery: title:Test3, "
+            "override: False>\n "
+            "+-- Collection <id: 8, name: h, dbquery: None, "
+            "override: False>\n "
+            "    +-- Collection <id: 10, name: j, dbquery: title:Test4, "
+            "override: False>\n"
         )
         assert result.output == aspected
 
@@ -265,37 +284,40 @@ def test_path(app):
         result = runner.invoke(cmd, ['path', 'a'], obj=script_info)
         assert 0 == result.exit_code
         aspected = (
-            "Collection <id: 1, name: a, dbquery: None>\n"
+            "Collection <id: 1, name: a, dbquery: None, override: False>\n"
         )
         assert result.output == aspected
 
         result = runner.invoke(cmd, ['path', 'e'], obj=script_info)
         assert 0 == result.exit_code
         aspected = (
-            "Collection <id: 1, name: a, dbquery: None>\n "
+            "Collection <id: 1, name: a, dbquery: None, override: False>\n "
             "+-- Collection <id: 3, name: e, dbquery: "
-            "title:Test2 OR title:Test3>\n"
+            "title:Test2 OR title:Test3, override: False>\n"
         )
         assert result.output == aspected
 
         result = runner.invoke(cmd, ['path', 'g'], obj=script_info)
         assert 0 == result.exit_code
         aspected = (
-            "Collection <id: 1, name: a, dbquery: None>\n "
+            "Collection <id: 1, name: a, dbquery: None, override: False>\n "
             "+-- Collection <id: 3, name: e, dbquery: "
-            "title:Test2 OR title:Test3>\n "
-            "    +-- Collection <id: 7, name: g, dbquery: None>\n"
+            "title:Test2 OR title:Test3, override: False>\n "
+            "    +-- Collection <id: 7, name: g, dbquery: None, "
+            "override: False>\n"
         )
         assert result.output == aspected
 
         result = runner.invoke(cmd, ['path', 'i'], obj=script_info)
         assert 0 == result.exit_code
         aspected = (
-            "Collection <id: 1, name: a, dbquery: None>\n "
+            "Collection <id: 1, name: a, dbquery: None, override: False>\n "
             "+-- Collection <id: 3, name: e, dbquery: "
-            "title:Test2 OR title:Test3>\n "
-            "    +-- Collection <id: 7, name: g, dbquery: None>\n "
-            "        +-- Collection <id: 9, name: i, dbquery: title:Test3>\n"
+            "title:Test2 OR title:Test3, override: False>\n "
+            "    +-- Collection <id: 7, name: g, dbquery: None, "
+            "override: False>\n "
+            "        +-- Collection <id: 9, name: i, dbquery: title:Test3, "
+            "override: False>\n"
         )
         assert result.output == aspected
 

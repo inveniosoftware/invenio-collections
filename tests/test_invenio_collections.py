@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015, 2016 CERN.
+# Copyright (C) 2015, 2016, 2017 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -93,8 +93,10 @@ def test_view(app):
             db.session.add(collection)
         db.session.commit()
         assert 1 == collection.id
-        assert 'Collection <id: 1, name: Test, dbquery: None>' == repr(
-            collection)
+        assert (
+           'Collection <id: 1, name: Test, '
+           'dbquery: None, override: False>'
+        ) == repr(collection)
 
     with app.test_client() as client:
         res = client.get(view_url)
