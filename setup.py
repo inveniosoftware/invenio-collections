@@ -47,7 +47,7 @@ tests_require = [
 
 extras_require = {
     ':python_version=="2.7"': [
-        'functools32>=3.2.3',
+        'functools32>=3.2.3.post2',
     ],
     'docs': [
         'Sphinx>=1.4.2',
