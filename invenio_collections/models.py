@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016 CERN.
+# Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016, 2017 CERN.
 #
 # Invenio is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -35,7 +35,7 @@ class Collection(db.Model, BaseNestedSets):
     def __repr__(self):
         """Return class representation."""
         return ('Collection <id: {0.id}, name: {0.name}, '
-                'dbquery: {0.dbquery}>'.format(self))
+                'dbquery: {0.dbquery}, override: {0.override}>'.format(self))
 
     id = db.Column(db.Integer, primary_key=True)
     """Collection identifier."""
@@ -45,6 +45,13 @@ class Collection(db.Model, BaseNestedSets):
 
     dbquery = db.Column(db.Text, nullable=True)
     """Query that returns all records that belong to this collection.."""
+
+    override = db.Column(
+        db.Boolean(create_constraint=False),
+        default=False,
+        nullable=False,
+    )
+    """Whether to override `dbquery` and return `True` or not."""
 
     @validates('parent_id')
     def validate_parent_id(self, key, parent_id):

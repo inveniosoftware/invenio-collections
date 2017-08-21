@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015, 2016 CERN.
+# Copyright (C) 2015, 2016, 2017 CERN.
 #
 # Invenio is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -55,6 +55,7 @@ def _build_cache():
         yield collection.name, dict(
             query=query.format(dbquery=collection.dbquery),
             ancestors=set(_ancestors(collection)),
+            override=collection.override,
         )
     raise StopIteration
 
@@ -66,7 +67,7 @@ def _find_matching_collections_internally(collections, record):
     :param record: record to match
     """
     for name, data in iteritems(collections):
-        if _build_query(data['query']).match(record):
+        if data['override'] or _build_query(data['query']).match(record):
             yield data['ancestors']
     raise StopIteration
 
