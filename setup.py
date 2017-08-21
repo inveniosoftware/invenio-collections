@@ -50,7 +50,7 @@ extras_require = {
         'functools32>=3.2.3.post2',
     ],
     'docs': [
-        'Sphinx>=1.4.2',
+        'Sphinx>=1.5.1',
     ],
     'mysql': [
         'invenio-db[mysql]>=1.0.0b3',
