@@ -72,6 +72,8 @@ class _AppState(object):
         from .models import Collection
         from .receivers import CollectionUpdater
 
+        self.unregister_signals()
+
         if self.app.config['COLLECTIONS_USE_PERCOLATOR']:
             from .percolator import collection_inserted_percolator, \
                 collection_removed_percolator, \
