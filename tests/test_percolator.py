@@ -68,6 +68,11 @@ def test_without_percolator(app, request):
             COLLECTIONS_USE_PERCOLATOR=False,
         )
 
+        search = InvenioSearch(app)
+        search.register_mappings('records', 'data')
+
+        InvenioIndexer(app)
+
         current_collections.unregister_signals()
         current_collections.register_signals()
 
@@ -118,7 +123,7 @@ def _try_populate_collections():
     db.session.commit()
 
     # start tests
-
+    current_search.client.indices.refresh()
     record0 = Record.create({'title': 'Test0', '$schema': schema})
 
     assert 'a' in record0['_collections']
@@ -161,6 +166,7 @@ def _try_populate_collections():
     # test delete
     db.session.delete(j)
     db.session.commit()
+    current_search.client.indices.refresh()
     record4.commit()
 
     assert 'h' not in record4['_collections']
@@ -171,6 +177,7 @@ def _try_populate_collections():
     i.dbquery = None
     db.session.add(i)
     db.session.commit()
+    current_search.client.indices.refresh()
     record3.commit()
 
     assert 'a' in record3['_collections']
@@ -181,6 +188,7 @@ def _try_populate_collections():
     i.dbquery = 'title:Test3'
     db.session.add(i)
     db.session.commit()
+    current_search.client.indices.refresh()
     record3.commit()
 
     assert 'a' in record3['_collections']
@@ -193,6 +201,7 @@ def _try_populate_collections():
     a.name = "new-a"
     db.session.add(a)
     db.session.commit()
+    current_search.client.indices.refresh()
     record3.commit()
 
     assert 'g' in record3['_collections']
@@ -205,6 +214,7 @@ def _try_populate_collections():
     c.name = "new-c"
     db.session.add(c)
     db.session.commit()
+    current_search.client.indices.refresh()
     record0.commit()
 
     assert 'new-a' in record0['_collections']

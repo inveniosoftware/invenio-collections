@@ -18,10 +18,25 @@
 # 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 """Percolator."""
-
+from elasticsearch import VERSION as ES_VERSION
 from invenio_indexer.api import RecordIndexer
 from invenio_query_parser.contrib.elasticsearch import IQ
 from invenio_search import current_search, current_search_client
+
+PERCOLATOR_DOCTYPE = '.percolator' if ES_VERSION[0] == 2 else 'percolators'
+PERCOLATOR_MAPPING = {
+    'properties': {'query': {'type': 'percolator'}}
+}
+
+
+def _put_percolator_mapping(es_client, index_name):
+    if ES_VERSION[0] > 2:
+        es_client.indices.put_mapping(
+            index=index_name,
+            doc_type=PERCOLATOR_DOCTYPE,
+            body=PERCOLATOR_MAPPING,
+            ignore=[400, 404],
+        )
 
 
 def new_collection_percolator(target):
@@ -32,9 +47,13 @@ def new_collection_percolator(target):
     query = IQ(target.dbquery)
     for name in current_search.mappings.keys():
         if target.name and target.dbquery:
+            _put_percolator_mapping(
+                es_client=current_search_client,
+                index_name=name,
+            )
             current_search.client.index(
                 index=name,
-                doc_type='.percolator',
+                doc_type=PERCOLATOR_DOCTYPE,
                 id='collection-{}'.format(target.name),
                 body={'query': query.to_dict()}
             )
@@ -47,9 +66,13 @@ def delete_collection_percolator(target):
     """
     for name in current_search.mappings.keys():
         if target.name and target.dbquery:
-            current_search.client.delete(
+            _put_percolator_mapping(
+                es_client=current_search_client,
+                index_name=name,
+            )
+            current_search_client.delete(
                 index=name,
-                doc_type='.percolator',
+                doc_type=PERCOLATOR_DOCTYPE,
                 id='collection-{}'.format(target.name),
                 ignore=[404]
             )
@@ -97,6 +120,10 @@ def _find_matching_collections_externally(collections, record):
     """
     index, doc_type = RecordIndexer().record_to_index(record)
     body = {"doc": record.dumps()}
+    _put_percolator_mapping(
+        es_client=current_search_client,
+        index_name=index,
+    )
     results = current_search_client.percolate(
         index=index,
         doc_type=doc_type,
