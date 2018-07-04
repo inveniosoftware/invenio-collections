@@ -42,15 +42,21 @@ cache:
   - pip
 
 env:
-  - REQUIREMENTS=lowest EXTRAS=all,sqlite SQLALCHEMY_DATABASE_URI="sqlite:///test.db" ES_HOST=127.0.0.1 ES_VERSION=2.2.0
-  - REQUIREMENTS=lowest EXTRAS=all,mysql SQLALCHEMY_DATABASE_URI="mysql+pymysql://travis@localhost:3306/invenio" ES_HOST=127.0.0.1 ES_VERSION=2.2.0
-  - REQUIREMENTS=lowest EXTRAS=all,postgresql SQLALCHEMY_DATABASE_URI="postgresql+psycopg2://postgres@localhost:5432/invenio" ES_HOST=127.0.0.1 ES_VERSION=2.2.0
-  - REQUIREMENTS=release EXTRAS=all,sqlite SQLALCHEMY_DATABASE_URI="sqlite:///test.db" ES_HOST=127.0.0.1 ES_VERSION=2.2.0
-  - REQUIREMENTS=release EXTRAS=all,mysql SQLALCHEMY_DATABASE_URI="mysql+pymysql://travis@localhost:3306/invenio" ES_HOST=127.0.0.1 ES_VERSION=2.2.0
-  - REQUIREMENTS=release EXTRAS=all,postgresql SQLALCHEMY_DATABASE_URI="postgresql+psycopg2://postgres@localhost:5432/invenio" ES_HOST=127.0.0.1 ES_VERSION=2.2.0
-  - REQUIREMENTS=devel EXTRAS=all,sqlite SQLALCHEMY_DATABASE_URI="sqlite:///test.db" ES_HOST=127.0.0.1 ES_VERSION=2.2.0
-  - REQUIREMENTS=devel EXTRAS=all,mysql SQLALCHEMY_DATABASE_URI="mysql+pymysql://travis@localhost:3306/invenio" ES_HOST=127.0.0.1 ES_VERSION=2.2.0
-  - REQUIREMENTS=devel EXTRAS=all,postgresql SQLALCHEMY_DATABASE_URI="postgresql+psycopg2://postgres@localhost:5432/invenio" ES_HOST=127.0.0.1 ES_VERSION=2.2.0
+  global:
+    - ES2_DOWNLOAD_URL="https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.4.2/elasticsearch-2.4.2.tar.gz"
+    - ES5_DOWNLOAD_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.4.tar.gz"
+    - ES_HOST=127.0.0.1
+  matrix:
+    # ES 5: sqlite, mysql, postgresql
+    - REQUIREMENTS=lowest EXTRAS=all,sqlite,elasticsearch5  SQLALCHEMY_DATABASE_URI="sqlite:///test.db" ES_URL=$ES5_DOWNLOAD_URL
+    - REQUIREMENTS=lowest EXTRAS=all,mysql,elasticsearch5 SQLALCHEMY_DATABASE_URI="mysql+pymysql://travis@localhost:3306/invenio" ES_URL=$ES5_DOWNLOAD_URL
+    - REQUIREMENTS=lowest EXTRAS=all,postgresql,elasticsearch5 SQLALCHEMY_DATABASE_URI="postgresql+psycopg2://postgres@localhost:5432/invenio" ES_URL=$ES5_DOWNLOAD_URL
+    - REQUIREMENTS=release EXTRAS=all,sqlite,elasticsearch5 SQLALCHEMY_DATABASE_URI="sqlite:///test.db" ES_URL=$ES5_DOWNLOAD_URL
+    - REQUIREMENTS=release EXTRAS=all,mysql,elasticsearch5 SQLALCHEMY_DATABASE_URI="mysql+pymysql://travis@localhost:3306/invenio" ES_URL=$ES5_DOWNLOAD_URL
+    - REQUIREMENTS=release EXTRAS=all,postgresql,elasticsearch5 SQLALCHEMY_DATABASE_URI="postgresql+psycopg2://postgres@localhost:5432/invenio" ES_URL=$ES5_DOWNLOAD_URL
+
+    # ES 2: postgresql only
+    - REQUIREMENTS=devel EXTRAS=all,postgresql,elasticsearch2 SQLALCHEMY_DATABASE_URI="postgresql+psycopg2://postgres@localhost:5432/invenio" ES_URL=$ES2_DOWNLOAD_URL
 
 python:
   - "2.7"
@@ -62,11 +68,11 @@ matrix:
     - python: pypy
   include:
     - python: pypy
-      env: EXTRAS=all,sqlite REQUIREMENTS=release SQLALCHEMY_DATABASE_URI="sqlite:///test.db" ES_HOST=127.0.0.1 ES_VERSION=2.2.0
+      env: EXTRAS=all,sqlite,elasticsearch5 REQUIREMENTS=release SQLALCHEMY_DATABASE_URI="sqlite:///test.db" ES_URL=$ES5_DOWNLOAD_URL
 
 before_install:
   - "mkdir /tmp/elasticsearch"
-  - "wget -O - https://download.elasticsearch.org/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/${ES_VERSION}/elasticsearch-${ES_VERSION}.tar.gz | tar xz --directory=/tmp/elasticsearch --strip-components=1"
+  - "wget -O - $ES_URL | tar xz --directory=/tmp/elasticsearch --strip-components=1"
   - "/tmp/elasticsearch/bin/elasticsearch &"
   - "sleep 20"
   - "travis_retry pip install --upgrade pip setuptools py"
