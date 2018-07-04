@@ -52,6 +52,14 @@ extras_require = {
     'docs': [
         'Sphinx>=1.5.1',
     ],
+    'elasticsearch2': [
+        'elasticsearch~=2.0',
+        'elasticsearch-dsl~=2.0',
+    ],
+    'elasticsearch5': [
+        'elasticsearch~=5.0',
+        'elasticsearch-dsl~=5.0',
+    ],
     'mysql': [
         'invenio-db[mysql]>=1.0.0b3',
     ],
@@ -71,7 +79,8 @@ extras_require = {
 
 extras_require['all'] = []
 for name, reqs in extras_require.items():
-    if name[0] == ':' or name in ('mysql', 'postgresql', 'sqlite'):
+    if name[0] == ':' or name in ('mysql', 'postgresql', 'sqlite',
+                                  'elasticsearch2', 'elasticsearch5'):
         continue
     extras_require['all'].extend(reqs)
 
@@ -85,8 +94,6 @@ install_requires = [
     'Flask-Breadcrumbs>=0.3.0',
     'Flask>=0.11.1',
     'asciitree>=0.3.1',
-    'elasticsearch>=2.0.0,<6.0.0',
-    'elasticsearch-dsl>=2.0.0,<6.0.0',
     'invenio-query-parser>=0.6.0',
     'invenio-records>=1.0.0b1',
     'pyPEG2>=2.15.1',
