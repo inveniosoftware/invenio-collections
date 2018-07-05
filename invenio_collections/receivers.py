@@ -106,7 +106,7 @@ class CollectionUpdater(object):
             from .percolator import _find_matching_collections_externally
             self.matcher = _find_matching_collections_externally
 
-    def __call__(self, record, **kwargs):
+    def __call__(self, sender, record, **kwargs):
         """Update collections list."""
         record['_collections'] = get_record_collections(record=record,
                                                         matcher=self.matcher)
