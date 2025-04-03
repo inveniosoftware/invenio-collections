@@ -7,4 +7,9 @@
     details.
 
 
-.. include:: ../INSTALL.rst
+Configuration
+=============
+
+.. automodule:: invenio_collections.config
+   :members:
+

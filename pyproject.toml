@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools", "wheel", "babel>2.8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name="invenio-collections"
+dynamic = ["version", "readme"]
+description = "Invenio module for organizing metadata into collections."
+authors=[
+  {name = "CERN", email = "info@inveniosoftware.org"}
+]
+requires-python = ">=3.9"
+dependencies = [
+  "invenio-administration>=3.0.0,<4.0.0",
+  "invenio-communities>=18.0.0,<19.0.0",
+  "invenio-records-resources>=7.0.0,<8.0.0",
+  "invenio-search-ui>=4.0.0,<5.0.0",
+]
+
+[project.optional-dependencies]
+tests=[
+    "invenio-app>=2.0.0,<3.0.0",
+    "invenio-db[postgresql,mysql]>=2.0.0,<3.0.0",
+    "pytest-black>=0.3.0",
+    "pytest-invenio>=3.0.0,<4.0.0",
+    "sphinx>=4.5",
+]
+opensearch2 = [
+    "invenio-search[opensearch2]>=3.0.0,<4.0.0",
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "invenio_collections.__version__"}
+readme = {file = ["README.rst"]}
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--black --isort --pydocstyle --doctest-glob=\"*.rst\" --doctest-modules --cov=invenio_collections --cov-report=term-missing"
+testpaths = [
+    "docs",
+    "tests",
+    "invenio_collections",
+]
+filterwarnings = [
+    "ignore::marshmallow.warnings.RemovedInMarshmallow4Warning",
+]
+
+[tool.pydocstyle]
+add_ignore = [
+    "D401",
+    "D403",
+]
+
+[tool.isort]
+profile="black"
+

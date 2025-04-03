@@ -2,6 +2,9 @@
 __pycache__/
 *.py[cod]
 
+# Idea software family
+.idea/
+
 # C extensions
 *.so
 
@@ -22,6 +25,9 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+Pipfile
+Pipfile.lock
+.venv/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -55,5 +61,8 @@ docs/_build/
 # PyBuilder
 target/
 
-# examples
-examples/*.db
+# Vim swapfiles
+.*.sw?
+
+# VSCode
+.vscode/

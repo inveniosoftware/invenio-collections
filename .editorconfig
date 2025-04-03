@@ -1,27 +1,10 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of Invenio.
 # Copyright (C) 2015 CERN.
+# Copyright (C) 2025 Ubiquity Press.
 #
-# Invenio is free software; you can redistribute it
-# and/or modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of the
-# License, or (at your option) any later version.
-#
-# Invenio is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Invenio; if not, write to the
-# Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-# MA 02111-1307, USA.
-#
-# In applying this license, CERN does not
-# waive the privileges and immunities granted to it by virtue of its status
-# as an Intergovernmental Organization or submit itself to any jurisdiction.
-
+# invenio-collections is free software; you can redistribute it and/or modify
+# it under the terms of the MIT License; see LICENSE file for more details.
 
 root = true
 
@@ -36,10 +19,10 @@ charset = utf-8
 [*.py]
 indent_size = 4
 # isort plugin configuration
-known_first_party = invenio_collections
-known_third_party = invenio_db, invenio_query_parser, invenio_records, invenio_search, invenio_indexer
+known_first_party = invenio_colections
 multi_line_output = 2
 default_section = THIRDPARTY
+skip = .eggs
 
 # RST files (used by sphinx)
 [*.rst]
@@ -49,8 +32,8 @@ indent_size = 4
 [*.{css,html,js,json,yml}]
 indent_size = 2
 
-# Matches the exact files either package.json or .travis.yml
-[{package.json,.travis.yml}]
+# Matches the exact files either package.json or .github/workflows/*.yml
+[{package.json,.github/workflows/*.yml}]
 indent_size = 2
 
 # Dockerfile
