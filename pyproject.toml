@@ -1,22 +1,42 @@
 [build-system]
-requires = ["setuptools", "wheel", "babel>2.8"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name="invenio-collections"
-dynamic = ["version", "readme"]
 description = "Invenio module for organizing metadata into collections."
 authors=[
   {name = "CERN", email = "info@inveniosoftware.org"}
 ]
+classifiers = [
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+   "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dynamic = ["version"]
+keywords = ["invenio", "inveniordm", "rdm", "collections"]
+license = {file = "LICENSE"}
+readme = "README.rst"
+
 requires-python = ">=3.9"
 dependencies = [
   "invenio-administration>=3.0.0,<4.0.0",
   "invenio-communities>=18.0.0,<19.0.0",
-  "invenio-rdm-records>=18.2.0",
+  "invenio-rdm-records>=18.2.0,<19.0.0",
   "invenio-records-resources>=7.0.0,<8.0.0",
   "invenio-search-ui>=4.0.0,<5.0.0",
 ]
+urls = {Repository = "https://github.com/inveniosoftware/invenio-collections"}
 
 [project.optional-dependencies]
 tests=[
@@ -30,6 +50,7 @@ opensearch2 = [
     "invenio-search[opensearch2]>=3.0.0,<4.0.0",
 ]
 
+# Entrypoints
 [project.entry-points."invenio_base.apps"]
 invenio_collections = "invenio_collections.ext:InvenioCollections"
 
@@ -48,13 +69,46 @@ invenio_collections = "invenio_collections:alembic"
 [project.entry-points."invenio_db.models"]
 invenio_collections = "invenio_collections.models"
 
-[project.entry-points."invenio_i18n.translations"]
-messages = "invenio_collections"
+# Tools in alphabetical order
+[tool.babel.compile_catalog]
+directory = "invenio_collections/translations/"
+use_fuzzy = true
 
-[tool.setuptools.dynamic]
-version = {attr = "invenio_collections.__version__"}
-readme = {file = ["README.rst"]}
+[tool.babel.extract_messages]
+copyright_holder = "CERN"
+msgid_bugs_address = "info@inveniosoftware.org"
+mapping_file = "babel.ini"
+output_file = "invenio_collections/translations/messages.pot"
+add_comments = "NOTE"
 
+[tool.babel.init_catalog]
+input_file = "invenio_collections/translations/messages.pot"
+output_dir = "invenio_collections/translations/"
+
+[tool.babel.javascript]
+"**.js" = { encoding = "utf-8", extract_messages = ["$_", "jQuery._"] }
+
+[tool.babel.jinja2]
+"**/templates/**.html" = { encoding = "utf-8" }
+
+[tool.babel.python]
+"**.py" = { encoding = "utf-8" }
+
+[tool.babel.update_catalog]
+input_file = "invenio_collections/translations/messages.pot"
+output_dir = "invenio_collections/translations/"
+
+[tool.hatch.version]
+path = "invenio_collections/__init__.py"
+
+[tool.isort]
+profile = "black"
+
+[tool.pydocstyle]
+add_ignore = [
+    "D401",
+    "D403",
+]
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "--black --isort --pydocstyle --doctest-glob=\"*.rst\" --doctest-modules --cov=invenio_collections --cov-report=term-missing"
@@ -66,13 +120,4 @@ testpaths = [
 filterwarnings = [
     "ignore::marshmallow.warnings.RemovedInMarshmallow4Warning",
 ]
-
-[tool.pydocstyle]
-add_ignore = [
-    "D401",
-    "D403",
-]
-
-[tool.isort]
-profile="black"
 
