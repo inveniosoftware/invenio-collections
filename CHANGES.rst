@@ -9,6 +9,12 @@
 Changes
 =======
 
+Version 0.4.0 (release 2025-05-30)
+-----------------------------------
+
+- Package refactoring for Invenio RDM
+- Migrate collection content from Invenio-RDM-Records
+
 Version 1.0.0a4 (released 2017-09-04)
 -------------------------------------
 
