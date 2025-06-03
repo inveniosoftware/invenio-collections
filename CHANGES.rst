@@ -1,6 +1,7 @@
 ..
     Copyright (C) 2015 CERN.
     Copyright (C) 2025 Ubiquity Press.
+    Copyright (C) 2025 Graz University of Technology.
 
     Invenio-Collections is free software; you can redistribute it and/or
     modify it under the terms of the MIT License; see LICENSE file for more
@@ -8,6 +9,11 @@
 
 Changes
 =======
+
+Version 0.5.0 (release 2025-06-03)
+
+- setup: bump major dependencies
+- fix(tests): add configuration
 
 Version 0.4.0 (release 2025-05-30)
 -----------------------------------
