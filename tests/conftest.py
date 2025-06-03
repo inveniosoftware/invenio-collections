@@ -2,6 +2,7 @@
 #
 # Copyright (C) 2015 CERN.
 # Copyright (C) 2025 Ubiquity Press.
+# Copyright (C) 2025 Graz University of Technology.
 #
 # Invenio-Collections is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -42,6 +43,7 @@ def app_config(app_config):
     )
     # Variable not used. We set it to silent warnings
     app_config["JSONSCHEMAS_HOST"] = "not-used"
+    app_config["THEME_FRONTPAGE"] = False
 
     return app_config
 
