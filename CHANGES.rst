@@ -10,6 +10,10 @@
 Changes
 =======
 
+Version 1.0.0 (release 2025-08-01)
+
+- setup: bump major dependencies
+
 Version 0.5.0 (release 2025-06-03)
 
 - setup: bump major dependencies
