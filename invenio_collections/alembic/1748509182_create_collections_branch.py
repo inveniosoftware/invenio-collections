@@ -12,7 +12,7 @@
 revision = "1748509182"
 down_revision = None
 branch_labels = ("invenio_collections",)
-depends_on = "ff9bec971d30"
+depends_on = "72b37bb4119c"
 
 
 def upgrade():
