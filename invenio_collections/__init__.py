@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2015 CERN.
+# Copyright (C) 2015-2025 CERN.
 # Copyright (C) 2025 Ubiquity Press.
 # Copyright (C) 2025 Graz University of Technology.
 #
@@ -11,6 +11,6 @@
 
 from .ext import InvenioCollections
 
-__version__ = "1.0.0"
+__version__ = "2.0.0"
 
 __all__ = ("__version__", "InvenioCollections")
