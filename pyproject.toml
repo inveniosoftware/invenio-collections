@@ -31,8 +31,8 @@ readme = "README.rst"
 requires-python = ">=3.9"
 dependencies = [
   "invenio-administration>=4.0.0,<5.0.0",
-  "invenio-communities>=20.0.0,<21.0.0",
-  "invenio-rdm-records>=20.0.0,<21.0.0",
+  "invenio-communities>=21.0.0,<22.0.0",
+  "invenio-rdm-records>=21.0.0,<22.0.0",
   "invenio-records-resources>=8.0.0,<9.0.0",
   "invenio-search-ui>=4.0.0,<5.0.0",
 ]
