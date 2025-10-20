@@ -10,7 +10,13 @@
 Changes
 =======
 
+Version 1.2.0 (released 2025-10-21)
+-----------------------------------
+
+- setup: bump major dependencies
+
 Version 1.1.0 (release 2025-10-03)
+-----------------------------------
 
 - installation: relax packages requirements:
   (invenio-rdm-records, invenio-collections)
@@ -18,10 +24,12 @@ Version 1.1.0 (release 2025-10-03)
   to avoid the backwards incompatible change in alembic recipe applied in v2
 
 Version 1.0.0 (release 2025-08-01)
+-----------------------------------
 
 - setup: bump major dependencies
 
 Version 0.5.0 (release 2025-06-03)
+-----------------------------------
 
 - setup: bump major dependencies
 - fix(tests): add configuration
