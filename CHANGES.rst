@@ -10,6 +10,10 @@
 Changes
 =======
 
+Version v2.1.0 (released 2025-10-21)
+
+- setup: bump major dependencies
+
 Version v2.0.0 (released 2025-09-24)
 
 - installation: bump communities and rdm-records
