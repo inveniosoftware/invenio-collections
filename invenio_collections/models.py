@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2024 CERN.
+# Copyright (C) 2025 Graz University of Technology.
 #
 # Invenio-Collections is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -8,13 +9,12 @@
 
 from invenio_communities.communities.records.models import CommunityMetadata
 from invenio_db import db
-from invenio_records.models import Timestamp
 from sqlalchemy import UniqueConstraint
 from sqlalchemy_utils.types import UUIDType
 
 
 # CollectionTree Table
-class CollectionTree(db.Model, Timestamp):
+class CollectionTree(db.Model, db.Timestamp):
     """Collection tree model."""
 
     __tablename__ = "collections_collection_tree"
@@ -79,7 +79,7 @@ class CollectionTree(db.Model, Timestamp):
 
 
 # Collection Table
-class Collection(db.Model, Timestamp):
+class Collection(db.Model, db.Timestamp):
     """Collection model.
 
     Indices:
