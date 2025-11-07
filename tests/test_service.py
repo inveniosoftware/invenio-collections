@@ -173,6 +173,7 @@ def test_collections_results(
             "order": c0.order,
             "slug": "collection-1",
             "title": "Collection 1",
+            "search_query": "metadata.title:foo",
         },
         c1.id: {
             "children": [],
@@ -186,6 +187,7 @@ def test_collections_results(
             "order": c1.order,
             "slug": "collection-2",
             "title": "Collection 2",
+            "search_query": "metadata.title:bar",
         },
     }
     assert not list(dictdiffer.diff(expected, r_dict))
@@ -218,6 +220,7 @@ def test_collections_results(
             "order": c0.order,
             "slug": "collection-1",
             "title": "Collection 1",
+            "search_query": "metadata.title:foo",
         },
         c1.id: {
             "children": [c3.id],
@@ -231,6 +234,7 @@ def test_collections_results(
             "order": c1.order,
             "slug": "collection-2",
             "title": "Collection 2",
+            "search_query": "metadata.title:bar",
         },
         c3.id: {
             "children": [],
@@ -244,6 +248,7 @@ def test_collections_results(
             "order": c3.order,
             "slug": "collection-3",
             "title": "Collection 3",
+            "search_query": "metadata.title:baz",
         },
     }
 
@@ -259,7 +264,7 @@ def test_update(app, db, add_collections, collections_service, community_owner):
     collections_service.update(
         community_owner.identity,
         c0.id,
-        data={"slug": "New slug"},
+        data={"slug": "new-slug"},
     )
 
     res = collections_service.read(
@@ -267,20 +272,20 @@ def test_update(app, db, add_collections, collections_service, community_owner):
         id_=c0.id,
     )
 
-    assert res.to_dict()[c0.id]["slug"] == "New slug"
+    assert res.to_dict()[c0.id]["slug"] == "new-slug"
 
     # Update by object
     collections_service.update(
         community_owner.identity,
         c0,
-        data={"slug": "New slug 2"},
+        data={"slug": "new-slug-2"},
     )
 
     res = collections_service.read(
         identity=community_owner.identity,
         id_=c0.id,
     )
-    assert res.to_dict()[c0.id]["slug"] == "New slug 2"
+    assert res.to_dict()[c0.id]["slug"] == "new-slug-2"
 
 
 def test_read_many(app, db, add_collections, collections_service, community_owner):
