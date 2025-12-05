@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2024 CERN.
+# Copyright (C) 2025 Northwestern University.
 #
 # Invenio-RDM is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
 """Test suite for the collections service."""
 
-import dictdiffer
 import pytest
 
 from invenio_collections.api import Collection, CollectionTree
@@ -158,7 +158,7 @@ def test_collections_results(
         c0.id: {
             "breadcrumbs": [
                 {
-                    "link": "/communities/public/collections/tree-1/collection-1",
+                    "link": "https://127.0.0.1:5000/communities/public/collections/tree-1/collection-1",
                     "title": "Collection 1",
                 }
             ],
@@ -166,8 +166,8 @@ def test_collections_results(
             "depth": 0,
             "id": c0.id,
             "links": {
-                "self_html": "/communities/public/collections/tree-1/collection-1",
-                "search": f"/api/collections/{c0.id}/records",
+                "self_html": "https://127.0.0.1:5000/communities/public/collections/tree-1/collection-1",
+                "search": f"https://127.0.0.1:5000/api/collections/{c0.id}/records",
             },
             "num_records": 0,
             "order": c0.order,
@@ -179,8 +179,8 @@ def test_collections_results(
             "depth": 1,
             "id": c1.id,
             "links": {
-                "self_html": "/communities/public/collections/tree-1/collection-2",
-                "search": f"/api/collections/{c1.id}/records",
+                "self_html": "https://127.0.0.1:5000/communities/public/collections/tree-1/collection-2",
+                "search": f"https://127.0.0.1:5000/api/collections/{c1.id}/records",
             },
             "num_records": 0,
             "order": c1.order,
@@ -188,7 +188,7 @@ def test_collections_results(
             "title": "Collection 2",
         },
     }
-    assert not list(dictdiffer.diff(expected, r_dict))
+    assert expected == r_dict
 
     # Read the collection tree up to depth 3
     res = collections_service.read(
@@ -203,7 +203,7 @@ def test_collections_results(
         c0.id: {
             "breadcrumbs": [
                 {
-                    "link": "/communities/public/collections/tree-1/collection-1",
+                    "link": "https://127.0.0.1:5000/communities/public/collections/tree-1/collection-1",
                     "title": "Collection 1",
                 }
             ],
@@ -211,8 +211,8 @@ def test_collections_results(
             "depth": 0,
             "id": c0.id,
             "links": {
-                "self_html": "/communities/public/collections/tree-1/collection-1",
-                "search": f"/api/collections/{c0.id}/records",
+                "self_html": "https://127.0.0.1:5000/communities/public/collections/tree-1/collection-1",
+                "search": f"https://127.0.0.1:5000/api/collections/{c0.id}/records",
             },
             "num_records": 0,
             "order": c0.order,
@@ -224,8 +224,8 @@ def test_collections_results(
             "depth": 1,
             "id": c1.id,
             "links": {
-                "self_html": "/communities/public/collections/tree-1/collection-2",
-                "search": f"/api/collections/{c1.id}/records",
+                "self_html": "https://127.0.0.1:5000/communities/public/collections/tree-1/collection-2",
+                "search": f"https://127.0.0.1:5000/api/collections/{c1.id}/records",
             },
             "num_records": 0,
             "order": c1.order,
@@ -237,8 +237,8 @@ def test_collections_results(
             "depth": 2,
             "id": c3.id,
             "links": {
-                "self_html": "/communities/public/collections/tree-1/collection-3",
-                "search": f"/api/collections/{c3.id}/records",
+                "self_html": "https://127.0.0.1:5000/communities/public/collections/tree-1/collection-3",
+                "search": f"https://127.0.0.1:5000/api/collections/{c3.id}/records",
             },
             "num_records": 0,
             "order": c3.order,
@@ -247,7 +247,7 @@ def test_collections_results(
         },
     }
 
-    assert not list(dictdiffer.diff(expected, r_dict))
+    assert expected == r_dict
 
 
 def test_update(app, db, add_collections, collections_service, community_owner):
