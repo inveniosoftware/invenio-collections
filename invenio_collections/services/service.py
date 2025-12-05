@@ -10,13 +10,15 @@ import os
 
 from flask import current_app, url_for
 from invenio_rdm_records.proxies import current_community_records_service
-from invenio_records_resources.services import ServiceSchemaWrapper
+from invenio_records_resources.services import (
+    LinksTemplate,
+    ServiceSchemaWrapper,
+)
 from invenio_records_resources.services.base import Service
 from invenio_records_resources.services.uow import ModelCommitOp, unit_of_work
 
 from ..api import Collection, CollectionTree
 from ..errors import LogoNotFoundError
-from .links import CollectionLinkstemplate
 from .results import CollectionItem, CollectionList, CollectionTreeList
 
 
@@ -37,7 +39,7 @@ class CollectionsService(Service):
     @property
     def links_item_tpl(self):
         """Get the item links template."""
-        return CollectionLinkstemplate(
+        return LinksTemplate(
             links=self.config.links_item,
             context={
                 "permission_policy_cls": self.config.permission_policy_cls,

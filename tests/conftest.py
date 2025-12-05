@@ -3,6 +3,7 @@
 # Copyright (C) 2015 CERN.
 # Copyright (C) 2025 Ubiquity Press.
 # Copyright (C) 2025 Graz University of Technology.
+# Copyright (C) 2025 Northwestern University.
 #
 # Invenio-Collections is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -27,7 +28,17 @@ from invenio_vocabularies.records.api import Vocabulary
 
 
 @pytest.fixture(scope="module")
-def create_app(instance_path):
+def extra_entry_points():
+    """Extra entry points to load the mock_module features."""
+    return {
+        "invenio_base.blueprints": [
+            "mock_module = tests.mock_module.blueprint:create_ui_blueprint",
+        ],
+    }
+
+
+@pytest.fixture(scope="module")
+def create_app(instance_path, entry_points):
     """Application factory fixture."""
     return _create_app
 

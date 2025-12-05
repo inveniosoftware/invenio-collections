@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2024 CERN.
+# Copyright (C) 2025 Northwestern University.
 #
 # Invenio-Collections is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
 """Collections service config."""
 
 from invenio_communities.permissions import CommunityPermissionPolicy
-from invenio_records_resources.services import ConditionalLink
+from invenio_records_resources.services import EndpointLink
 from invenio_records_resources.services.base import ServiceConfig
 from invenio_records_resources.services.base.config import ConfiguratorMixin, FromConfig
 
-from .links import CollectionLink
 from .results import CollectionItem, CollectionList
 from .schema import CollectionSchema
 
@@ -27,14 +27,31 @@ class CollectionServiceConfig(ServiceConfig, ConfiguratorMixin):
     )
     schema = CollectionSchema
 
-    # TODO here to switchover to the new invenio_url_for-based style of links.
     links_item = {
-        "search": CollectionLink("/api/collections/{id}/records"),
-        "self_html": ConditionalLink(
-            cond=lambda coll, ctx: coll.community,
-            if_=CollectionLink(
-                "/communities/{community}/collections/{tree}/{collection}"
+        "search": EndpointLink(
+            "collections.search_records",
+            params=["id"],
+            vars=lambda obj, vars: vars.update(id=obj.id),
+        ),
+        # So far there are no UI endpoints outside the community one.
+        # When that changes, revisit this.
+        "self_html": EndpointLink(
+            # This perhaps illustrate the need for invenio-app-rdm to
+            # be the place where this config is set/finalized, so that the core
+            # of this ServiceConfig can be more generic. Alternatively,
+            # bring the UI endpoint to this repo and let its template be
+            # overridden in invenio-app-rdm
+            "invenio_app_rdm_communities.community_collection",
+            params=["pid_value", "tree_slug", "collection_slug"],
+            # obj is a collection
+            vars=lambda obj, vars: vars.update(
+                {
+                    # pid_value of the community
+                    "pid_value": obj.community.slug,
+                    "tree_slug": obj.collection_tree.slug,
+                    "collection_slug": obj.slug,
+                }
             ),
-            else_=CollectionLink("/collections/{tree}/{collection}"),
+            when=lambda coll, ctx: coll.community,
         ),
     }
