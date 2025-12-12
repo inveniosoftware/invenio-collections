@@ -10,6 +10,10 @@
 Changes
 =======
 
+Version v3.0.0 (released 2025-12-12)
+
+- chore(pyproject): bump major versions of invenio-communities and invenio-rdm-records
+
 Version v2.1.0 (released 2025-10-21)
 
 - setup: bump major dependencies
