@@ -10,6 +10,10 @@
 Changes
 =======
 
+Version v3.0.1 (released 2025-12-15)
+
+- revert alembic revision_id to invenio-rdm-records 
+
 Version v3.0.0 (released 2025-12-12)
 
 - chore(pyproject): bump major versions of invenio-communities and invenio-rdm-records
