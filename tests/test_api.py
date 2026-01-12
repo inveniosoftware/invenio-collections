@@ -22,7 +22,7 @@ def test_create(app, db, community):
 
     collection = Collection.create(
         title="My Collection",
-        query="*:*",
+        search_query="*:*",
         slug="my-collection",
         ctree=tree,
     )
@@ -35,7 +35,7 @@ def test_create(app, db, community):
     # Use collection tree id
     collection = Collection.create(
         title="My Collection 2",
-        query="*:*",
+        search_query="*:*",
         slug="my-collection-2",
         ctree=tree.id,
     )
@@ -57,7 +57,7 @@ def test_resolve(app, db, community):
 
     collection = Collection.create(
         title="My Collection",
-        query="*:*",
+        search_query="*:*",
         slug="my-collection",
         ctree=tree,
     )
@@ -80,13 +80,13 @@ def test_query_build(app, db):
     )
     c1 = Collection.create(
         title="My Collection",
-        query="metadata.title:hello",
+        search_query="metadata.title:hello",
         slug="my-collection",
         ctree=tree,
     )
     c2 = Collection.create(
         title="My Collection 2",
-        query="metadata.creators.name:john",
+        search_query="metadata.creators.name:john",
         slug="my-collection-2",
         parent=c1,
     )
@@ -102,19 +102,19 @@ def test_children(app, db):
     )
     c1 = Collection.create(
         title="My Collection",
-        query="*:*",
+        search_query="*:*",
         slug="my-collection",
         ctree=tree,
     )
     c2 = Collection.create(
         title="My Collection 2",
-        query="*:*",
+        search_query="*:*",
         slug="my-collection-2",
         parent=c1,
     )
     c3 = Collection.create(
         title="My Collection 3",
-        query="*:*",
+        search_query="*:*",
         slug="my-collection-3",
         parent=c2,
     )
