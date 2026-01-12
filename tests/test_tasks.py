@@ -23,7 +23,7 @@ def test_update_collections_size(app, db, record_factory, minimal_record, commun
 
     collection = Collection.create(
         title="My Collection",
-        query="metadata.title:foo",
+        search_query="metadata.title:foo",
         slug="my-collection",
         ctree=tree,
     )

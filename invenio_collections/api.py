@@ -6,11 +6,12 @@
 # it under the terms of the MIT License; see LICENSE file for more details.
 """Collections programmatic API."""
 
+from invenio_db import db
 from invenio_records.systemfields import ModelField
-from luqum.parser import parser as luqum_parser
+from invenio_search.engine import dsl
 from werkzeug.utils import cached_property
 
-from .errors import CollectionNotFound, CollectionTreeNotFound, InvalidQuery
+from .errors import CollectionNotFound, CollectionTreeNotFound
 from .models import Collection as CollectionModel
 from .models import CollectionTree as CollectionTreeModel
 
@@ -36,15 +37,9 @@ class Collection:
         self.max_depth = max_depth
 
     @classmethod
-    def validate_query(cls, query):
-        """Validate the collection query."""
-        try:
-            luqum_parser.parse(query)
-        except Exception:
-            raise InvalidQuery()
-
-    @classmethod
-    def create(cls, slug, title, query, ctree=None, parent=None, order=None, depth=2):
+    def create(
+        cls, slug, title, search_query, ctree=None, parent=None, order=None, depth=2
+    ):
         """Create a new collection."""
         _ctree = None
         if parent:
@@ -56,13 +51,12 @@ class Collection:
         else:
             raise ValueError("Either parent or ctree must be set.")
 
-        Collection.validate_query(query)
         return cls(
             cls.model_cls.create(
                 slug=slug,
                 path=path,
                 title=title,
-                search_query=query,
+                search_query=search_query,
                 order=order,
                 ctree_or_id=_ctree,
             ),
@@ -101,15 +95,22 @@ class Collection:
 
     def update(self, **kwargs):
         """Update the collection."""
-        if "search_query" in kwargs:
-            Collection.validate_query(kwargs["search_query"])
         self.model.update(**kwargs)
         return self
 
-    def add(self, slug, title, query, order=None, depth=2):
+    def add_test_query(self, search_query):
+        """Add another search_query to existing collection search_query so it can be tested."""
+        return self.query & dsl.Q("query_string", query=search_query)
+
+    def add(self, slug, title, search_query, order=None, depth=2):
         """Add a subcollection to the collection."""
         return self.create(
-            slug=slug, title=title, query=query, parent=self, order=order, depth=depth
+            slug=slug,
+            title=title,
+            search_query=search_query,
+            parent=self,
+            order=order,
+            depth=depth,
         )
 
     @property
@@ -231,19 +232,29 @@ class CollectionTree:
         )
 
     @classmethod
-    def resolve(cls, id_=None, slug=None, community_id=None):
+    def resolve(cls, id_=None, slug=None, community_id=None, depth=2):
         """Resolve a CollectionTree."""
         res = None
         if id_:
-            res = cls(cls.model_cls.get(id_))
+            res = cls(cls.model_cls.get(id_), max_depth=depth)
         elif slug and community_id:
-            res = cls(cls.model_cls.get_by_slug(slug, community_id))
+            res = cls(cls.model_cls.get_by_slug(slug, community_id), max_depth=depth)
         else:
             raise ValueError("Either ID or slug and community ID must be provided.")
 
         if res.model is None:
             raise CollectionTreeNotFound()
         return res
+
+    def update(self, **kwargs):
+        """Update the collection tree."""
+        self.model.update(**kwargs)
+        return self
+
+    def delete_all_collections(self):
+        """Delete all collections under the tree, AKA cascade."""
+        for collection in self.collections:
+            db.session.delete(collection.model)
 
     @cached_property
     def collections(self):

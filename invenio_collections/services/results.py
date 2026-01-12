@@ -40,7 +40,7 @@ class CollectionItem(ServiceItemResult):
                     "slug": "root",
                     "depth": 0,
                     "order": 1,
-                    "query": "",
+                    "search_query": "",
                     "num_records": 0,
                     "children": [2],
                     "links": {
@@ -54,7 +54,7 @@ class CollectionItem(ServiceItemResult):
                     "slug": "subcollection",
                     "depth": 1,
                     "order": 1,
-                    "query": "",
+                    "search_query": "",
                     "num_records": 0,
                     "children": [],
                     "links": {
@@ -149,44 +149,41 @@ class CollectionList(ServiceListResult):
         )
 
 
-class CollectionTreeItem:
+class CollectionTreeItem(ServiceItemResult):
     """Collection tree item."""
 
-    def __init__(self, identity, tree, collection_link_tpl, collection_schema):
+    def __init__(self, identity, tree, links_item_tpl, schema, collection_schema):
         """Instantiate a Collection tree object."""
         self._identity = identity
         self._tree = tree
-        self._collection_link_tpl = collection_link_tpl
+        self._links_item_tpl = links_item_tpl
+        self._schema = schema
         self._collection_schema = collection_schema
 
     def to_dict(self):
         """Serialize the collection tree to a dictionary."""
-        return {
-            "title": self._tree.title,
-            "slug": self._tree.slug,
-            "community_id": str(self._tree.community_id),
-            "order": self._tree.order,
-            "id": self._tree.id,
-            "collections": [
-                CollectionItem(
-                    self._identity,
-                    c,
-                    self._collection_schema,
-                    self._collection_link_tpl,
-                ).to_dict()
-                for c in self._tree.collections
-            ],
-        }
+        res = self._schema.dump(self._tree, context={"identity": self._identity})
+        res["collections"] = [
+            CollectionItem(
+                self._identity,
+                c,
+                self._collection_schema,
+                self._links_item_tpl,
+            ).to_dict()
+            for c in self._tree.collections
+        ]
+        return res
 
 
 class CollectionTreeList:
     """Collection tree list item."""
 
-    def __init__(self, identity, trees, collection_schema, collection_link_tpl):
+    def __init__(self, identity, trees, links_item_tpl, tree_schema, collection_schema):
         """Instantiate a Collection tree list item."""
         self._identity = identity
         self._trees = trees
-        self._collection_link_tpl = collection_link_tpl
+        self._links_item_tpl = links_item_tpl
+        self._tree_schema = tree_schema
         self._collection_schema = collection_schema
 
     def to_dict(self):
@@ -197,8 +194,9 @@ class CollectionTreeList:
             res[tree.id] = CollectionTreeItem(
                 self._identity,
                 tree,
+                self._links_item_tpl,
+                self._tree_schema,
                 self._collection_schema,
-                self._collection_link_tpl,
             ).to_dict()
         return res
 

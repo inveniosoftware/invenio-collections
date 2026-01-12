@@ -12,8 +12,9 @@ from invenio_records_resources.services import EndpointLink
 from invenio_records_resources.services.base import ServiceConfig
 from invenio_records_resources.services.base.config import ConfiguratorMixin, FromConfig
 
+from ..api import Collection, CollectionTree
 from .results import CollectionItem, CollectionList
-from .schema import CollectionSchema
+from .schema import CollectionSchema, CollectionTreeSchema
 
 
 class CollectionServiceConfig(ServiceConfig, ConfiguratorMixin):
@@ -26,6 +27,9 @@ class CollectionServiceConfig(ServiceConfig, ConfiguratorMixin):
         "COMMUNITIES_PERMISSION_POLICY", default=CommunityPermissionPolicy
     )
     schema = CollectionSchema
+    collection_cls = Collection
+    collection_tree_cls = CollectionTree
+    tree_schema = CollectionTreeSchema
 
     links_item = {
         "search": EndpointLink(

@@ -25,3 +25,15 @@ class InvalidQuery(CollectionError):
 
 class LogoNotFoundError(CollectionError):
     """Logo not found error."""
+
+
+class CollectionTreeHasCollections(CollectionError):
+    """Collection tree contains collections."""
+
+
+class CollectionHasChildren(CollectionError):
+    """Collection has children collections."""
+
+
+class DuplicateSlugError(CollectionError):
+    """Slug already exists in this context."""
