@@ -9,6 +9,7 @@
 from celery import shared_task
 from flask import current_app
 from invenio_access.permissions import system_identity
+from invenio_db import db
 
 from .proxies import current_collections
 
@@ -24,8 +25,8 @@ def update_collections_size():
             res = collections_service.search_collection_records(
                 system_identity, collection
             )
-            collections_service.update(
-                system_identity, collection, data={"num_records": res.total}
-            )
+            # Update num_records directly on the model since it's dump_only in schema
+            collection.update(num_records=res.total)
+            db.session.commit()
         except Exception as e:
             current_app.logger.exception(str(e))

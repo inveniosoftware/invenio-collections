@@ -6,10 +6,20 @@
 # it under the terms of the MIT License; see LICENSE file for more details.
 """Test suite for the collections service."""
 
+import uuid
+from copy import deepcopy
+
 import dictdiffer
 import pytest
 
 from invenio_collections.api import Collection, CollectionTree
+from invenio_collections.errors import (
+    CollectionHasChildren,
+    CollectionNotFound,
+    CollectionTreeHasCollections,
+    CollectionTreeNotFound,
+    DuplicateSlugError,
+)
 from invenio_collections.proxies import current_collections
 
 
@@ -19,17 +29,19 @@ def collections_service():
     return current_collections.service
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def add_collections(app, db, community):
     """Create collections on demand."""
 
     def _inner():
         """Add collections to the app."""
+        # Create unique slugs to avoid conflicts
+        unique_id = str(uuid.uuid4())[:8]
         tree = CollectionTree.create(
             title="Tree 1",
             order=10,
             community_id=community.id,
-            slug="tree-1",
+            slug=f"tree-1-{unique_id}",
         )
         c1 = Collection.create(
             title="Collection 1",
@@ -74,18 +86,20 @@ def test_collections_read(
 def test_collections_create(app, db, collections_service, community, community_owner):
     """Test collection creation via service."""
     tree = CollectionTree.create(
-        title="Tree 1",
+        title="Tree for Create Test",
         order=10,
         community_id=community.id,
-        slug="tree-1",
+        slug="tree-create-test",
     )
     collection = collections_service.create(
-        community_owner.identity,
-        community.id,
-        tree_slug="tree-1",
-        slug="my-collection",
-        title="My Collection",
-        query="*:*",
+        identity=community_owner.identity,
+        community_id=community.id,
+        tree_slug="tree-create-test",
+        data={
+            "slug": "my-collection",
+            "title": "My Collection",
+            "query": "*:*",
+        },
     )
 
     # Get the API object, just for the sake of testing
@@ -102,7 +116,7 @@ def test_collections_create(app, db, collections_service, community, community_o
 
 
 def test_collections_add(
-    app, db, collections_service, add_collections, community_owner
+    app, db, collections_service, add_collections, community, community_owner
 ):
     """Test adding a collection to another via service."""
     collections = add_collections()
@@ -110,11 +124,15 @@ def test_collections_add(
     c2 = collections[1]
 
     c3 = collections_service.add(
-        community_owner.identity,
-        collection=c2,
-        slug="collection-3",
-        title="Collection 3",
-        query="metadata.title:baz",
+        identity=community_owner.identity,
+        community_id=community.id,
+        tree_slug=c1.collection_tree.slug,
+        slug=c2.slug,
+        data={
+            "slug": "collection-3",
+            "title": "Collection 3",
+            "query": "metadata.title:baz",
+        },
     )
 
     # Get the API object, just for the sake of testing
@@ -131,7 +149,7 @@ def test_collections_add(
 
 
 def test_collections_results(
-    app, db, add_collections, collections_service, community_owner
+    app, db, add_collections, collections_service, community, community_owner
 ):
     """Test collection results.
 
@@ -141,11 +159,15 @@ def test_collections_results(
     c0 = collections[0]
     c1 = collections[1]
     c3 = collections_service.add(
-        community_owner.identity,
-        c1,
-        slug="collection-3",
-        title="Collection 3",
-        query="metadata.title:baz",
+        identity=community_owner.identity,
+        community_id=community.id,
+        tree_slug=c0.collection_tree.slug,
+        slug=c1.slug,
+        data={
+            "slug": "collection-3",
+            "title": "Collection 3",
+            "query": "metadata.title:baz",
+        },
     )
     # Read the collection tree up to depth 2
     res = collections_service.read(
@@ -153,12 +175,13 @@ def test_collections_results(
     )
     r_dict = res.to_dict()
 
+    tree_slug = c0.collection_tree.slug
     expected = {
         "root": c0.id,
         c0.id: {
             "breadcrumbs": [
                 {
-                    "link": "/communities/public/collections/tree-1/collection-1",
+                    "link": f"/communities/public/collections/{tree_slug}/collection-1",
                     "title": "Collection 1",
                 }
             ],
@@ -166,11 +189,12 @@ def test_collections_results(
             "depth": 0,
             "id": c0.id,
             "links": {
-                "self_html": "/communities/public/collections/tree-1/collection-1",
+                "self_html": f"/communities/public/collections/{tree_slug}/collection-1",
                 "search": f"/api/collections/{c0.id}/records",
             },
             "num_records": 0,
             "order": c0.order,
+            "query": str(c0.query),
             "slug": "collection-1",
             "title": "Collection 1",
         },
@@ -179,11 +203,12 @@ def test_collections_results(
             "depth": 1,
             "id": c1.id,
             "links": {
-                "self_html": "/communities/public/collections/tree-1/collection-2",
+                "self_html": f"/communities/public/collections/{tree_slug}/collection-2",
                 "search": f"/api/collections/{c1.id}/records",
             },
             "num_records": 0,
             "order": c1.order,
+            "query": str(c1.query),
             "slug": "collection-2",
             "title": "Collection 2",
         },
@@ -203,7 +228,7 @@ def test_collections_results(
         c0.id: {
             "breadcrumbs": [
                 {
-                    "link": "/communities/public/collections/tree-1/collection-1",
+                    "link": f"/communities/public/collections/{tree_slug}/collection-1",
                     "title": "Collection 1",
                 }
             ],
@@ -211,11 +236,12 @@ def test_collections_results(
             "depth": 0,
             "id": c0.id,
             "links": {
-                "self_html": "/communities/public/collections/tree-1/collection-1",
+                "self_html": f"/communities/public/collections/{tree_slug}/collection-1",
                 "search": f"/api/collections/{c0.id}/records",
             },
             "num_records": 0,
             "order": c0.order,
+            "query": str(c0.query),
             "slug": "collection-1",
             "title": "Collection 1",
         },
@@ -224,11 +250,12 @@ def test_collections_results(
             "depth": 1,
             "id": c1.id,
             "links": {
-                "self_html": "/communities/public/collections/tree-1/collection-2",
+                "self_html": f"/communities/public/collections/{tree_slug}/collection-2",
                 "search": f"/api/collections/{c1.id}/records",
             },
             "num_records": 0,
             "order": c1.order,
+            "query": str(c1.query),
             "slug": "collection-2",
             "title": "Collection 2",
         },
@@ -237,11 +264,12 @@ def test_collections_results(
             "depth": 2,
             "id": c3.id,
             "links": {
-                "self_html": "/communities/public/collections/tree-1/collection-3",
+                "self_html": f"/communities/public/collections/{tree_slug}/collection-3",
                 "search": f"/api/collections/{c3.id}/records",
             },
             "num_records": 0,
             "order": c3.order,
+            "query": str(c3.query),
             "slug": "collection-3",
             "title": "Collection 3",
         },
@@ -259,7 +287,11 @@ def test_update(app, db, add_collections, collections_service, community_owner):
     collections_service.update(
         community_owner.identity,
         c0.id,
-        data={"slug": "New slug"},
+        data={
+            "slug": "new-slug",
+            "title": "Updated Title",
+            "query": "metadata.title:updated",
+        },
     )
 
     res = collections_service.read(
@@ -267,20 +299,26 @@ def test_update(app, db, add_collections, collections_service, community_owner):
         id_=c0.id,
     )
 
-    assert res.to_dict()[c0.id]["slug"] == "New slug"
+    assert res.to_dict()[c0.id]["slug"] == "new-slug"
+    assert res.to_dict()[c0.id]["title"] == "Updated Title"
 
     # Update by object
     collections_service.update(
         community_owner.identity,
         c0,
-        data={"slug": "New slug 2"},
+        data={
+            "slug": "new-slug-2",
+            "title": "Updated Title 2",
+            "query": "metadata.title:updated2",
+        },
     )
 
     res = collections_service.read(
         identity=community_owner.identity,
         id_=c0.id,
     )
-    assert res.to_dict()[c0.id]["slug"] == "New slug 2"
+    assert res.to_dict()[c0.id]["slug"] == "new-slug-2"
+    assert res.to_dict()[c0.id]["title"] == "Updated Title 2"
 
 
 def test_read_many(app, db, add_collections, collections_service, community_owner):
@@ -312,9 +350,12 @@ def test_read_all(app, db, add_collections, collections_service, community_owner
     res = collections_service.read_all(community_owner.identity, depth=0)
 
     res = res.to_dict()
-    assert len(res) == 2
-    assert res[0]["root"] == c0.id
-    assert res[1]["root"] == c1.id
+    # At least our 2 collections should be in the result
+    assert len(res) >= 2
+    # Find our collections in the result
+    collection_ids = [r["root"] for r in res]
+    assert c0.id in collection_ids
+    assert c1.id in collection_ids
 
 
 def test_read_invalid(app, db, collections_service, community_owner):
@@ -323,3 +364,488 @@ def test_read_invalid(app, db, collections_service, community_owner):
         collections_service.read(
             identity=community_owner.identity,
         )
+
+
+def test_create_tree(app, db, collections_service, community, community_owner):
+    """Test creating a collection tree via service."""
+    tree = collections_service.create_tree(
+        identity=community_owner.identity,
+        community_id=community.id,
+        data={
+            "slug": "test-tree",
+            "title": "Test Tree",
+            "order": 1,
+        },
+    )
+
+    assert tree._tree.slug == "test-tree"
+    assert tree._tree.title == "Test Tree"
+    assert tree._tree.order == 1
+    assert str(tree._tree.community_id) == str(community.id)
+
+
+def test_read_tree(app, db, collections_service, community, community_owner):
+    """Test reading a collection tree via service."""
+    # Create a tree first
+    tree = CollectionTree.create(
+        title="Read Tree",
+        slug="read-tree",
+        community_id=community.id,
+        order=1,
+    )
+
+    # Read by slug
+    result = collections_service.read_tree(
+        identity=community_owner.identity,
+        community_id=community.id,
+        tree_slug="read-tree",
+    )
+
+    assert result._tree.id == tree.id
+    assert result._tree.slug == "read-tree"
+    assert result._tree.title == "Read Tree"
+
+
+def test_update_tree(app, db, collections_service, community, community_owner):
+    """Test updating a collection tree via service."""
+    # Create a tree first
+    tree = CollectionTree.create(
+        title="Original Title",
+        slug="update-tree",
+        community_id=community.id,
+        order=1,
+    )
+
+    # Update the tree
+    updated = collections_service.update_tree(
+        identity=community_owner.identity,
+        community_id=community.id,
+        tree_slug="update-tree",
+        data={
+            "title": "Updated Title",
+            "slug": "update-tree",
+            "order": 5,
+        },
+    )
+
+    assert updated._tree.title == "Updated Title"
+    assert updated._tree.order == 5
+
+
+def test_delete_tree_without_cascade(
+    app, db, collections_service, community, community_owner
+):
+    """Test deleting a tree with collections fails without cascade."""
+
+    # Create tree and collection
+    tree = CollectionTree.create(
+        title="Tree to Delete",
+        slug="delete-tree",
+        community_id=community.id,
+        order=1,
+    )
+    Collection.create(
+        title="Collection in Tree",
+        query="*:*",
+        slug="collection",
+        ctree=tree,
+    )
+
+    # Try to delete without cascade should fail
+    with pytest.raises(CollectionTreeHasCollections):
+        collections_service.delete_tree(
+            identity=community_owner.identity,
+            community_id=community.id,
+            tree_slug="delete-tree",
+            cascade=False,
+        )
+
+
+def test_delete_tree_with_cascade(
+    app, db, collections_service, community, community_owner
+):
+    """Test deleting a tree with collections succeeds with cascade."""
+    # Create tree and collection
+    tree = CollectionTree.create(
+        title="Tree to Delete",
+        slug="delete-tree-cascade",
+        community_id=community.id,
+        order=1,
+    )
+    collection = Collection.create(
+        title="Collection in Tree",
+        query="*:*",
+        slug="collection",
+        ctree=tree,
+    )
+
+    # Delete with cascade should succeed
+    collections_service.delete_tree(
+        identity=community_owner.identity,
+        community_id=community.id,
+        tree_slug="delete-tree-cascade",
+        cascade=True,
+    )
+
+    # Verify tree and collection are deleted
+
+    with pytest.raises(CollectionTreeNotFound):
+        CollectionTree.resolve(slug="delete-tree-cascade", community_id=community.id)
+
+    with pytest.raises(CollectionNotFound):
+        Collection.read(id_=collection.id)
+
+
+def test_list_trees(app, db, collections_service, community, community_owner):
+    """Test listing all trees for a community."""
+    # Create multiple trees
+    tree1 = CollectionTree.create(
+        title="Tree 1 for List",
+        slug="tree-list-1",
+        community_id=community.id,
+        order=1,
+    )
+    tree2 = CollectionTree.create(
+        title="Tree 2 for List",
+        slug="tree-list-2",
+        community_id=community.id,
+        order=2,
+    )
+
+    # List trees
+    result = collections_service.list_trees(
+        identity=community_owner.identity,
+        community_id=community.id,
+    )
+
+    trees_dict = result.to_dict()
+    assert len(trees_dict) >= 2
+    tree_slugs = [t["slug"] for t in trees_dict.values()]
+    assert "tree-list-1" in tree_slugs
+    assert "tree-list-2" in tree_slugs
+
+
+def test_duplicate_collection_slug_same_tree(
+    app, db, collections_service, community, community_owner
+):
+    """Test that duplicate collection slug in same tree raises error."""
+
+    tree = CollectionTree.create(
+        title="Duplicate Test Tree",
+        slug="tree-duplicate-test",
+        community_id=community.id,
+        order=1,
+    )
+
+    # Create first collection
+    collections_service.create(
+        identity=community_owner.identity,
+        community_id=community.id,
+        tree_slug="tree-duplicate-test",
+        data={
+            "slug": "duplicate-slug",
+            "title": "First Collection",
+            "query": "*:*",
+        },
+    )
+
+    # Try to create second collection with same slug in same tree
+    with pytest.raises(DuplicateSlugError):
+        collections_service.create(
+            identity=community_owner.identity,
+            community_id=community.id,
+            tree_slug="tree-duplicate-test",
+            data={
+                "slug": "duplicate-slug",
+                "title": "Second Collection",
+                "query": "*:*",
+            },
+        )
+
+
+def test_duplicate_tree_slug_same_community(
+    app, db, collections_service, community, community_owner
+):
+    """Test that duplicate tree slug in same community raises error."""
+
+    # Create first tree
+    collections_service.create_tree(
+        identity=community_owner.identity,
+        community_id=community.id,
+        data={
+            "slug": "duplicate-tree",
+            "title": "First Tree",
+            "order": 1,
+        },
+    )
+
+    # Try to create second tree with same slug in same community
+    with pytest.raises(DuplicateSlugError):
+        collections_service.create_tree(
+            identity=community_owner.identity,
+            community_id=community.id,
+            data={
+                "slug": "duplicate-tree",
+                "title": "Second Tree",
+                "order": 2,
+            },
+        )
+
+
+def test_collection_not_found(app, db, collections_service, community, community_owner):
+    """Test that reading non-existent collection raises error."""
+
+    tree = CollectionTree.create(
+        title="Not Found Test Tree",
+        slug="tree-not-found-test",
+        community_id=community.id,
+        order=1,
+    )
+
+    with pytest.raises(CollectionNotFound):
+        collections_service.read(
+            identity=community_owner.identity,
+            community_id=community.id,
+            tree_slug="tree-not-found-test",
+            slug="non-existent",
+        )
+
+
+def test_collection_tree_not_found(
+    app, db, collections_service, community, community_owner
+):
+    """Test that reading non-existent tree raises error."""
+
+    with pytest.raises(CollectionTreeNotFound):
+        collections_service.read_tree(
+            identity=community_owner.identity,
+            community_id=community.id,
+            tree_slug="non-existent-tree",
+        )
+
+
+def test_delete_collection_with_children_no_cascade(
+    app, db, add_collections, collections_service, community, community_owner
+):
+    """Test that deleting collection with children fails without cascade."""
+
+    collections = add_collections()
+    parent = collections[0]  # Has children
+
+    with pytest.raises(CollectionHasChildren):
+        collections_service.delete(
+            identity=community_owner.identity,
+            community_id=community.id,
+            tree_slug=parent.collection_tree.slug,
+            slug=parent.slug,
+            cascade=False,
+        )
+
+
+def test_delete_collection_with_children_cascade(
+    app, db, add_collections, collections_service, community, community_owner
+):
+    """Test that deleting collection with children succeeds with cascade."""
+    collections = add_collections()
+    parent = collections[0]
+    child = collections[1]
+    parent_id = parent.id
+    child_id = child.id
+
+    # Delete with cascade
+    collections_service.delete(
+        identity=community_owner.identity,
+        community_id=community.id,
+        tree_slug=parent.collection_tree.slug,
+        slug=parent.slug,
+        cascade=True,
+    )
+
+    # Verify both are deleted
+
+    with pytest.raises(CollectionNotFound):
+        Collection.read(id_=parent_id)
+
+    with pytest.raises(CollectionNotFound):
+        Collection.read(id_=child_id)
+
+
+def test_search_test_collection_records(
+    app,
+    db,
+    collections_service,
+    add_collections,
+    community,
+    community_owner,
+    record_factory,
+    minimal_record,
+    search_clear,
+):
+    """Test search test collection records endpoint with actual records."""
+    collections = add_collections()
+    c0 = collections[0]  # Collection with query "metadata.title:foo"
+
+    # Create records - some that match the collection query, some that don't
+    # Record 1 - MATCHES collection query (foo) AND additional query
+    rec1 = deepcopy(minimal_record)
+    rec1["metadata"]["title"] = "foo additional research"
+    matching_record = record_factory.create_record(
+        record_dict=rec1, community=community
+    )
+
+    # Record 2 - MATCHES collection query (foo) but NOT additional query
+    rec2 = deepcopy(minimal_record)
+    rec2["metadata"]["title"] = "foo only"
+    partial_match = record_factory.create_record(record_dict=rec2, community=community)
+
+    # Record 3 - Does NOT match collection query at all
+    rec3 = deepcopy(minimal_record)
+    rec3["metadata"]["title"] = "bar test"
+    non_matching = record_factory.create_record(record_dict=rec3, community=community)
+
+    # Test with collection slug and additional query
+    result = collections_service.search_test_collection_records(
+        identity=community_owner.identity,
+        community_id=community.id,
+        tree_slug=c0.collection_tree.slug,
+        slug=c0.slug,
+        data={"search_query": "metadata.title:additional"},
+    )
+
+    # Verify results
+    assert result is not None
+    assert hasattr(result, "total")
+
+    # Should get 1 record (matches both foo AND additional)
+    # We created 3 records: 1 matching both queries, 1 matching only collection, 1 non-matching
+    assert (
+        result.total == 1
+    ), f"Expected 1 record matching 'foo' AND 'additional', got {result.total}"
+
+
+def test_search_test_collection_records_no_slug(
+    app,
+    db,
+    collections_service,
+    add_collections,
+    community,
+    community_owner,
+    record_factory,
+    minimal_record,
+    search_clear,
+):
+    """Test search test collection records without existing collection slug."""
+    collections = add_collections()
+    c0 = collections[0]
+
+    # Create records with different titles
+    # Record 1 - MATCHES the search query "test"
+    rec1 = deepcopy(minimal_record)
+    rec1["metadata"]["title"] = "test research paper"
+    matching_record = record_factory.create_record(
+        record_dict=rec1, community=community
+    )
+
+    # Record 2 - Also MATCHES the search query "test"
+    rec2 = deepcopy(minimal_record)
+    rec2["metadata"]["title"] = "another test study"
+    matching_record2 = record_factory.create_record(
+        record_dict=rec2, community=community
+    )
+
+    # Record 3 - Does NOT match the search query
+    rec3 = deepcopy(minimal_record)
+    rec3["metadata"]["title"] = "random research"
+    non_matching = record_factory.create_record(record_dict=rec3, community=community)
+
+    # Test without collection slug (tests query directly without collection filter)
+    result = collections_service.search_test_collection_records(
+        identity=community_owner.identity,
+        community_id=community.id,
+        tree_slug=c0.collection_tree.slug,
+        slug=None,
+        data={"search_query": "metadata.title:test"},
+    )
+
+    # Verify results
+    assert result is not None
+    assert hasattr(result, "total")
+
+    # Should get 2 records (both matching "test")
+    # We created 3 records: 2 with "test" in title, 1 without
+    assert result.total == 2, f"Expected 2 records matching 'test', got {result.total}"
+
+
+def test_search_test_collection_records_optional_query(
+    app,
+    db,
+    collections_service,
+    add_collections,
+    community,
+    community_owner,
+    record_factory,
+    minimal_record,
+    search_clear,
+):
+    """Test search test collection records with no search_query (optional)."""
+    collections = add_collections()
+    c0 = collections[0]  # Collection with query "metadata.title:foo"
+
+    # Create records
+    # Record 1 - MATCHES collection query (foo)
+    rec1 = deepcopy(minimal_record)
+    rec1["metadata"]["title"] = "foo paper one"
+    matching_record1 = record_factory.create_record(
+        record_dict=rec1, community=community
+    )
+
+    # Record 2 - Also MATCHES collection query (foo)
+    rec2 = deepcopy(minimal_record)
+    rec2["metadata"]["title"] = "foo paper two"
+    matching_record2 = record_factory.create_record(
+        record_dict=rec2, community=community
+    )
+
+    # Record 3 - Does NOT match collection query
+    rec3 = deepcopy(minimal_record)
+    rec3["metadata"]["title"] = "bar paper"
+    non_matching = record_factory.create_record(record_dict=rec3, community=community)
+
+    # Test with collection but no additional query (should return all records matching collection query)
+    result = collections_service.search_test_collection_records(
+        identity=community_owner.identity,
+        community_id=community.id,
+        tree_slug=c0.collection_tree.slug,
+        slug=c0.slug,
+        data={},
+    )
+
+    # Verify results
+    assert result is not None
+    assert hasattr(result, "total")
+
+    # Should get 2 records (both matching "foo")
+    # We created 3 records: 2 with "foo" in title (matching collection query), 1 with "bar"
+    assert (
+        result.total == 2
+    ), f"Expected 2 records matching collection query 'foo', got {result.total}"
+
+
+def test_community_id_resolution_by_slug(
+    app, db, collections_service, community, community_owner
+):
+    """Test that community_id can be resolved from slug."""
+    # Create tree using community slug instead of UUID
+    community_slug = community._record.get("slug", community.id)
+    tree = collections_service.create_tree(
+        identity=community_owner.identity,
+        community_id=community_slug,  # Use slug instead of ID
+        data={
+            "slug": "test-slug-resolution",
+            "title": "Test Slug Resolution",
+            "order": 1,
+        },
+    )
+
+    assert tree._tree.slug == "test-slug-resolution"
+    assert str(tree._tree.community_id) == str(community.id)

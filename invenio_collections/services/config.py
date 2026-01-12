@@ -11,9 +11,10 @@ from invenio_records_resources.services import ConditionalLink
 from invenio_records_resources.services.base import ServiceConfig
 from invenio_records_resources.services.base.config import ConfiguratorMixin, FromConfig
 
+from ..api import Collection, CollectionTree
 from .links import CollectionLink
 from .results import CollectionItem, CollectionList
-from .schema import CollectionSchema
+from .schema import CollectionSchema, CollectionTreeSchema
 
 
 class CollectionServiceConfig(ServiceConfig, ConfiguratorMixin):
@@ -26,6 +27,9 @@ class CollectionServiceConfig(ServiceConfig, ConfiguratorMixin):
         "COMMUNITIES_PERMISSION_POLICY", default=CommunityPermissionPolicy
     )
     schema = CollectionSchema
+    collection_cls = Collection
+    collection_tree_cls = CollectionTree
+    tree_schema = CollectionTreeSchema
 
     # TODO here to switchover to the new invenio_url_for-based style of links.
     links_item = {
