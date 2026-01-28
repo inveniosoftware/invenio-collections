@@ -26,6 +26,7 @@ from ..errors import (
     CollectionTreeHasCollections,
     CollectionTreeNotFound,
     DuplicateSlugError,
+    MaxDepthExceeded,
 )
 
 
@@ -43,6 +44,8 @@ class CollectionsResourceConfig(ResourceConfig, ConfiguratorMixin):
         "list-tree-collections-test-records": "/communities/<pid_value>/collection-trees/<tree_slug>/collections-records-test",
         "collection-item": "/communities/<pid_value>/collection-trees/<tree_slug>/collections/<col_slug>",
         "collection-records": "/communities/<pid_value>/collection-trees/<tree_slug>/collections/<col_slug>/records",
+        "reorder-trees": "/communities/<pid_value>/collection-trees/reorder",
+        "reorder-collections": "/communities/<pid_value>/collection-trees/<tree_slug>/collections/reorder",
     }
 
     request_view_args = {
@@ -82,6 +85,12 @@ class CollectionsResourceConfig(ResourceConfig, ConfiguratorMixin):
             HTTPJSONException(
                 code=409,
                 description="A collection with this slug already exists in this context.",
+            )
+        ),
+        MaxDepthExceeded: create_error_handler(
+            lambda e: HTTPJSONException(
+                code=400,
+                description=str(e),
             )
         ),
     }
