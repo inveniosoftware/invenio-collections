@@ -37,3 +37,16 @@ class CollectionHasChildren(CollectionError):
 
 class DuplicateSlugError(CollectionError):
     """Slug already exists in this context."""
+
+
+class MaxDepthExceeded(CollectionError):
+    """Collection exceeds maximum allowed depth."""
+
+    def __init__(self, current_depth, max_depth):
+        """Initialize the error with depth information."""
+        self.current_depth = current_depth
+        self.max_depth = max_depth
+        super().__init__(
+            f"Cannot create collection at depth {current_depth + 1}. "
+            f"Maximum depth is {max_depth} (allowing depths 0-{max_depth})."
+        )

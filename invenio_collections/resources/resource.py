@@ -46,6 +46,8 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
             route("PUT", routes["collection-item"], self.update),
             route("DELETE", routes["collection-item"], self.delete),
             route("GET", routes["collection-records"], self.search_records_by_slug),
+            route("POST", routes["reorder-trees"], self.reorder_trees),
+            route("POST", routes["reorder-collections"], self.reorder_collections),
         ]
 
     @request_view_args
@@ -174,14 +176,14 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
 
     @request_data
     @request_view_args
+    @request_extra_args
     @request_search_args
     @response_handler(many=True)
     def search_base_test_records(self):
         """Search records for a collection tree with or without existing collections and new search query."""
-        # Extract test_col_slug and tree_id from args before passing to service
+        # Extract test_col_slug from extra args before passing to service
         args_dict = dict(resource_requestctx.args) if resource_requestctx.args else {}
         test_col_slug = args_dict.pop("test_col_slug", None)
-        tree_id = args_dict.pop("tree_id", None)
 
         records = self.service.search_test_collection_records(
             g.identity,
@@ -258,3 +260,26 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
             depth=resource_requestctx.args.get("depth", 2),
         )
         return result.to_dict(), 200
+
+    @request_data
+    @request_view_args
+    def reorder_trees(self):
+        """Batch reorder collection trees."""
+        result = self.service.reorder_trees(
+            identity=g.identity,
+            community_id=resource_requestctx.view_args["pid_value"],
+            data=resource_requestctx.data or {},
+        )
+        return result, 200
+
+    @request_data
+    @request_view_args
+    def reorder_collections(self):
+        """Batch reorder collections."""
+        result = self.service.reorder_collections(
+            identity=g.identity,
+            community_id=resource_requestctx.view_args["pid_value"],
+            tree_slug=resource_requestctx.view_args["tree_slug"],
+            data=resource_requestctx.data or {},
+        )
+        return result, 200

@@ -10,6 +10,7 @@ import os
 
 from flask import current_app, url_for
 from invenio_communities.communities.records.api import Community
+from invenio_db import db
 from invenio_db.uow import ModelDeleteOp
 from invenio_rdm_records.proxies import current_community_records_service
 from invenio_records_resources.services import (
@@ -19,14 +20,18 @@ from invenio_records_resources.services import (
 from invenio_records_resources.services.base import Service
 from invenio_records_resources.services.uow import ModelCommitOp, unit_of_work
 from invenio_search.engine import dsl
+from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 
 from ..api import Collection, CollectionTree
 from ..errors import (
     CollectionHasChildren,
+    CollectionNotFound,
     CollectionTreeHasCollections,
+    CollectionTreeNotFound,
     DuplicateSlugError,
     LogoNotFoundError,
+    MaxDepthExceeded,
 )
 from .results import (
     CollectionItem,
@@ -34,7 +39,7 @@ from .results import (
     CollectionTreeItem,
     CollectionTreeList,
 )
-from .schema import validate_search_query
+from .schema import BatchReorderSchema, validate_search_query
 
 
 class CollectionsService(Service):
@@ -152,6 +157,19 @@ class CollectionsService(Service):
         data, _ = self.collection_schema.load(
             data, context={"identity": identity}, raise_errors=True
         )
+
+        # Auto-calculate order if not provided
+        if data.get("order") is None:
+            # Get max order for root collections in this tree
+            max_order = (
+                db.session.query(func.max(Collection.model_cls.order))
+                .filter(
+                    Collection.model_cls.tree_id == ctree.id,
+                    Collection.model_cls.path == ","  # Root collections only
+                )
+                .scalar()
+            )
+            data["order"] = (max_order or 0) + 10
 
         collection = self.collection_cls.create(ctree=ctree, **data, **kwargs)
 
@@ -274,6 +292,25 @@ class CollectionsService(Service):
         )
 
         collection = self.collection_cls.read(slug=slug, ctree_id=ctree.id)
+
+        # Validate depth limit
+        max_depth = current_app.config.get("COMMUNITIES_COLLECTIONS_MAX_DEPTH", 1)
+        if collection.depth >= max_depth:
+            raise MaxDepthExceeded(collection.depth, max_depth)
+
+        # Auto-calculate order if not provided
+        if data.get("order") is None:
+            # Get max order for children of this parent
+            parent_path = f"{collection.path}{collection.id},"
+            max_order = (
+                db.session.query(func.max(Collection.model_cls.order))
+                .filter(
+                    Collection.model_cls.tree_id == ctree.id,
+                    Collection.model_cls.path == parent_path
+                )
+                .scalar()
+            )
+            data["order"] = (max_order or 0) + 10
 
         new_collection = self.collection_cls.create(parent=collection, **data, **kwargs)
 
@@ -550,6 +587,16 @@ class CollectionsService(Service):
             data, context={"identity": identity}, raise_errors=True
         )
 
+        # Auto-calculate order if not provided
+        if valid_data.get("order") is None:
+            # Get max order for trees in this community
+            max_order = (
+                db.session.query(func.max(CollectionTree.model_cls.order))
+                .filter(CollectionTree.model_cls.community_id == community_id)
+                .scalar()
+            )
+            valid_data["order"] = (max_order or 0) + 10
+
         item = self.collection_tree_cls.create(community_id=community_id, **valid_data)
         uow.register(ModelCommitOp(item.model))
 
@@ -634,3 +681,117 @@ class CollectionsService(Service):
         uow.register(ModelDeleteOp(ctree.model))
 
         return True
+
+    @unit_of_work()
+    def reorder_trees(self, identity, community_id, data, uow=None):
+        """Batch reorder collection trees.
+
+        Args:
+            identity: The identity of the user.
+            community_id: The community ID (required).
+            data: The reorder data containing list of {slug, order} items.
+            uow: Unit of work instance.
+
+        Returns:
+            dict: Response with updated count and items list.
+        """
+        community_id = self._resolve_community_id(community_id)
+
+        self.require_permission(identity, "update", community_id=community_id)
+
+        # Validate schema
+        valid_data = BatchReorderSchema().load(data)
+
+        # Update in transaction
+        updated = []
+        for item in valid_data["order"]:
+            tree_model = self.collection_tree_cls.model_cls.get_by_slug(item["slug"], community_id)
+
+            if not tree_model:
+                raise CollectionTreeNotFound(
+                    f"Collection tree '{item['slug']}' not found"
+                )
+
+            tree = self.collection_tree_cls(tree_model)
+            tree.update(order=item["order"])
+            updated.append(tree)
+
+        # Register all updated trees
+        for tree in updated:
+            uow.register(ModelCommitOp(tree.model))
+
+        # Return response
+        return {
+            "updated": len(updated),
+            "items": [
+                {
+                    "slug": tree.slug,
+                    "title": tree.title,
+                    "order": tree.order,
+                    "id": tree.id,
+                    "community_id": str(tree.community_id),
+                }
+                for tree in updated
+            ],
+        }
+
+    @unit_of_work()
+    def reorder_collections(
+        self, identity, community_id, tree_slug, data, uow=None
+    ):
+        """Batch reorder collections within a tree.
+
+        Args:
+            identity: The identity of the user.
+            community_id: The community ID (required).
+            tree_slug: The tree slug (required).
+            data: The reorder data containing list of {slug, order} items.
+            uow: Unit of work instance.
+
+        Returns:
+            dict: Response with updated count and items list.
+        """
+        community_id = self._resolve_community_id(community_id)
+
+        self.require_permission(identity, "update", community_id=community_id)
+
+        # Validate tree exists and get it as API object
+        try:
+            ctree = self.collection_tree_cls.resolve(
+                slug=tree_slug, community_id=community_id
+            )
+        except CollectionTreeNotFound:
+            raise CollectionTreeNotFound(f"Collection tree '{tree_slug}' not found")
+
+        # Validate schema
+        valid_data = BatchReorderSchema().load(data)
+
+        # Update in transaction
+        updated = []
+        for item in valid_data["order"]:
+            collection_model = Collection.model_cls.get_by_slug(item["slug"], ctree.id)
+
+            if not collection_model:
+                raise CollectionNotFound(f"Collection '{item['slug']}' not found")
+
+            collection = Collection(collection_model)
+            collection.update(order=item["order"])
+            updated.append(collection)
+
+        # Register all updated collections
+        for collection in updated:
+            uow.register(ModelCommitOp(collection.model))
+
+        # Return response
+        return {
+            "updated": len(updated),
+            "items": [
+                {
+                    "slug": collection.slug,
+                    "title": collection.title,
+                    "order": collection.order,
+                    "id": collection.id,
+                }
+                for collection in updated
+            ],
+        }

@@ -66,3 +66,23 @@ class CollectionSchema(Schema):
         required=True,
         validate=[validate_search_query],
     )
+
+
+class ReorderItemSchema(Schema):
+    """Schema for a single reorder item."""
+
+    slug = fields.Str(required=True)
+    order = fields.Int(
+        required=True,
+        validate=validate.Range(min=0, error=_("Order must be non-negative."))
+    )
+
+
+class BatchReorderSchema(Schema):
+    """Schema for batch reordering request."""
+
+    order = fields.List(
+        fields.Nested(ReorderItemSchema),
+        required=True,
+        validate=validate.Length(min=1, error=_("At least one item required."))
+    )
