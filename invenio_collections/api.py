@@ -98,8 +98,8 @@ class Collection:
         self.model.update(**kwargs)
         return self
 
-    def add_test_query(self, search_query):
-        """Add another search_query to existing collection search_query so it can be tested."""
+    def extend_query(self, search_query):
+        """Extend the collection's query with an additional search query constraint."""
         return self.query & dsl.Q("query_string", query=search_query)
 
     def add(self, slug, title, search_query, order=None, depth=2):
@@ -253,8 +253,12 @@ class CollectionTree:
 
     def delete_all_collections(self):
         """Delete all collections under the tree, AKA cascade."""
-        for collection in self.collections:
-            db.session.delete(collection.model)
+        # Get ALL collections in the tree, not just root collections
+        all_collections = CollectionModel.query.filter(
+            CollectionModel.tree_id == self.model.id
+        ).all()
+        for collection in all_collections:
+            db.session.delete(collection)
 
     @cached_property
     def collections(self):

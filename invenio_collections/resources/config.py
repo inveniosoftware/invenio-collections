@@ -26,7 +26,9 @@ from ..errors import (
     CollectionTreeHasCollections,
     CollectionTreeNotFound,
     DuplicateSlugError,
+    MaxCollectionsExceeded,
     MaxDepthExceeded,
+    MaxTreesExceeded,
 )
 
 
@@ -88,6 +90,18 @@ class CollectionsResourceConfig(ResourceConfig, ConfiguratorMixin):
             )
         ),
         MaxDepthExceeded: create_error_handler(
+            lambda e: HTTPJSONException(
+                code=400,
+                description=str(e),
+            )
+        ),
+        MaxTreesExceeded: create_error_handler(
+            lambda e: HTTPJSONException(
+                code=400,
+                description=str(e),
+            )
+        ),
+        MaxCollectionsExceeded: create_error_handler(
             lambda e: HTTPJSONException(
                 code=400,
                 description=str(e),
