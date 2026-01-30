@@ -21,19 +21,28 @@ def validate_search_query(query):
         raise ValidationError(str(e)) from e
 
 
+class SlugField(SanitizedUnicode):
+    """Reusable slug field with validation."""
+
+    def __init__(self, **kwargs):
+        """Initialize slug field with standard validation."""
+        super().__init__(
+            required=True,
+            validate=[
+                validate.Length(min=1, max=255),
+                validate.Regexp(
+                    r"^[\w-]+$",
+                    error=_("Slug: letters, numbers, underscores, or hyphens only."),
+                ),
+            ],
+            **kwargs,
+        )
+
+
 class CollectionTreeSchema(Schema):
     """Collection tree schema."""
 
-    slug = SanitizedUnicode(
-        required=True,
-        validate=[
-            validate.Length(min=1, max=255),
-            validate.Regexp(
-                r"^[\w-]+$",
-                error=_("Slug: letters, numbers, underscores, or hyphens only."),
-            ),
-        ],
-    )
+    slug = SlugField()
     title = SanitizedUnicode(required=True, validate=validate.Length(min=1, max=255))
     order = fields.Int(
         validate=validate.Range(min=0, error=_("Order must be non-negative."))
@@ -45,16 +54,7 @@ class CollectionTreeSchema(Schema):
 class CollectionSchema(Schema):
     """Collection schema."""
 
-    slug = SanitizedUnicode(
-        required=True,
-        validate=[
-            validate.Length(min=1, max=255),
-            validate.Regexp(
-                r"^[\w-]+$",
-                error=_("Slug: letters, numbers, underscores, or hyphens only."),
-            ),
-        ],
-    )
+    slug = SlugField()
     title = SanitizedUnicode(required=True, validate=validate.Length(min=1, max=255))
     depth = fields.Int(dump_only=True)
     order = fields.Int(
@@ -74,7 +74,7 @@ class ReorderItemSchema(Schema):
     slug = fields.Str(required=True)
     order = fields.Int(
         required=True,
-        validate=validate.Range(min=0, error=_("Order must be non-negative."))
+        validate=validate.Range(min=0, error=_("Order must be non-negative.")),
     )
 
 
@@ -84,5 +84,5 @@ class BatchReorderSchema(Schema):
     order = fields.List(
         fields.Nested(ReorderItemSchema),
         required=True,
-        validate=validate.Length(min=1, error=_("At least one item required."))
+        validate=validate.Length(min=1, error=_("At least one item required.")),
     )

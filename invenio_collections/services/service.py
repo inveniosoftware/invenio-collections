@@ -31,7 +31,9 @@ from ..errors import (
     CollectionTreeNotFound,
     DuplicateSlugError,
     LogoNotFoundError,
+    MaxCollectionsExceeded,
     MaxDepthExceeded,
+    MaxTreesExceeded,
 )
 from .results import (
     CollectionItem,
@@ -51,6 +53,20 @@ class CollectionsService(Service):
 
     collection_cls = Collection
 
+    def _resolve_community(self, community_id):
+        """Resolve community slug or UUID to Community record.
+
+        Args:
+            community_id: Either a community slug (string) or UUID (string/UUID object)
+
+        Returns:
+            Community: The resolved community record
+        """
+        if not community_id:
+            return None
+
+        return Community.pid.resolve(community_id)
+
     def _resolve_community_id(self, community_id):
         """Resolve community slug or UUID to UUID string.
 
@@ -63,14 +79,13 @@ class CollectionsService(Service):
         if not community_id:
             return None
 
-        # Resolve using Community.pid system field
-        community = Community.pid.resolve(community_id)
+        community = self._resolve_community(community_id)
         return str(community.id)
 
     def _resolve_tree_and_community(
         self, tree_id=None, tree_slug=None, community_id=None
     ):
-        """Resolve tree and community ID.
+        """Resolve tree, community record, and community ID.
 
         Resolves the collection tree using either tree_id or tree_slug+community_id.
         If community_id is not provided, it will be extracted from the resolved tree.
@@ -81,20 +96,76 @@ class CollectionsService(Service):
             community_id: The community ID (optional).
 
         Returns:
-            tuple: (tree, community_id) where community_id is guaranteed to be resolved
+            tuple: (tree, community_record, community_id) where community_id is guaranteed to be resolved
         """
+        # Resolve community if provided
+        community = None
         if community_id:
-            community_id = self._resolve_community_id(community_id)
+            community = self._resolve_community(community_id)
+            community_id = str(community.id)
 
         ctree = self.collection_tree_cls.resolve(
             id_=tree_id, slug=tree_slug, community_id=community_id
         )
 
-        # Get community_id from tree if not provided
-        if not community_id and ctree.community:
-            community_id = str(ctree.community.id)
+        # Get community from tree if not already resolved
+        if not community and ctree.community:
+            community = ctree.community  # tree.community is already a Community record
+            community_id = str(community.id)
 
-        return ctree, community_id
+        return ctree, community, community_id
+
+    def _validate_tree_limit(self, community_id):
+        """Validate that adding a new tree doesn't exceed the limit.
+
+        Args:
+            community_id: The community ID to check.
+
+        Raises:
+            MaxTreesExceeded: If the tree limit would be exceeded.
+        """
+        max_trees = current_app.config["COMMUNITIES_COLLECTIONS_MAX_TREES"]
+
+        # 0 means unlimited
+        if max_trees == 0:
+            return
+
+        # Count existing trees for this community
+        current_count = (
+            db.session.query(func.count(CollectionTree.model_cls.id))
+            .filter(CollectionTree.model_cls.community_id == community_id)
+            .scalar()
+        )
+
+        if current_count >= max_trees:
+            raise MaxTreesExceeded(current_count, max_trees)
+
+    def _validate_collection_limit(self, tree_id):
+        """Validate that adding a new collection doesn't exceed the limit.
+
+        Args:
+            tree_id: The collection tree ID to check.
+
+        Raises:
+            MaxCollectionsExceeded: If the collection limit would be exceeded.
+        """
+        max_collections = current_app.config[
+            "COMMUNITIES_COLLECTIONS_MAX_COLLECTIONS_PER_TREE"
+        ]
+
+        # 0 means unlimited
+        if max_collections == 0:
+            return
+
+        # Count existing collections in this tree
+        current_count = (
+            db.session.query(func.count(Collection.model_cls.id))
+            .filter(Collection.model_cls.tree_id == tree_id)
+            .scalar()
+        )
+
+        if current_count >= max_collections:
+            raise MaxCollectionsExceeded(current_count, max_collections)
 
     @property
     def collection_schema(self):
@@ -148,11 +219,14 @@ class CollectionsService(Service):
         if not tree_slug and not tree_id:
             raise ValueError("Either tree_slug or tree_id must be provided")
 
-        ctree, community_id = self._resolve_tree_and_community(
+        ctree, community, community_id = self._resolve_tree_and_community(
             tree_id=tree_id, tree_slug=tree_slug, community_id=community_id
         )
 
-        self.require_permission(identity, "update", community_id=community_id)
+        self.require_permission(identity, "manage_collections", record=community)
+
+        # Validate collection limit
+        self._validate_collection_limit(ctree.id)
 
         data, _ = self.collection_schema.load(
             data, context={"identity": identity}, raise_errors=True
@@ -165,7 +239,7 @@ class CollectionsService(Service):
                 db.session.query(func.max(Collection.model_cls.order))
                 .filter(
                     Collection.model_cls.tree_id == ctree.id,
-                    Collection.model_cls.path == ","  # Root collections only
+                    Collection.model_cls.path == ",",  # Root collections only
                 )
                 .scalar()
             )
@@ -281,11 +355,14 @@ class CollectionsService(Service):
         if not tree_slug and not tree_id:
             raise ValueError("Either tree_slug or tree_id must be provided")
 
-        ctree, community_id = self._resolve_tree_and_community(
+        ctree, community, community_id = self._resolve_tree_and_community(
             tree_id=tree_id, tree_slug=tree_slug, community_id=community_id
         )
 
-        self.require_permission(identity, "update", community_id=community_id)
+        self.require_permission(identity, "manage_collections", record=community)
+
+        # Validate collection limit
+        self._validate_collection_limit(ctree.id)
 
         data, _ = self.collection_schema.load(
             data, context={"identity": identity}, raise_errors=True
@@ -306,7 +383,7 @@ class CollectionsService(Service):
                 db.session.query(func.max(Collection.model_cls.order))
                 .filter(
                     Collection.model_cls.tree_id == ctree.id,
-                    Collection.model_cls.path == parent_path
+                    Collection.model_cls.path == parent_path,
                 )
                 .scalar()
             )
@@ -334,9 +411,11 @@ class CollectionsService(Service):
             collection = self.collection_cls.read(id_=collection_or_id)
         else:
             collection = collection_or_id
-        self.require_permission(
-            identity, "update", community_id=collection.community.id
-        )
+
+        # Resolve community for permission check
+        community = self._resolve_community(collection.community.id)
+
+        self.require_permission(identity, "manage_collections", record=community)
 
         data = data or {}
 
@@ -374,11 +453,11 @@ class CollectionsService(Service):
             cascade: Whether to delete child collections (default: False).
             uow: Unit of work instance.
         """
-        ctree, community_id = self._resolve_tree_and_community(
+        ctree, community, community_id = self._resolve_tree_and_community(
             tree_id=ctree_id, tree_slug=tree_slug, community_id=community_id
         )
 
-        self.require_permission(identity, "update", community_id=community_id)
+        self.require_permission(identity, "manage_collections", record=community)
 
         collection = self.collection_cls.read(slug=slug, ctree_id=ctree.id)
 
@@ -506,7 +585,7 @@ class CollectionsService(Service):
         if slug:
             collection = self.collection_cls.read(slug=slug, ctree_id=ctree.id)
             if search_query:
-                new_search_query = collection.add_test_query(search_query)
+                new_search_query = collection.extend_query(search_query)
             else:
                 # No additional query, use collection's existing query
                 new_search_query = collection.query
@@ -579,9 +658,14 @@ class CollectionsService(Service):
         if not community_id:
             raise ValueError("community_id is required")
 
-        self.require_permission(identity, "update", community_id=community_id)
+        # Resolve community once for both permission check and validation
+        community = self._resolve_community(community_id)
+        community_id = str(community.id)
 
-        community_id = self._resolve_community_id(community_id)
+        self.require_permission(identity, "manage_collections", record=community)
+
+        # Validate tree limit
+        self._validate_tree_limit(community_id)
 
         valid_data, errors = self.collection_tree_schema.load(
             data, context={"identity": identity}, raise_errors=True
@@ -625,11 +709,11 @@ class CollectionsService(Service):
         if not tree_slug and not tree_id:
             raise ValueError("Either tree_slug or tree_id must be provided")
 
-        ctree, community_id = self._resolve_tree_and_community(
+        ctree, community, community_id = self._resolve_tree_and_community(
             tree_id=tree_id, tree_slug=tree_slug, community_id=community_id
         )
 
-        self.require_permission(identity, "update", community_id=community_id)
+        self.require_permission(identity, "manage_collections", record=community)
 
         valid_data, errors = self.collection_tree_schema.load(
             data, context={"identity": identity}, raise_errors=True
@@ -666,11 +750,11 @@ class CollectionsService(Service):
             cascade: Whether to delete all collections in tree (default: False).
             uow: Unit of work instance.
         """
-        ctree, community_id = self._resolve_tree_and_community(
+        ctree, community, community_id = self._resolve_tree_and_community(
             tree_id=ctree_id, tree_slug=tree_slug, community_id=community_id
         )
 
-        self.require_permission(identity, "update", community_id=community_id)
+        self.require_permission(identity, "manage_collections", record=community)
 
         if ctree.collections:
             if not cascade:
@@ -695,9 +779,11 @@ class CollectionsService(Service):
         Returns:
             dict: Response with updated count and items list.
         """
-        community_id = self._resolve_community_id(community_id)
+        # Resolve community once for both permission check and operations
+        community = self._resolve_community(community_id)
+        community_id = str(community.id)
 
-        self.require_permission(identity, "update", community_id=community_id)
+        self.require_permission(identity, "manage_collections", record=community)
 
         # Validate schema
         valid_data = BatchReorderSchema().load(data)
@@ -705,7 +791,9 @@ class CollectionsService(Service):
         # Update in transaction
         updated = []
         for item in valid_data["order"]:
-            tree_model = self.collection_tree_cls.model_cls.get_by_slug(item["slug"], community_id)
+            tree_model = self.collection_tree_cls.model_cls.get_by_slug(
+                item["slug"], community_id
+            )
 
             if not tree_model:
                 raise CollectionTreeNotFound(
@@ -736,9 +824,7 @@ class CollectionsService(Service):
         }
 
     @unit_of_work()
-    def reorder_collections(
-        self, identity, community_id, tree_slug, data, uow=None
-    ):
+    def reorder_collections(self, identity, community_id, tree_slug, data, uow=None):
         """Batch reorder collections within a tree.
 
         Args:
@@ -751,9 +837,11 @@ class CollectionsService(Service):
         Returns:
             dict: Response with updated count and items list.
         """
-        community_id = self._resolve_community_id(community_id)
+        # Resolve community once for both permission check and operations
+        community = self._resolve_community(community_id)
+        community_id = str(community.id)
 
-        self.require_permission(identity, "update", community_id=community_id)
+        self.require_permission(identity, "manage_collections", record=community)
 
         # Validate tree exists and get it as API object
         try:
