@@ -1,7 +1,7 @@
 ..
     Copyright (C) 2015 CERN.
     Copyright (C) 2025 Ubiquity Press.
-    Copyright (C) 2025 Graz University of Technology.
+    Copyright (C) 2025-2026 Graz University of Technology.
 
     Invenio-Collections is free software; you can redistribute it and/or
     modify it under the terms of the MIT License; see LICENSE file for more
@@ -9,6 +9,13 @@
 
 Changes
 =======
+
+Version v4.0.0 (released 2026-02-03)
+
+- chore(black): update formatting to >= 26.0
+- chore(setup): bump dependencies
+- refactor: use Timestamp from db
+- refactor!: replace Link usage by EndpointLink
 
 Version v3.0.1 (released 2025-12-15)
 
