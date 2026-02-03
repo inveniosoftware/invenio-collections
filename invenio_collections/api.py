@@ -5,6 +5,7 @@
 # Invenio-Collections is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
 """Collections programmatic API."""
+
 from invenio_records.systemfields import ModelField
 from luqum.parser import parser as luqum_parser
 from werkzeug.utils import cached_property

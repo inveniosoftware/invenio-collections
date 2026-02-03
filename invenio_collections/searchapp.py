@@ -6,7 +6,6 @@
 # it under the terms of the MIT License; see LICENSE file for more details.
 """Collection search app helpers for React-SearchKit."""
 
-
 from functools import partial
 
 from flask import current_app
