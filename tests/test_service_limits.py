@@ -22,7 +22,7 @@ def collections_service():
 def test_max_trees_limit(app, db, collections_service, community, community_owner):
     """Test that tree creation respects the maximum trees limit."""
     # Set a low limit for testing
-    app.config["COMMUNITIES_COLLECTIONS_MAX_TREES"] = 2
+    app.config["COLLECTIONS_MAX_TREES"] = 2
 
     # Create first tree - should succeed
     tree1 = collections_service.create_tree(
@@ -59,7 +59,7 @@ def test_max_collections_limit(
 ):
     """Test that collection creation respects the maximum collections limit."""
     # Set a low limit for testing
-    app.config["COMMUNITIES_COLLECTIONS_MAX_COLLECTIONS_PER_TREE"] = 3
+    app.config["COLLECTIONS_MAX_COLLECTIONS_PER_TREE"] = 3
 
     # Create a tree
     tree = CollectionTree.create(
@@ -132,7 +132,7 @@ def test_max_collections_limit_with_subcollections(
 ):
     """Test that subcollection creation also respects the limit."""
     # Set a low limit for testing
-    app.config["COMMUNITIES_COLLECTIONS_MAX_COLLECTIONS_PER_TREE"] = 2
+    app.config["COLLECTIONS_MAX_COLLECTIONS_PER_TREE"] = 2
 
     # Create a tree
     tree = CollectionTree.create(
@@ -185,7 +185,7 @@ def test_max_collections_limit_with_subcollections(
 def test_unlimited_trees(app, db, collections_service, community, community_owner):
     """Test that setting max trees to 0 allows unlimited trees."""
     # Set to unlimited
-    app.config["COMMUNITIES_COLLECTIONS_MAX_TREES"] = 0
+    app.config["COLLECTIONS_MAX_TREES"] = 0
 
     # Create multiple trees - all should succeed
     for i in range(15):
@@ -202,7 +202,7 @@ def test_unlimited_collections(
 ):
     """Test that setting max collections to 0 allows unlimited collections."""
     # Set to unlimited
-    app.config["COMMUNITIES_COLLECTIONS_MAX_COLLECTIONS_PER_TREE"] = 0
+    app.config["COLLECTIONS_MAX_COLLECTIONS_PER_TREE"] = 0
 
     # Create a tree
     tree = CollectionTree.create(
@@ -230,7 +230,7 @@ def test_unlimited_collections(
 def test_error_messages(app, db, collections_service, community, community_owner):
     """Test that error messages contain the correct information."""
     # Test tree limit error message
-    app.config["COMMUNITIES_COLLECTIONS_MAX_TREES"] = 1
+    app.config["COLLECTIONS_MAX_TREES"] = 1
 
     tree1 = collections_service.create_tree(
         identity=community_owner.identity,
@@ -252,7 +252,7 @@ def test_error_messages(app, db, collections_service, community, community_owner
         assert "Maximum allowed is 1" in str(e)
 
     # Test collection limit error message
-    app.config["COMMUNITIES_COLLECTIONS_MAX_COLLECTIONS_PER_TREE"] = 1
+    app.config["COLLECTIONS_MAX_COLLECTIONS_PER_TREE"] = 1
 
     tree2 = CollectionTree.create(
         title="Test Tree 2",

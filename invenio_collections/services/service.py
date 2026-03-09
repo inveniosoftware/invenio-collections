@@ -124,7 +124,7 @@ class CollectionsService(Service):
         Raises:
             MaxTreesExceeded: If the tree limit would be exceeded.
         """
-        max_trees = current_app.config["COMMUNITIES_COLLECTIONS_MAX_TREES"]
+        max_trees = current_app.config["COLLECTIONS_MAX_TREES"]
 
         # 0 means unlimited
         if max_trees == 0:
@@ -150,7 +150,7 @@ class CollectionsService(Service):
             MaxCollectionsExceeded: If the collection limit would be exceeded.
         """
         max_collections = current_app.config[
-            "COMMUNITIES_COLLECTIONS_MAX_COLLECTIONS_PER_TREE"
+            "COLLECTIONS_MAX_COLLECTIONS_PER_TREE"
         ]
 
         # 0 means unlimited
@@ -371,7 +371,7 @@ class CollectionsService(Service):
         collection = self.collection_cls.read(slug=slug, ctree_id=ctree.id)
 
         # Validate depth limit
-        max_depth = current_app.config.get("COMMUNITIES_COLLECTIONS_MAX_DEPTH", 1)
+        max_depth = current_app.config.get("COLLECTIONS_MAX_DEPTH", 1)
         if collection.depth >= max_depth:
             raise MaxDepthExceeded(collection.depth, max_depth)
 
