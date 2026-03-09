@@ -57,7 +57,7 @@ def app_config(app_config):
     app_config["THEME_FRONTPAGE"] = False
 
     # Set a higher max depth for tests that need nested collections
-    app_config["COMMUNITIES_COLLECTIONS_MAX_DEPTH"] = 3
+    app_config["COLLECTIONS_MAX_DEPTH"] = 3
 
     return app_config
 

@@ -59,6 +59,12 @@ invenio_collections = "invenio_collections.ext:InvenioCollections"
 [project.entry-points."invenio_base.api_blueprints"]
 invenio_collections = "invenio_collections.views:create_bp"
 
+[project.entry-points."invenio_assets.webpack"]
+invenio_collections = "invenio_collections.webpack:theme"
+
+[project.entry-points."invenio_base.blueprints"]
+invenio_collections_ui = "invenio_collections.views.ui:create_ui_blueprint"
+
 [project.entry-points."invenio_celery.tasks"]
 invenio_collections = "invenio_collections.tasks"
 
