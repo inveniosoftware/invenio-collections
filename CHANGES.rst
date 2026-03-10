@@ -10,6 +10,10 @@
 Changes
 =======
 
+Version v5.0.0 (released 2026-03-10)
+
+- change(setup): upgrade invenio-collections, invenio-rdm-records
+
 Version v4.0.0 (released 2026-02-03)
 
 - chore(black): update formatting to >= 26.0
@@ -19,7 +23,7 @@ Version v4.0.0 (released 2026-02-03)
 
 Version v3.0.1 (released 2025-12-15)
 
-- revert alembic revision_id to invenio-rdm-records 
+- revert alembic revision_id to invenio-rdm-records
 
 Version v3.0.0 (released 2025-12-12)
 
