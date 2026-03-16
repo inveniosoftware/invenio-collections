@@ -53,14 +53,14 @@ class MaxDepthExceeded(CollectionError):
 
 
 class MaxTreesExceeded(CollectionError):
-    """Maximum number of trees exceeded for this community."""
+    """Maximum number of trees exceeded for this namespace."""
 
     def __init__(self, current_count, max_trees):
         """Initialize the error with tree count information."""
         self.current_count = current_count
         self.max_trees = max_trees
         super().__init__(
-            f"Cannot create category. Community already has {current_count} categories. "
+            f"Cannot create category. Namespace already has {current_count} categories. "
             f"Maximum allowed is {max_trees}."
         )
 

@@ -48,7 +48,7 @@ class CollectionTreeSchema(Schema):
         validate=validate.Range(min=0, error=_("Order must be non-negative."))
     )
     id = fields.Int(dump_only=True)
-    community_id = fields.Str(dump_only=True)
+    namespace_id = fields.Str(dump_only=True)
 
 
 class CollectionSchema(Schema):

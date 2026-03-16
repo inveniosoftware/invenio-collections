@@ -18,7 +18,7 @@ class CollectionItem(ServiceItemResult):
     def __init__(self, identity, collection, schema, links_tpl):
         """Instantiate a Collection object.
 
-        Optionally pass a community to cache its information in the collection's instance.
+        Optionally pass a namespace to cache its information in the collection's instance.
         """
         self._identity = identity
         self._collection = collection
@@ -44,7 +44,6 @@ class CollectionItem(ServiceItemResult):
                     "num_records": 0,
                     "children": [2],
                     "links": {
-                        "self_html": "..."
                         "search": "..."
                     }
                 },
@@ -58,7 +57,6 @@ class CollectionItem(ServiceItemResult):
                     "num_records": 0,
                     "children": [],
                     "links": {
-                        "self_html": "..."
                         "search": "..."
                     }
                 }
@@ -101,15 +99,15 @@ class CollectionItem(ServiceItemResult):
         for anc in self._collection.ancestors:
             _a = {
                 "title": anc.title,
-                "link": self._links_tpl.expand(self._identity, anc)["self_html"],
+                "link": self._links_tpl.expand(self._identity, anc).get("self_html"),
             }
             res.append(_a)
         res.append(
             {
                 "title": self._collection.title,
-                "link": self._links_tpl.expand(self._identity, self._collection)[
+                "link": self._links_tpl.expand(self._identity, self._collection).get(
                     "self_html"
-                ],
+                ),
             }
         )
         return res

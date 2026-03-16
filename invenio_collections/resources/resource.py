@@ -68,11 +68,11 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
     @request_extra_args
     @response_handler()
     def create(self):
-        """Create a new community collection."""
+        """Create a new collection."""
         item = self.service.create(
             identity=g.identity,
             data=resource_requestctx.data or {},
-            community_id=resource_requestctx.view_args["pid_value"],
+            namespace_id=resource_requestctx.view_args["pid_value"],
             tree_slug=resource_requestctx.view_args["tree_slug"],
             tree_id=resource_requestctx.args.get("tree_id"),
         )
@@ -82,10 +82,10 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
     @request_view_args
     @response_handler()
     def read(self):
-        """Read a community collection."""
+        """Read a collection."""
         item = self.service.read(
             identity=g.identity,
-            community_id=resource_requestctx.view_args["pid_value"],
+            namespace_id=resource_requestctx.view_args["pid_value"],
             tree_slug=resource_requestctx.view_args["tree_slug"],
             slug=resource_requestctx.view_args["col_slug"],
             depth=resource_requestctx.args.get("depth", 2),
@@ -98,12 +98,12 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
     @request_extra_args
     @response_handler()
     def add(self):
-        """Add a new community collection under an existing one."""
+        """Add a new collection under an existing one."""
         item = self.service.add(
             identity=g.identity,
             slug=resource_requestctx.view_args["col_slug"],
             data=resource_requestctx.data or {},
-            community_id=resource_requestctx.view_args["pid_value"],
+            namespace_id=resource_requestctx.view_args["pid_value"],
             tree_slug=resource_requestctx.view_args["tree_slug"],
             tree_id=resource_requestctx.args.get("tree_id"),
         )
@@ -113,10 +113,10 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
     @request_view_args
     @response_handler()
     def update(self):
-        """Update community collection."""
+        """Update collection."""
         collection = self.service.read(
             identity=g.identity,
-            community_id=resource_requestctx.view_args["pid_value"],
+            namespace_id=resource_requestctx.view_args["pid_value"],
             tree_slug=resource_requestctx.view_args["tree_slug"],
             slug=resource_requestctx.view_args["col_slug"],
         )
@@ -130,12 +130,12 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
     @request_extra_args
     @request_view_args
     def delete(self):
-        """Delete community collection."""
+        """Delete collection."""
         self.service.delete(
             g.identity,
             slug=resource_requestctx.view_args["col_slug"],
             tree_slug=resource_requestctx.view_args["tree_slug"],
-            community_id=resource_requestctx.view_args["pid_value"],
+            namespace_id=resource_requestctx.view_args["pid_value"],
             ctree_id=resource_requestctx.args.get("tree_id"),
             cascade=resource_requestctx.args.get("cascade", False),
         )
@@ -148,7 +148,7 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
         """Search records in a collection by slug."""
         collection = self.service.read(
             identity=g.identity,
-            community_id=resource_requestctx.view_args["pid_value"],
+            namespace_id=resource_requestctx.view_args["pid_value"],
             tree_slug=resource_requestctx.view_args["tree_slug"],
             slug=resource_requestctx.view_args["col_slug"],
         )
@@ -187,7 +187,7 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
 
         records = self.service.search_test_collection_records(
             g.identity,
-            community_id=resource_requestctx.view_args["pid_value"],
+            namespace_id=resource_requestctx.view_args["pid_value"],
             tree_slug=resource_requestctx.view_args["tree_slug"],
             slug=test_col_slug,
             data=resource_requestctx.data or {},
@@ -199,10 +199,10 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
     @request_view_args
     @response_handler()
     def create_tree(self):
-        """Create a new community collection tree."""
+        """Create a new collection tree."""
         item = self.service.create_tree(
             identity=g.identity,
-            community_id=resource_requestctx.view_args["pid_value"],
+            namespace_id=resource_requestctx.view_args["pid_value"],
             data=resource_requestctx.data or {},
         )
         return item.to_dict(), 201
@@ -214,7 +214,7 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
         """Read one particular tree."""
         item = self.service.read_tree(
             identity=g.identity,
-            community_id=resource_requestctx.view_args["pid_value"],
+            namespace_id=resource_requestctx.view_args["pid_value"],
             tree_slug=resource_requestctx.view_args["tree_slug"],
             depth=resource_requestctx.args.get("depth", 2),
             ctree_id=resource_requestctx.args.get("tree_id"),
@@ -226,10 +226,10 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
     @request_extra_args
     @response_handler()
     def update_tree(self):
-        """Update a community tree."""
+        """Update a collection tree."""
         item = self.service.update_tree(
             identity=g.identity,
-            community_id=resource_requestctx.view_args["pid_value"],
+            namespace_id=resource_requestctx.view_args["pid_value"],
             tree_slug=resource_requestctx.view_args["tree_slug"],
             data=resource_requestctx.data,
             tree_id=resource_requestctx.args.get("tree_id"),
@@ -239,10 +239,10 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
     @request_extra_args
     @request_view_args
     def delete_tree(self):
-        """Delete a community tree."""
+        """Delete a collection tree."""
         self.service.delete_tree(
             identity=g.identity,
-            community_id=resource_requestctx.view_args["pid_value"],
+            namespace_id=resource_requestctx.view_args["pid_value"],
             tree_slug=resource_requestctx.view_args["tree_slug"],
             ctree_id=resource_requestctx.args.get("tree_id"),
             cascade=resource_requestctx.args.get("cascade", False),
@@ -253,10 +253,10 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
     @request_view_args
     @response_handler(many=True)
     def list_trees(self):
-        """List collections for a community."""
+        """List collections for a namespace."""
         result = self.service.list_trees(
             identity=g.identity,
-            community_id=resource_requestctx.view_args["pid_value"],
+            namespace_id=resource_requestctx.view_args["pid_value"],
             depth=resource_requestctx.args.get("depth", 2),
         )
         return result.to_dict(), 200
@@ -267,7 +267,7 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
         """Batch reorder collection trees."""
         result = self.service.reorder_trees(
             identity=g.identity,
-            community_id=resource_requestctx.view_args["pid_value"],
+            namespace_id=resource_requestctx.view_args["pid_value"],
             data=resource_requestctx.data or {},
         )
         return result, 200
@@ -278,7 +278,7 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
         """Batch reorder collections."""
         result = self.service.reorder_collections(
             identity=g.identity,
-            community_id=resource_requestctx.view_args["pid_value"],
+            namespace_id=resource_requestctx.view_args["pid_value"],
             tree_slug=resource_requestctx.view_args["tree_slug"],
             data=resource_requestctx.data or {},
         )
