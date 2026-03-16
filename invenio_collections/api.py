@@ -121,11 +121,6 @@ class Collection:
         """
         return CollectionTree(self.model.collection_tree)
 
-    @cached_property
-    def community(self):
-        """Get the community object."""
-        return self.collection_tree.community
-
     @property
     def query(self):
         """Get the collection query."""
@@ -212,9 +207,8 @@ class CollectionTree:
     id = ModelField("id")
     title = ModelField("title")
     slug = ModelField("slug")
-    community_id = ModelField("community_id")
+    namespace_id = ModelField("namespace_id")
     order = ModelField("order")
-    community = ModelField("community")
     collections = ModelField("collections")
 
     def __init__(self, model=None, max_depth=2):
@@ -223,24 +217,24 @@ class CollectionTree:
         self.max_depth = max_depth
 
     @classmethod
-    def create(cls, title, slug, community_id=None, order=None):
+    def create(cls, title, slug, namespace_id=None, order=None):
         """Create a new collection tree."""
         return cls(
             cls.model_cls.create(
-                title=title, slug=slug, community_id=community_id, order=order
+                title=title, slug=slug, namespace_id=namespace_id, order=order
             )
         )
 
     @classmethod
-    def resolve(cls, id_=None, slug=None, community_id=None, depth=2):
+    def resolve(cls, id_=None, slug=None, namespace_id=None, depth=2):
         """Resolve a CollectionTree."""
         res = None
         if id_:
             res = cls(cls.model_cls.get(id_), max_depth=depth)
-        elif slug and community_id:
-            res = cls(cls.model_cls.get_by_slug(slug, community_id), max_depth=depth)
+        elif slug and namespace_id:
+            res = cls(cls.model_cls.get_by_slug(slug, namespace_id), max_depth=depth)
         else:
-            raise ValueError("Either ID or slug and community ID must be provided.")
+            raise ValueError("Either ID or slug and namespace ID must be provided.")
 
         if res.model is None:
             raise CollectionTreeNotFound()
@@ -267,6 +261,6 @@ class CollectionTree:
         return [Collection(c, self.max_depth) for c in root_collections]
 
     @classmethod
-    def get_community_trees(cls, community_id, depth=2):
-        """Get all the collection trees for a community."""
-        return [cls(c, depth) for c in cls.model_cls.get_community_trees(community_id)]
+    def get_namespace_trees(cls, namespace_id, depth=2):
+        """Get all the collection trees for a namespace."""
+        return [cls(c, depth) for c in cls.model_cls.get_namespace_trees(namespace_id)]

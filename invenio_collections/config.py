@@ -20,7 +20,7 @@ Setting this to 2 would allow 3 levels: root + children + grandchildren.
 """
 
 COLLECTIONS_MAX_TREES = 10
-"""Maximum number of collection trees allowed per community.
+"""Maximum number of collection trees allowed per namespace.
 
 Set to 0 for unlimited trees.
 Default: 10

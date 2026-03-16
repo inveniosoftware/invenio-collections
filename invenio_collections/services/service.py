@@ -9,7 +9,6 @@
 import os
 
 from flask import current_app, url_for
-from invenio_communities.communities.records.api import Community
 from invenio_db import db
 from invenio_db.uow import ModelDeleteOp
 from invenio_rdm_records.proxies import current_community_records_service
@@ -53,73 +52,36 @@ class CollectionsService(Service):
 
     collection_cls = Collection
 
-    def _resolve_community(self, community_id):
-        """Resolve community slug or UUID to Community record.
-
-        Args:
-            community_id: Either a community slug (string) or UUID (string/UUID object)
-
-        Returns:
-            Community: The resolved community record
-        """
-        if not community_id:
-            return None
-
-        return Community.pid.resolve(community_id)
-
-    def _resolve_community_id(self, community_id):
-        """Resolve community slug or UUID to UUID string.
-
-        Args:
-            community_id: Either a community slug (string) or UUID (string/UUID object)
-
-        Returns:
-            str: The community UUID as a string
-        """
-        if not community_id:
-            return None
-
-        community = self._resolve_community(community_id)
-        return str(community.id)
-
-    def _resolve_tree_and_community(
-        self, tree_id=None, tree_slug=None, community_id=None
+    def _resolve_tree(
+        self, tree_id=None, tree_slug=None, namespace_id=None
     ):
-        """Resolve tree, community record, and community ID.
-
-        Resolves the collection tree using either tree_id or tree_slug+community_id.
-        If community_id is not provided, it will be extracted from the resolved tree.
+        """Resolve tree and namespace ID.
 
         Args:
             tree_id: The tree ID (optional).
             tree_slug: The tree slug (optional).
-            community_id: The community ID (optional).
+            namespace_id: The namespace UUID (optional).
 
         Returns:
-            tuple: (tree, community_record, community_id) where community_id is guaranteed to be resolved
+            tuple: (tree, namespace_id)
         """
-        # Resolve community if provided
-        community = None
-        if community_id:
-            community = self._resolve_community(community_id)
-            community_id = str(community.id)
+        if namespace_id:
+            namespace_id = str(namespace_id)
 
         ctree = self.collection_tree_cls.resolve(
-            id_=tree_id, slug=tree_slug, community_id=community_id
+            id_=tree_id, slug=tree_slug, namespace_id=namespace_id
         )
 
-        # Get community from tree if not already resolved
-        if not community and ctree.community:
-            community = ctree.community  # tree.community is already a Community record
-            community_id = str(community.id)
+        if not namespace_id and ctree.namespace_id:
+            namespace_id = str(ctree.namespace_id)
 
-        return ctree, community, community_id
+        return ctree, namespace_id
 
-    def _validate_tree_limit(self, community_id):
+    def _validate_tree_limit(self, namespace_id):
         """Validate that adding a new tree doesn't exceed the limit.
 
         Args:
-            community_id: The community ID to check.
+            namespace_id: The namespace ID to check.
 
         Raises:
             MaxTreesExceeded: If the tree limit would be exceeded.
@@ -130,10 +92,10 @@ class CollectionsService(Service):
         if max_trees == 0:
             return
 
-        # Count existing trees for this community
+        # Count existing trees for this namespace
         current_count = (
             db.session.query(func.count(CollectionTree.model_cls.id))
-            .filter(CollectionTree.model_cls.community_id == community_id)
+            .filter(CollectionTree.model_cls.namespace_id == namespace_id)
             .scalar()
         )
 
@@ -197,7 +159,7 @@ class CollectionsService(Service):
         self,
         identity,
         data,
-        community_id=None,
+        namespace_id=None,
         tree_slug=None,
         tree_id=None,
         uow=None,
@@ -211,7 +173,7 @@ class CollectionsService(Service):
         Args:
             identity: The identity of the user.
             data: The collection data.
-            community_id: The community ID (required if using tree_slug).
+            namespace_id: The namespace UUID (required if using tree_slug).
             tree_slug: The tree slug (either this or tree_id is required).
             tree_id: The tree ID (either this or tree_slug is required).
             uow: Unit of work instance.
@@ -219,11 +181,13 @@ class CollectionsService(Service):
         if not tree_slug and not tree_id:
             raise ValueError("Either tree_slug or tree_id must be provided")
 
-        ctree, community, community_id = self._resolve_tree_and_community(
-            tree_id=tree_id, tree_slug=tree_slug, community_id=community_id
+        ctree, namespace_id = self._resolve_tree(
+            tree_id=tree_id, tree_slug=tree_slug, namespace_id=namespace_id
         )
 
-        self.require_permission(identity, "manage_collections", record=community)
+        self.require_permission(
+            identity, "manage_collections", namespace_id=namespace_id
+        )
 
         # Validate collection limit
         self._validate_collection_limit(ctree.id)
@@ -259,7 +223,7 @@ class CollectionsService(Service):
         *,
         id_=None,
         slug=None,
-        community_id=None,
+        namespace_id=None,
         tree_slug=None,
         tree_id=None,
         depth=2,
@@ -267,37 +231,38 @@ class CollectionsService(Service):
     ):
         """Get a collection by ID or slug.
 
-        To resolve by slug, either tree_id or tree_slug+community_id must be provided.
+        To resolve by slug, either tree_id or tree_slug+namespace_id must be provided.
 
         Args:
             identity: The identity of the user.
             id_: The collection ID.
             slug: The collection slug.
-            community_id: The community ID (required if using tree_slug).
+            namespace_id: The namespace UUID (required if using tree_slug).
             tree_slug: The tree slug.
             tree_id: The tree ID.
             depth: Maximum depth for fetching nested collections (default: 2).
         """
-        if community_id:
-            community_id = self._resolve_community_id(community_id)
+        if namespace_id:
+            namespace_id = str(namespace_id)
 
         if id_:
             collection = self.collection_cls.read(id_=id_, depth=depth)
         elif slug and (tree_slug or tree_id):
             ctree = CollectionTree.resolve(
-                id_=tree_id, slug=tree_slug, community_id=community_id
+                id_=tree_id, slug=tree_slug, namespace_id=namespace_id
             )
             collection = self.collection_cls.read(
                 slug=slug, ctree_id=ctree.id, depth=depth
             )
         else:
             raise ValueError(
-                "Either id_ or slug with (tree_id or tree_slug+community_id) must be provided."
+                "Either id_ or slug with (tree_id or tree_slug+namespace_id) must be provided."
             )
 
-        if collection.community:
+        tree_namespace_id = collection.collection_tree.namespace_id
+        if tree_namespace_id:
             self.require_permission(
-                identity, "read", community_id=collection.community.id
+                identity, "read", namespace_id=str(tree_namespace_id)
             )
 
         return CollectionItem(
@@ -307,20 +272,20 @@ class CollectionsService(Service):
             self.links_item_tpl,
         )
 
-    def list_trees(self, identity, community_id, **kwargs):
-        """Get the trees of a community.
+    def list_trees(self, identity, namespace_id, **kwargs):
+        """Get the trees of a namespace.
 
         Args:
             identity: The identity of the user.
-            community_id: The community ID (required).
+            namespace_id: The namespace UUID (required).
         """
-        self.require_permission(identity, "read", community_id=community_id)
+        self.require_permission(identity, "read", namespace_id=namespace_id)
 
-        community_id = self._resolve_community_id(community_id)
+        namespace_id = str(namespace_id)
 
-        if not community_id:
-            raise ValueError("Community ID must be provided.")
-        res = CollectionTree.get_community_trees(community_id, **kwargs)
+        if not namespace_id:
+            raise ValueError("Namespace ID must be provided.")
+        res = CollectionTree.get_namespace_trees(namespace_id, **kwargs)
         return CollectionTreeList(
             identity,
             res,
@@ -335,7 +300,7 @@ class CollectionsService(Service):
         identity,
         slug,
         data,
-        community_id=None,
+        namespace_id=None,
         tree_slug=None,
         tree_id=None,
         uow=None,
@@ -347,7 +312,7 @@ class CollectionsService(Service):
             identity: The identity of the user.
             slug: The parent collection slug (required).
             data: The new subcollection data (required).
-            community_id: The community ID (required if using tree_slug).
+            namespace_id: The namespace UUID (required if using tree_slug).
             tree_slug: The tree slug (either this or tree_id is required).
             tree_id: The tree ID (either this or tree_slug is required).
             uow: Unit of work instance.
@@ -355,11 +320,13 @@ class CollectionsService(Service):
         if not tree_slug and not tree_id:
             raise ValueError("Either tree_slug or tree_id must be provided")
 
-        ctree, community, community_id = self._resolve_tree_and_community(
-            tree_id=tree_id, tree_slug=tree_slug, community_id=community_id
+        ctree, namespace_id = self._resolve_tree(
+            tree_id=tree_id, tree_slug=tree_slug, namespace_id=namespace_id
         )
 
-        self.require_permission(identity, "manage_collections", record=community)
+        self.require_permission(
+            identity, "manage_collections", namespace_id=namespace_id
+        )
 
         # Validate collection limit
         self._validate_collection_limit(ctree.id)
@@ -412,10 +379,15 @@ class CollectionsService(Service):
         else:
             collection = collection_or_id
 
-        # Resolve community for permission check
-        community = self._resolve_community(collection.community.id)
-
-        self.require_permission(identity, "manage_collections", record=community)
+        # Resolve namespace for permission check
+        namespace_id = (
+            str(collection.collection_tree.namespace_id)
+            if collection.collection_tree.namespace_id
+            else None
+        )
+        self.require_permission(
+            identity, "manage_collections", namespace_id=namespace_id
+        )
 
         data = data or {}
 
@@ -437,7 +409,7 @@ class CollectionsService(Service):
         identity,
         slug,
         tree_slug=None,
-        community_id=None,
+        namespace_id=None,
         ctree_id=None,
         cascade=False,
         uow=None,
@@ -448,16 +420,18 @@ class CollectionsService(Service):
             identity: The identity of the user.
             slug: The collection slug (required).
             tree_slug: The tree slug (either this or ctree_id required).
-            community_id: The community ID (required if using tree_slug).
-            ctree_id: The tree ID (either this or tree_slug+community_id required).
+            namespace_id: The namespace UUID (required if using tree_slug).
+            ctree_id: The tree ID (either this or tree_slug+namespace_id required).
             cascade: Whether to delete child collections (default: False).
             uow: Unit of work instance.
         """
-        ctree, community, community_id = self._resolve_tree_and_community(
-            tree_id=ctree_id, tree_slug=tree_slug, community_id=community_id
+        ctree, namespace_id = self._resolve_tree(
+            tree_id=ctree_id, tree_slug=tree_slug, namespace_id=namespace_id
         )
 
-        self.require_permission(identity, "manage_collections", record=community)
+        self.require_permission(
+            identity, "manage_collections", namespace_id=namespace_id
+        )
 
         collection = self.collection_cls.read(slug=slug, ctree_id=ctree.id)
 
@@ -532,16 +506,17 @@ class CollectionsService(Service):
         else:
             collection = collection_or_id
 
-        if collection.community:
+        collection_namespace_id = collection.collection_tree.namespace_id
+        if collection_namespace_id:
             res = current_community_records_service.search(
                 identity,
-                community_id=collection.community.id,
+                community_id=str(collection_namespace_id),
                 extra_filter=collection.query,
                 params=params,
             )
         else:
             raise NotImplementedError(
-                "Search for collections without community not supported."
+                "Search for collections without namespace not supported."
             )
         return res
 
@@ -549,7 +524,7 @@ class CollectionsService(Service):
         self,
         identity,
         tree_slug,
-        community_id,
+        namespace_id,
         slug=None,
         data=None,
         params=None,
@@ -559,19 +534,19 @@ class CollectionsService(Service):
         Args:
             identity: The identity of the user.
             tree_slug: The tree slug (required).
-            community_id: The community ID (required).
+            namespace_id: The namespace UUID (required).
             slug: The collection slug (optional, for testing with existing collection).
             data: Additional data containing search_query (optional).
             params: Search parameters (optional).
         """
         if not tree_slug:
             raise ValueError("tree_slug is required")
-        if not community_id:
-            raise ValueError("community_id is required")
+        if not namespace_id:
+            raise ValueError("namespace_id is required")
 
-        self.require_permission(identity, "read", community_id=community_id)
+        self.require_permission(identity, "read", namespace_id=namespace_id)
 
-        community_id = self._resolve_community_id(community_id)
+        namespace_id = str(namespace_id)
 
         search_query = data.get("search_query") if data else None
 
@@ -579,7 +554,7 @@ class CollectionsService(Service):
             validate_search_query(search_query)
 
         ctree = self.collection_tree_cls.resolve(
-            slug=tree_slug, community_id=community_id
+            slug=tree_slug, namespace_id=namespace_id
         )
 
         if slug:
@@ -593,49 +568,49 @@ class CollectionsService(Service):
             if search_query:
                 new_search_query = dsl.Q("query_string", query=search_query)
             else:
-                # No query at all, return all records in community
+                # No query at all, return all records in namespace
                 new_search_query = None
 
         params = params or {}
 
-        if ctree.community:
+        if ctree.namespace_id:
             res = current_community_records_service.search(
                 identity,
-                community_id=ctree.community.id,
+                community_id=str(ctree.namespace_id),
                 extra_filter=new_search_query,
                 params=params,
             )
         else:
             raise NotImplementedError(
-                "Search for collections without community not supported."
+                "Search for collections without namespace not supported."
             )
 
         return res
 
     def read_tree(
-        self, identity, community_id=None, tree_slug=None, ctree_id=None, depth=2
+        self, identity, namespace_id=None, tree_slug=None, ctree_id=None, depth=2
     ):
         """Read a collection tree.
 
         Args:
             identity: The identity of the user.
-            community_id: The community ID (required if using tree_slug).
+            namespace_id: The namespace UUID (required if using tree_slug).
             tree_slug: The tree slug (either this or ctree_id required).
             ctree_id: The tree ID (either this or tree_slug required).
             depth: Maximum depth for fetching nested collections (default: 2).
         """
-        if community_id:
-            community_id = self._resolve_community_id(community_id)
+        if namespace_id:
+            namespace_id = str(namespace_id)
 
         ctree = self.collection_tree_cls.resolve(
-            community_id=community_id, slug=tree_slug, id_=ctree_id, depth=depth
+            namespace_id=namespace_id, slug=tree_slug, id_=ctree_id, depth=depth
         )
 
-        # Get community_id from tree if not provided
-        if not community_id and ctree.community:
-            community_id = str(ctree.community.id)
+        # Get namespace_id from tree if not provided
+        if not namespace_id and ctree.namespace_id:
+            namespace_id = str(ctree.namespace_id)
 
-        self.require_permission(identity, "read", community_id=community_id)
+        self.require_permission(identity, "read", namespace_id=namespace_id)
 
         return CollectionTreeItem(
             identity,
@@ -646,26 +621,26 @@ class CollectionsService(Service):
         )
 
     @unit_of_work()
-    def create_tree(self, identity, data, community_id, uow=None):
+    def create_tree(self, identity, data, namespace_id, uow=None):
         """Create new collection tree.
 
         Args:
             identity: The identity of the user.
             data: The collection tree data.
-            community_id: The community ID (required).
+            namespace_id: The namespace UUID (required).
             uow: Unit of work instance.
         """
-        if not community_id:
-            raise ValueError("community_id is required")
+        if not namespace_id:
+            raise ValueError("namespace_id is required")
 
-        # Resolve community once for both permission check and validation
-        community = self._resolve_community(community_id)
-        community_id = str(community.id)
+        namespace_id = str(namespace_id)
 
-        self.require_permission(identity, "manage_collections", record=community)
+        self.require_permission(
+            identity, "manage_collections", namespace_id=namespace_id
+        )
 
         # Validate tree limit
-        self._validate_tree_limit(community_id)
+        self._validate_tree_limit(namespace_id)
 
         valid_data, errors = self.collection_tree_schema.load(
             data, context={"identity": identity}, raise_errors=True
@@ -673,15 +648,15 @@ class CollectionsService(Service):
 
         # Auto-calculate order if not provided
         if valid_data.get("order") is None:
-            # Get max order for trees in this community
+            # Get max order for trees in this namespace
             max_order = (
                 db.session.query(func.max(CollectionTree.model_cls.order))
-                .filter(CollectionTree.model_cls.community_id == community_id)
+                .filter(CollectionTree.model_cls.namespace_id == namespace_id)
                 .scalar()
             )
             valid_data["order"] = (max_order or 0) + 10
 
-        item = self.collection_tree_cls.create(community_id=community_id, **valid_data)
+        item = self.collection_tree_cls.create(namespace_id=namespace_id, **valid_data)
         uow.register(ModelCommitOp(item.model))
 
         return CollectionTreeItem(
@@ -694,7 +669,7 @@ class CollectionsService(Service):
 
     @unit_of_work()
     def update_tree(
-        self, identity, data, tree_slug=None, tree_id=None, community_id=None, uow=None
+        self, identity, data, tree_slug=None, tree_id=None, namespace_id=None, uow=None
     ):
         """Update a collection tree.
 
@@ -703,17 +678,19 @@ class CollectionsService(Service):
             data: The collection tree data to update.
             tree_slug: The slug of the tree to update.
             tree_id: The ID of the tree to update.
-            community_id: The community ID (required if using tree_slug).
+            namespace_id: The namespace UUID (required if using tree_slug).
             uow: Unit of work instance.
         """
         if not tree_slug and not tree_id:
             raise ValueError("Either tree_slug or tree_id must be provided")
 
-        ctree, community, community_id = self._resolve_tree_and_community(
-            tree_id=tree_id, tree_slug=tree_slug, community_id=community_id
+        ctree, namespace_id = self._resolve_tree(
+            tree_id=tree_id, tree_slug=tree_slug, namespace_id=namespace_id
         )
 
-        self.require_permission(identity, "manage_collections", record=community)
+        self.require_permission(
+            identity, "manage_collections", namespace_id=namespace_id
+        )
 
         valid_data, errors = self.collection_tree_schema.load(
             data, context={"identity": identity}, raise_errors=True
@@ -735,7 +712,7 @@ class CollectionsService(Service):
         self,
         identity,
         tree_slug=None,
-        community_id=None,
+        namespace_id=None,
         ctree_id=None,
         cascade=False,
         uow=None,
@@ -745,16 +722,18 @@ class CollectionsService(Service):
         Args:
             identity: The identity of the user.
             tree_slug: The tree slug (either this or ctree_id required).
-            community_id: The community ID (required if using tree_slug).
-            ctree_id: The tree ID (either this or tree_slug+community_id required).
+            namespace_id: The namespace UUID (required if using tree_slug).
+            ctree_id: The tree ID (either this or tree_slug+namespace_id required).
             cascade: Whether to delete all collections in tree (default: False).
             uow: Unit of work instance.
         """
-        ctree, community, community_id = self._resolve_tree_and_community(
-            tree_id=ctree_id, tree_slug=tree_slug, community_id=community_id
+        ctree, namespace_id = self._resolve_tree(
+            tree_id=ctree_id, tree_slug=tree_slug, namespace_id=namespace_id
         )
 
-        self.require_permission(identity, "manage_collections", record=community)
+        self.require_permission(
+            identity, "manage_collections", namespace_id=namespace_id
+        )
 
         if ctree.collections:
             if not cascade:
@@ -767,23 +746,23 @@ class CollectionsService(Service):
         return True
 
     @unit_of_work()
-    def reorder_trees(self, identity, community_id, data, uow=None):
+    def reorder_trees(self, identity, namespace_id, data, uow=None):
         """Batch reorder collection trees.
 
         Args:
             identity: The identity of the user.
-            community_id: The community ID (required).
+            namespace_id: The namespace UUID (required).
             data: The reorder data containing list of {slug, order} items.
             uow: Unit of work instance.
 
         Returns:
             dict: Response with updated count and items list.
         """
-        # Resolve community once for both permission check and operations
-        community = self._resolve_community(community_id)
-        community_id = str(community.id)
+        namespace_id = str(namespace_id)
 
-        self.require_permission(identity, "manage_collections", record=community)
+        self.require_permission(
+            identity, "manage_collections", namespace_id=namespace_id
+        )
 
         # Validate schema
         valid_data = BatchReorderSchema().load(data)
@@ -792,7 +771,7 @@ class CollectionsService(Service):
         updated = []
         for item in valid_data["order"]:
             tree_model = self.collection_tree_cls.model_cls.get_by_slug(
-                item["slug"], community_id
+                item["slug"], namespace_id
             )
 
             if not tree_model:
@@ -817,19 +796,19 @@ class CollectionsService(Service):
                     "title": tree.title,
                     "order": tree.order,
                     "id": tree.id,
-                    "community_id": str(tree.community_id),
+                    "namespace_id": str(tree.namespace_id),
                 }
                 for tree in updated
             ],
         }
 
     @unit_of_work()
-    def reorder_collections(self, identity, community_id, tree_slug, data, uow=None):
+    def reorder_collections(self, identity, namespace_id, tree_slug, data, uow=None):
         """Batch reorder collections within a tree.
 
         Args:
             identity: The identity of the user.
-            community_id: The community ID (required).
+            namespace_id: The namespace UUID (required).
             tree_slug: The tree slug (required).
             data: The reorder data containing list of {slug, order} items.
             uow: Unit of work instance.
@@ -837,16 +816,16 @@ class CollectionsService(Service):
         Returns:
             dict: Response with updated count and items list.
         """
-        # Resolve community once for both permission check and operations
-        community = self._resolve_community(community_id)
-        community_id = str(community.id)
+        namespace_id = str(namespace_id)
 
-        self.require_permission(identity, "manage_collections", record=community)
+        self.require_permission(
+            identity, "manage_collections", namespace_id=namespace_id
+        )
 
         # Validate tree exists and get it as API object
         try:
             ctree = self.collection_tree_cls.resolve(
-                slug=tree_slug, community_id=community_id
+                slug=tree_slug, namespace_id=namespace_id
             )
         except CollectionTreeNotFound:
             raise CollectionTreeNotFound(f"Collection tree '{tree_slug}' not found")
