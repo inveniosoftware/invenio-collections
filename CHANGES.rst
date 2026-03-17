@@ -10,6 +10,10 @@
 Changes
 =======
 
+Version v5.0.1 (released 2026-03-17)
+
+- fix(setup):  remove unused administration dependency
+
 Version v5.0.0 (released 2026-03-10)
 
 - change(setup): upgrade invenio-collections, invenio-rdm-records
