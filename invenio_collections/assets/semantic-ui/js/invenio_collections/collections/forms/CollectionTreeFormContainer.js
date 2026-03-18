@@ -7,37 +7,38 @@
 import _cloneDeep from "lodash/cloneDeep";
 import _defaultsDeep from "lodash/defaultsDeep";
 import React, { Component } from "react";
-import { communityErrorSerializer } from "../../api/serializers";
 import PropTypes from "prop-types";
+import { withCancel } from "react-invenio-forms";
+import { communityErrorSerializer } from "../../api/serializers";
 import { removeEmptyValues } from "../utils";
 import { COLLECTION_TREE_VALIDATION_SCHEMA } from "../Configs";
 import CollectionTreeForm from "./CollectionTreeForm";
 
-class NewCollectionTreeForm extends Component {
+/**
+ * Container for creating or editing a collection tree (section).
+ *
+ * Edit mode is detected automatically: when `collectionTree` has an `id`
+ * the form updates the existing tree; otherwise it creates a new one.
+ */
+class CollectionTreeFormContainer extends Component {
   state = {
     error: "",
   };
 
+  componentWillUnmount() {
+    this.cancellableSubmit && this.cancellableSubmit.cancel();
+  }
+
+  isEditing = () => !!this.props.collectionTree?.id;
+
   getInitialValues = () => {
     const { collectionTree } = this.props;
-    let initialValues = _defaultsDeep(collectionTree, {
-      id: "",
-      title: "",
-      slug: "",
-    });
-
     return {
-      ...initialValues,
+      ..._defaultsDeep(collectionTree, { id: "", title: "", slug: "" }),
     };
   };
 
-  serializeValues = (values) => {
-    let submittedCollectionTree = _cloneDeep(values);
-    submittedCollectionTree = {
-      ...submittedCollectionTree,
-    };
-    return removeEmptyValues(submittedCollectionTree);
-  };
+  serializeValues = (values) => removeEmptyValues(_cloneDeep(values));
 
   setGlobalError = (error) => {
     const { message } = communityErrorSerializer(error);
@@ -46,17 +47,25 @@ class NewCollectionTreeForm extends Component {
 
   onSubmit = async (values, { setSubmitting, setFieldError }) => {
     setSubmitting(true);
-    let payload = this.serializeValues(values);
-    const { collectionApi } = this.props;
+    const { collectionTree, maxCollectionDepth, collectionApi, onSuccess } = this.props;
 
+    const apiCall = this.isEditing()
+      ? collectionApi.updateCollectionTree(collectionTree.slug, {
+          title: values.title,
+          slug: values.slug,
+        })
+      : collectionApi.createCollectionTree(
+          this.serializeValues(values),
+          maxCollectionDepth
+        );
+
+    this.cancellableSubmit = withCancel(apiCall);
     try {
-      await this.props.collectionApi.create_collection_trees(payload);
-      this.props.onSuccess();
+      await this.cancellableSubmit.promise;
+      onSuccess();
     } catch (error) {
       if (error === "UNMOUNTED") return;
-
       const { message, errors } = communityErrorSerializer(error);
-
       if (message) {
         this.setGlobalError(error);
       }
@@ -69,15 +78,16 @@ class NewCollectionTreeForm extends Component {
   };
 
   render() {
-    const { slugGeneration, onFormReady } = this.props;
+    const { onFormReady, handleCancel, slugGeneration: slugGenerationProp } = this.props;
     const { error } = this.state;
+    const slugGeneration = slugGenerationProp ?? !this.isEditing();
 
     return (
       <CollectionTreeForm
         initialValues={this.getInitialValues()}
         validationSchema={COLLECTION_TREE_VALIDATION_SCHEMA}
         onSubmit={this.onSubmit}
-        handleCancel={this.props.handleCancel}
+        handleCancel={handleCancel}
         error={error}
         slugGeneration={slugGeneration}
         onFormReady={onFormReady}
@@ -86,18 +96,20 @@ class NewCollectionTreeForm extends Component {
   }
 }
 
-NewCollectionTreeForm.propTypes = {
+CollectionTreeFormContainer.propTypes = {
   collectionTree: PropTypes.object.isRequired,
+  maxCollectionDepth: PropTypes.number.isRequired,
   onSuccess: PropTypes.func,
-  handleCancel: PropTypes.func.isRequired,
+  handleCancel: PropTypes.func,
   slugGeneration: PropTypes.bool,
   collectionApi: PropTypes.object.isRequired,
   onFormReady: PropTypes.func,
 };
 
-NewCollectionTreeForm.defaultProps = {
+CollectionTreeFormContainer.defaultProps = {
   onSuccess: () => {},
-  slugGeneration: true,
+  handleCancel: () => {},
+  slugGeneration: undefined,
 };
 
-export default NewCollectionTreeForm;
+export default CollectionTreeFormContainer;

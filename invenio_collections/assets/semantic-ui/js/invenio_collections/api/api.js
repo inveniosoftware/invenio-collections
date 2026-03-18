@@ -7,6 +7,12 @@
 import { http } from "react-invenio-forms";
 import { CommunityLinksExtractor } from "./CommunityLinksExtractor";
 
+const ACCEPT_JSON = { Accept: "application/json" };
+const ACCEPT_JSON_CONTENT_JSON = {
+  Accept: "application/json",
+  "Content-Type": "application/json",
+};
+
 /**
  * API Client for community collection trees.
  *
@@ -63,39 +69,26 @@ export class CommunityCollectionsApi {
    * @param {number} depth - Depth of the collection tree
    * @param {object} options - Custom options
    */
-  async get_collection_trees(depth, options) {
-    options = options || {};
-    const headers = {
-      Accept: "application/json",
-    };
+  getCollectionTrees(depth, options = {}) {
     const url = this._buildUrl(this.endpoint, { depth });
-    return http.get(url, {
-      headers: headers,
-      ...options,
-    });
+    return http.get(url, { headers: ACCEPT_JSON, ...options });
   }
 
   /**
    * Create a new Community Collection Tree.
    *
    * @param {object} payload - Serialized Collection object
+   * @param {number} depth - Depth used when fetching existing trees to compute order
    * @param {object} options - Custom options
    */
-  async create_collection_trees(payload, options) {
-    options = options || {};
-    const headers = {
-      Accept: "application/json",
-    };
-    const collectionTrees = await this.get_collection_trees(10, options);
-    let maxOrder = Math.max(
-      ...Object.values(collectionTrees.data).map((tree) => tree.order || 0),
+  async createCollectionTree(payload, depth, options = {}) {
+    const { data } = await this.getCollectionTrees(depth, options);
+    const maxOrder = Math.max(
+      ...Object.values(data).map(({ order }) => order || 0),
       0
     );
     payload.order = maxOrder + 1;
-    return http.post(this.endpoint, payload, {
-      headers: headers,
-      ...options,
-    });
+    return http.post(this.endpoint, payload, { headers: ACCEPT_JSON, ...options });
   }
 
   /**
@@ -106,17 +99,10 @@ export class CommunityCollectionsApi {
    * @param {object} options - Custom options
    * @param {string|null} treeId - Tree ID (optional)
    */
-  async update_collection_tree(treeSlug, payload, options, treeId = null) {
+  updateCollectionTree(treeSlug, payload, options = {}, treeId = null) {
     this._validateTreeIdentifier(treeSlug, treeId);
-    options = options || {};
-    const headers = {
-      Accept: "application/json",
-    };
     const url = this._buildUrl(`${this.endpoint}/${treeSlug}`, { tree_id: treeId });
-    return http.put(url, payload, {
-      headers: headers,
-      ...options,
-    });
+    return http.put(url, payload, { headers: ACCEPT_JSON, ...options });
   }
 
   /**
@@ -127,43 +113,30 @@ export class CommunityCollectionsApi {
    * @param {string|null} treeId - Tree ID (optional)
    * @param {boolean} cascade - Delete all collections in the tree (default: false)
    */
-  async delete_collection_tree(treeSlug, options, treeId = null, cascade = false) {
+  deleteCollectionTree(treeSlug, options = {}, treeId = null, cascade = false) {
     this._validateTreeIdentifier(treeSlug, treeId);
-    options = options || {};
-    const headers = {
-      Accept: "application/json",
-    };
     const url = this._buildUrl(`${this.endpoint}/${treeSlug}`, {
       tree_id: treeId,
       cascade: cascade ? "true" : undefined,
     });
-    return http.delete(url, {
-      headers: headers,
-      ...options,
-    });
+    return http.delete(url, { headers: ACCEPT_JSON, ...options });
   }
 
   /**
    * Get a Community Collection Tree.
    *
    * @param {string} treeSlug - Slug of the collection tree
+   * @param {number} depth - Depth of the collection tree
    * @param {object} options - Custom options
    * @param {string|null} treeId - Tree ID (optional)
    */
-  async get_collection_tree(treeSlug, options, treeId = null) {
+  getCollectionTree(treeSlug, depth, options = {}, treeId = null) {
     this._validateTreeIdentifier(treeSlug, treeId);
-    options = options || {};
-    const headers = {
-      Accept: "application/json",
-    };
     const url = this._buildUrl(`${this.endpoint}/${treeSlug}`, {
-      depth: 10,
+      depth,
       tree_id: treeId,
     });
-    return http.get(url, {
-      headers: headers,
-      ...options,
-    });
+    return http.get(url, { headers: ACCEPT_JSON, ...options });
   }
 
   /**
@@ -171,29 +144,22 @@ export class CommunityCollectionsApi {
    *
    * @param {string} treeSlug - Slug of the collection tree
    * @param {object} payload - Serialized Collection object
+   * @param {number} depth - Depth used when fetching existing collections to compute order
    * @param {object} options - Custom options
    * @param {string|null} treeId - Tree ID (optional)
    */
-  async create_collection(treeSlug, payload, options, treeId = null) {
+  async createCollection(treeSlug, payload, depth, options = {}, treeId = null) {
     this._validateTreeIdentifier(treeSlug, treeId);
-    options = options || {};
-    const headers = {
-      "Accept": "application/json",
-      "Content-Type": "application/json",
-    };
-    const collections = await this.get_collection_tree(treeSlug, options, treeId);
-    let maxOrder = Math.max(
-      ...Object.values(collections.data.collections).map((tree) => tree.order || 0),
+    const { data } = await this.getCollectionTree(treeSlug, depth, options, treeId);
+    const maxOrder = Math.max(
+      ...Object.values(data.collections).map(({ order }) => order || 0),
       0
     );
     payload.order = maxOrder + 1;
     const url = this._buildUrl(`${this.endpoint}/${treeSlug}/collections`, {
       tree_id: treeId,
     });
-    return http.post(url, payload, {
-      headers: headers,
-      ...options,
-    });
+    return http.post(url, payload, { headers: ACCEPT_JSON_CONTENT_JSON, ...options });
   }
 
   /**
@@ -205,20 +171,13 @@ export class CommunityCollectionsApi {
    * @param {object} options - Custom options
    * @param {string|null} treeId - Tree ID (optional)
    */
-  async add_collection(treeSlug, collectionSlug, payload, options, treeId = null) {
+  addCollection(treeSlug, collectionSlug, payload, options = {}, treeId = null) {
     this._validateTreeIdentifier(treeSlug, treeId);
-    options = options || {};
-    const headers = {
-      Accept: "application/json",
-    };
     const url = this._buildUrl(
       `${this.endpoint}/${treeSlug}/collections/${collectionSlug}`,
       { tree_id: treeId }
     );
-    return http.post(url, payload, {
-      headers: headers,
-      ...options,
-    });
+    return http.post(url, payload, { headers: ACCEPT_JSON, ...options });
   }
 
   /**
@@ -230,20 +189,13 @@ export class CommunityCollectionsApi {
    * @param {object} options - Custom options
    * @param {string|null} treeId - Tree ID (optional)
    */
-  async update_collection(treeSlug, collectionSlug, payload, options, treeId = null) {
+  updateCollection(treeSlug, collectionSlug, payload, options = {}, treeId = null) {
     this._validateTreeIdentifier(treeSlug, treeId);
-    options = options || {};
-    const headers = {
-      Accept: "application/json",
-    };
     const url = this._buildUrl(
       `${this.endpoint}/${treeSlug}/collections/${collectionSlug}`,
       { tree_id: treeId }
     );
-    return http.put(url, payload, {
-      headers: headers,
-      ...options,
-    });
+    return http.put(url, payload, { headers: ACCEPT_JSON, ...options });
   }
 
   /**
@@ -255,18 +207,8 @@ export class CommunityCollectionsApi {
    * @param {string|null} treeId - Tree ID (optional)
    * @param {boolean} cascade - Whether to delete child collections (default: false)
    */
-  async delete_collection(
-    treeSlug,
-    collectionSlug,
-    options,
-    treeId = null,
-    cascade = false
-  ) {
+  deleteCollection(treeSlug, collectionSlug, options = {}, treeId = null, cascade = false) {
     this._validateTreeIdentifier(treeSlug, treeId);
-    options = options || {};
-    const headers = {
-      Accept: "application/json",
-    };
     const url = this._buildUrl(
       `${this.endpoint}/${treeSlug}/collections/${collectionSlug}`,
       {
@@ -274,10 +216,7 @@ export class CommunityCollectionsApi {
         cascade: cascade ? "true" : undefined,
       }
     );
-    return http.delete(url, {
-      headers: headers,
-      ...options,
-    });
+    return http.delete(url, { headers: ACCEPT_JSON, ...options });
   }
 
   /**
@@ -288,24 +227,17 @@ export class CommunityCollectionsApi {
    * @param {object} options - Custom options
    * @param {string|null} treeId - Tree ID (optional)
    */
-  async get_collection(treeSlug, collectionSlug, options, treeId = null) {
+  getCollection(treeSlug, collectionSlug, options = {}, treeId = null) {
     this._validateTreeIdentifier(treeSlug, treeId);
-    options = options || {};
-    const headers = {
-      Accept: "application/json",
-    };
     const url = this._buildUrl(
       `${this.endpoint}/${treeSlug}/collections/${collectionSlug}`,
       { tree_id: treeId }
     );
-    return http.get(url, {
-      headers: headers,
-      ...options,
-    });
+    return http.get(url, { headers: ACCEPT_JSON, ...options });
   }
 
   /**
-   * Test search query for a Community Collection.
+   * Preview records matching a collection search query.
    *
    * @param {string} treeSlug - Slug of the collection tree
    * @param {string} collectionSlug - Slug of the collection
@@ -313,58 +245,30 @@ export class CommunityCollectionsApi {
    * @param {object} options - Custom options
    * @param {string|null} treeId - Tree ID (optional)
    */
-  async test_search_query_for_collection(
-    treeSlug,
-    collectionSlug,
-    payload,
-    options,
-    treeId = null
-  ) {
+  previewCollectionRecords(treeSlug, collectionSlug, payload, options = {}, treeId = null) {
     this._validateTreeIdentifier(treeSlug, treeId);
-    options = options || {};
-    const headers = {
-      Accept: "application/json",
-    };
     const url = this._buildUrl(
       `${this.endpoint}/${treeSlug}/collections-records-test`,
-      {
-        test_col_slug: collectionSlug,
-        tree_id: treeId,
-      }
+      { test_col_slug: collectionSlug, tree_id: treeId }
     );
-    return http.post(url, payload, {
-      headers: headers,
-      ...options,
-    });
+    return http.post(url, payload, { headers: ACCEPT_JSON, ...options });
   }
 
   /**
-   * Test search query for a Community Base Collection of tree.
+   * Preview records matching the base collection query of a tree.
    *
    * @param {string} treeSlug - Slug of the collection tree
    * @param {object} payload - Serialized Collection object
    * @param {object} options - Custom options
    * @param {string|null} treeId - Tree ID (optional)
    */
-  async test_search_query_for_base_collection(
-    treeSlug,
-    payload,
-    options,
-    treeId = null
-  ) {
+  previewBaseCollectionRecords(treeSlug, payload, options = {}, treeId = null) {
     this._validateTreeIdentifier(treeSlug, treeId);
-    options = options || {};
-    const headers = {
-      Accept: "application/json",
-    };
     const url = this._buildUrl(
       `${this.endpoint}/${treeSlug}/collections-records-test`,
       { tree_id: treeId }
     );
-    return http.post(url, payload, {
-      headers: headers,
-      ...options,
-    });
+    return http.post(url, payload, { headers: ACCEPT_JSON, ...options });
   }
 
   /**
@@ -373,16 +277,9 @@ export class CommunityCollectionsApi {
    * @param {object} orderData - Order data with format: { order: [{slug, order}, ...] }
    * @param {object} options - Custom options
    */
-  async batch_reorder_trees(orderData, options = {}) {
-    const headers = {
-      "Accept": "application/json",
-      "Content-Type": "application/json",
-    };
+  batchReorderTrees(orderData, options = {}) {
     const url = `${this.endpoint}/reorder`;
-    return http.post(url, orderData, {
-      headers: headers,
-      ...options,
-    });
+    return http.post(url, orderData, { headers: ACCEPT_JSON_CONTENT_JSON, ...options });
   }
 
   /**
@@ -392,15 +289,8 @@ export class CommunityCollectionsApi {
    * @param {object} orderData - Order data with format: { order: [{slug, order}, ...] }
    * @param {object} options - Custom options
    */
-  async batch_reorder_collections(treeSlug, orderData, options = {}) {
-    const headers = {
-      "Accept": "application/json",
-      "Content-Type": "application/json",
-    };
+  batchReorderCollections(treeSlug, orderData, options = {}) {
     const url = `${this.endpoint}/${treeSlug}/collections/reorder`;
-    return http.post(url, orderData, {
-      headers: headers,
-      ...options,
-    });
+    return http.post(url, orderData, { headers: ACCEPT_JSON_CONTENT_JSON, ...options });
   }
 }

@@ -15,9 +15,10 @@ import {
   Container,
   Message,
 } from "semantic-ui-react";
+import ReorderableList from "./ReorderableList";
 import { i18next } from "@translations/invenio_collections/i18next";
 import { CollectionsContext } from "../../api/CollectionsContextProvider";
-import CollectionBrowseCard from "./CollectionBrowseCard";
+import CollectionItem from "./CollectionItem";
 
 class CollectionTreeBrowseView extends Component {
   static contextType = CollectionsContext;
@@ -28,6 +29,8 @@ class CollectionTreeBrowseView extends Component {
       rootCollections: [],
       draggedIndex: null,
       draggedOverIndex: null,
+      isReordering: false,
+      reorderError: null,
     };
   }
 
@@ -181,10 +184,11 @@ class CollectionTreeBrowseView extends Component {
     items.splice(draggedOverIndex, 0, reorderedItem);
 
     // Optimistic UI update
-    this.setState({ rootCollections: items });
+    this.setState({ rootCollections: items, reorderError: null });
 
     // Use batch endpoint for single API call
     if (this.context.api && collectionTree) {
+      this.setState({ isReordering: true });
       try {
         const orderPayload = {
           order: items.map((collection, index) => ({
@@ -193,14 +197,19 @@ class CollectionTreeBrowseView extends Component {
           })),
         };
 
-        await this.context.api.batch_reorder_collections(
+        await this.context.api.batchReorderCollections(
           collectionTree.slug,
           orderPayload
         );
       } catch (error) {
         console.error("Failed to update collection order:", error);
         // Revert on error
-        this.setState({ rootCollections });
+        this.setState({
+          rootCollections,
+          reorderError: i18next.t("Failed to save new order. Please try again."),
+        });
+      } finally {
+        this.setState({ isReordering: false });
       }
     }
   };
@@ -215,7 +224,7 @@ class CollectionTreeBrowseView extends Component {
       showHeader = false,
       maxCollectionDepth,
     } = this.props;
-    const { collectionMap, rootCollections, draggedIndex, draggedOverIndex } =
+    const { collectionMap, rootCollections, draggedIndex, draggedOverIndex, isReordering, reorderError } =
       this.state;
 
     if (!collectionTree) {
@@ -279,7 +288,8 @@ class CollectionTreeBrowseView extends Component {
             </Message.Content>
           </Message>
         ) : (
-          <Grid relaxed stackable>
+          <ReorderableList isSaving={isReordering} error={reorderError}>
+              <Grid relaxed stackable>
             {rootCollections.map((collection, index) => {
               const isCollectionDragging = draggedIndex === index;
               const isCollectionDraggedOver =
@@ -294,15 +304,15 @@ class CollectionTreeBrowseView extends Component {
                   } ${isCollectionDraggedOver ? "drag-over" : ""}`}
                   onDragOver={(e) => this.handleDragOver(e, index)}
                 >
-                  <CollectionBrowseCard
+                  <CollectionItem
                     collection={collection}
                     allCollections={collectionMap}
                     onEdit={this.handleEdit}
                     onDelete={this.handleDelete}
                     onAddChild={this.handleAddChild}
-                    community={community}
                     collectionApi={this.context.api}
                     treeSlug={collectionTree.slug}
+                    community={community}
                     isDraggable
                     dragIndex={index}
                     onDragStart={this.handleDragStart}
@@ -313,7 +323,8 @@ class CollectionTreeBrowseView extends Component {
                 </Grid.Column>
               );
             })}
-          </Grid>
+              </Grid>
+          </ReorderableList>
         )}
       </Container>
     );

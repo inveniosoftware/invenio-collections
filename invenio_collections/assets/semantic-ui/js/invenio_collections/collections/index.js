@@ -10,7 +10,7 @@ import { OverridableContext, overrideStore } from "react-overridable";
 import { CollectionsContextProvider } from "../api/CollectionsContextProvider";
 import CollectionTrees from "./CollectionTrees";
 
-const domContainer = document.getElementById("app");
+const domContainer = document.getElementById("invenio-collections-app");
 const community = JSON.parse(domContainer.dataset.community);
 const permissions = JSON.parse(domContainer.dataset.permissions);
 const maxCollectionDepth = JSON.parse(domContainer.dataset.maxCollectionDepth);

@@ -16,7 +16,7 @@ def test_create(app, db, community):
     tree = CollectionTree.create(
         title="Tree 1",
         order=10,
-        community_id=community.id,
+        namespace_id=community.id,
         slug="tree-1",
     )
 
@@ -51,7 +51,7 @@ def test_resolve(app, db, community):
     tree = CollectionTree.create(
         title="Tree 1",
         order=10,
-        community_id=community.id,
+        namespace_id=community.id,
         slug="tree-1",
     )
 

@@ -7,6 +7,7 @@
 """Test suite for collection limits."""
 
 import pytest
+from invenio_access.permissions import system_identity
 
 from invenio_collections.api import Collection, CollectionTree
 from invenio_collections.errors import MaxCollectionsExceeded, MaxTreesExceeded
@@ -26,16 +27,16 @@ def test_max_trees_limit(app, db, collections_service, community, community_owne
 
     # Create first tree - should succeed
     tree1 = collections_service.create_tree(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         data={"slug": "tree-1", "title": "Tree 1"},
     )
     assert tree1._tree.slug == "tree-1"
 
     # Create second tree - should succeed
     tree2 = collections_service.create_tree(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         data={"slug": "tree-2", "title": "Tree 2"},
     )
     assert tree2._tree.slug == "tree-2"
@@ -43,8 +44,8 @@ def test_max_trees_limit(app, db, collections_service, community, community_owne
     # Try to create third tree - should fail
     with pytest.raises(MaxTreesExceeded) as exc_info:
         collections_service.create_tree(
-            identity=community_owner.identity,
-            community_id=community.id,
+            identity=system_identity,
+            namespace_id=community.id,
             data={"slug": "tree-3", "title": "Tree 3"},
         )
 
@@ -65,14 +66,14 @@ def test_max_collections_limit(
     tree = CollectionTree.create(
         title="Test Tree",
         order=10,
-        community_id=community.id,
+        namespace_id=community.id,
         slug="test-tree",
     )
 
     # Create first collection - should succeed
     coll1 = collections_service.create(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         tree_slug="test-tree",
         data={
             "slug": "collection-1",
@@ -84,8 +85,8 @@ def test_max_collections_limit(
 
     # Create second collection - should succeed
     coll2 = collections_service.create(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         tree_slug="test-tree",
         data={
             "slug": "collection-2",
@@ -97,8 +98,8 @@ def test_max_collections_limit(
 
     # Create third collection - should succeed
     coll3 = collections_service.create(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         tree_slug="test-tree",
         data={
             "slug": "collection-3",
@@ -111,8 +112,8 @@ def test_max_collections_limit(
     # Try to create fourth collection - should fail
     with pytest.raises(MaxCollectionsExceeded) as exc_info:
         collections_service.create(
-            identity=community_owner.identity,
-            community_id=community.id,
+            identity=system_identity,
+            namespace_id=community.id,
             tree_slug="test-tree",
             data={
                 "slug": "collection-4",
@@ -138,14 +139,14 @@ def test_max_collections_limit_with_subcollections(
     tree = CollectionTree.create(
         title="Test Tree",
         order=10,
-        community_id=community.id,
+        namespace_id=community.id,
         slug="test-tree-sub",
     )
 
     # Create parent collection
     parent = collections_service.create(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         tree_slug="test-tree-sub",
         data={
             "slug": "parent",
@@ -156,8 +157,8 @@ def test_max_collections_limit_with_subcollections(
 
     # Create child collection
     child = collections_service.add(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         tree_slug="test-tree-sub",
         slug="parent",
         data={
@@ -171,8 +172,8 @@ def test_max_collections_limit_with_subcollections(
     # Try to create another collection (would be 3rd) - should fail
     with pytest.raises(MaxCollectionsExceeded):
         collections_service.create(
-            identity=community_owner.identity,
-            community_id=community.id,
+            identity=system_identity,
+            namespace_id=community.id,
             tree_slug="test-tree-sub",
             data={
                 "slug": "collection-3",
@@ -190,8 +191,8 @@ def test_unlimited_trees(app, db, collections_service, community, community_owne
     # Create multiple trees - all should succeed
     for i in range(15):
         tree = collections_service.create_tree(
-            identity=community_owner.identity,
-            community_id=community.id,
+            identity=system_identity,
+            namespace_id=community.id,
             data={"slug": f"tree-{i}", "title": f"Tree {i}"},
         )
         assert tree._tree.slug == f"tree-{i}"
@@ -208,15 +209,15 @@ def test_unlimited_collections(
     tree = CollectionTree.create(
         title="Unlimited Test Tree",
         order=10,
-        community_id=community.id,
+        namespace_id=community.id,
         slug="unlimited-tree",
     )
 
     # Create multiple collections - all should succeed
     for i in range(15):
         coll = collections_service.create(
-            identity=community_owner.identity,
-            community_id=community.id,
+            identity=system_identity,
+            namespace_id=community.id,
             tree_slug="unlimited-tree",
             data={
                 "slug": f"collection-{i}",
@@ -233,22 +234,22 @@ def test_error_messages(app, db, collections_service, community, community_owner
     app.config["COLLECTIONS_MAX_TREES"] = 1
 
     tree1 = collections_service.create_tree(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         data={"slug": "tree-1", "title": "Tree 1"},
     )
 
     try:
         collections_service.create_tree(
-            identity=community_owner.identity,
-            community_id=community.id,
+            identity=system_identity,
+            namespace_id=community.id,
             data={"slug": "tree-2", "title": "Tree 2"},
         )
         pytest.fail("Should have raised MaxTreesExceeded")
     except MaxTreesExceeded as e:
         assert e.current_count == 1
         assert e.max_trees == 1
-        assert "Community already has 1 categories" in str(e)
+        assert "Namespace already has 1 categories" in str(e)
         assert "Maximum allowed is 1" in str(e)
 
     # Test collection limit error message
@@ -257,13 +258,13 @@ def test_error_messages(app, db, collections_service, community, community_owner
     tree2 = CollectionTree.create(
         title="Test Tree 2",
         order=10,
-        community_id=community.id,
+        namespace_id=community.id,
         slug="test-tree-2",
     )
 
     coll1 = collections_service.create(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         tree_slug="test-tree-2",
         data={
             "slug": "collection-1",
@@ -274,8 +275,8 @@ def test_error_messages(app, db, collections_service, community, community_owner
 
     try:
         collections_service.create(
-            identity=community_owner.identity,
-            community_id=community.id,
+            identity=system_identity,
+            namespace_id=community.id,
             tree_slug="test-tree-2",
             data={
                 "slug": "collection-2",

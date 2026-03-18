@@ -11,6 +11,8 @@ import uuid
 from copy import deepcopy
 
 import pytest
+from invenio_access.permissions import system_identity
+from marshmallow import ValidationError
 
 from invenio_collections.api import Collection, CollectionTree
 from invenio_collections.errors import (
@@ -40,7 +42,7 @@ def add_collections(app, db, community):
         tree = CollectionTree.create(
             title="Tree 1",
             order=10,
-            community_id=community.id,
+            namespace_id=community.id,
             slug=f"tree-1-{unique_id}",
         )
         c1 = Collection.create(
@@ -70,13 +72,13 @@ def test_collections_read(
     c1 = collections[1]
 
     # Read by id
-    res = collections_service.read(identity=community_owner.identity, id_=c0.id)
+    res = collections_service.read(identity=system_identity, id_=c0.id)
     assert res._collection.id == c0.id
 
     # Read by slug
     res = collections_service.read(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         tree_slug=c0.collection_tree.slug,
         slug=c0.slug,
     )
@@ -88,12 +90,12 @@ def test_collections_create(app, db, collections_service, community, community_o
     tree = CollectionTree.create(
         title="Tree for Create Test",
         order=10,
-        community_id=community.id,
+        namespace_id=community.id,
         slug="tree-create-test",
     )
     collection = collections_service.create(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         tree_slug="tree-create-test",
         data={
             "slug": "my-collection",
@@ -109,7 +111,7 @@ def test_collections_create(app, db, collections_service, community, community_o
     assert collection.collection_tree.id == tree.id
 
     read_collection = collections_service.read(
-        identity=community_owner.identity, id_=collection.id
+        identity=system_identity, id_=collection.id
     )
     assert read_collection._collection.id == collection.id
     assert read_collection._collection.title == "My Collection"
@@ -124,8 +126,8 @@ def test_collections_add(
     c2 = collections[1]
 
     c3 = collections_service.add(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         tree_slug=c1.collection_tree.slug,
         slug=c2.slug,
         data={
@@ -139,12 +141,12 @@ def test_collections_add(
     c3 = c3._collection
 
     # Read the collection
-    res = collections_service.read(identity=community_owner.identity, id_=c3.id)
+    res = collections_service.read(identity=system_identity, id_=c3.id)
     assert res._collection.id == c3.id
     assert res._collection.title == "Collection 3"
 
     # Read the parent collection
-    res = collections_service.read(identity=community_owner.identity, id_=c2.id)
+    res = collections_service.read(identity=system_identity, id_=c2.id)
     assert res.to_dict()[c2.id]["children"] == [c3.id]
 
 
@@ -159,8 +161,8 @@ def test_collections_results(
     c0 = collections[0]
     c1 = collections[1]
     c3 = collections_service.add(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         tree_slug=c0.collection_tree.slug,
         slug=c1.slug,
         data={
@@ -170,9 +172,7 @@ def test_collections_results(
         },
     )
     # Read the collection tree up to depth 2
-    res = collections_service.read(
-        identity=community_owner.identity, id_=c0.id, depth=2
-    )
+    res = collections_service.read(identity=system_identity, id_=c0.id, depth=2)
     r_dict = res.to_dict()
 
     tree_slug = c0.collection_tree.slug
@@ -181,7 +181,8 @@ def test_collections_results(
         c0.id: {
             "breadcrumbs": [
                 {
-                    "link": f"https://127.0.0.1:5000/communities/public/collections/{tree_slug}/collection-1",
+                    "link": None,
+                    "slug": "collection-1",
                     "title": "Collection 1",
                 }
             ],
@@ -189,7 +190,6 @@ def test_collections_results(
             "depth": 0,
             "id": c0.id,
             "links": {
-                "self_html": f"https://127.0.0.1:5000/communities/public/collections/{tree_slug}/collection-1",
                 "search": f"https://127.0.0.1:5000/api/collections/{c0.id}/records",
             },
             "num_records": 0,
@@ -203,7 +203,6 @@ def test_collections_results(
             "depth": 1,
             "id": c1.id,
             "links": {
-                "self_html": f"https://127.0.0.1:5000/communities/public/collections/{tree_slug}/collection-2",
                 "search": f"https://127.0.0.1:5000/api/collections/{c1.id}/records",
             },
             "num_records": 0,
@@ -216,9 +215,7 @@ def test_collections_results(
     assert expected == r_dict
 
     # Read the collection tree up to depth 3
-    res = collections_service.read(
-        identity=community_owner.identity, id_=c0.id, depth=3
-    )
+    res = collections_service.read(identity=system_identity, id_=c0.id, depth=3)
     r_dict = res.to_dict()
 
     # Get the API object, just for the sake of testing
@@ -228,7 +225,8 @@ def test_collections_results(
         c0.id: {
             "breadcrumbs": [
                 {
-                    "link": f"https://127.0.0.1:5000/communities/public/collections/{tree_slug}/collection-1",
+                    "link": None,
+                    "slug": "collection-1",
                     "title": "Collection 1",
                 }
             ],
@@ -236,7 +234,6 @@ def test_collections_results(
             "depth": 0,
             "id": c0.id,
             "links": {
-                "self_html": f"https://127.0.0.1:5000/communities/public/collections/{tree_slug}/collection-1",
                 "search": f"https://127.0.0.1:5000/api/collections/{c0.id}/records",
             },
             "num_records": 0,
@@ -250,7 +247,6 @@ def test_collections_results(
             "depth": 1,
             "id": c1.id,
             "links": {
-                "self_html": f"https://127.0.0.1:5000/communities/public/collections/{tree_slug}/collection-2",
                 "search": f"https://127.0.0.1:5000/api/collections/{c1.id}/records",
             },
             "num_records": 0,
@@ -264,7 +260,6 @@ def test_collections_results(
             "depth": 2,
             "id": c3.id,
             "links": {
-                "self_html": f"https://127.0.0.1:5000/communities/public/collections/{tree_slug}/collection-3",
                 "search": f"https://127.0.0.1:5000/api/collections/{c3.id}/records",
             },
             "num_records": 0,
@@ -285,7 +280,7 @@ def test_update(app, db, add_collections, collections_service, community_owner):
 
     # Update by ID
     collections_service.update(
-        community_owner.identity,
+        system_identity,
         c0.id,
         data={
             "slug": "new-slug",
@@ -295,7 +290,7 @@ def test_update(app, db, add_collections, collections_service, community_owner):
     )
 
     res = collections_service.read(
-        identity=community_owner.identity,
+        identity=system_identity,
         id_=c0.id,
     )
 
@@ -304,7 +299,7 @@ def test_update(app, db, add_collections, collections_service, community_owner):
 
     # Update by object
     collections_service.update(
-        community_owner.identity,
+        system_identity,
         c0,
         data={
             "slug": "new-slug-2",
@@ -314,7 +309,7 @@ def test_update(app, db, add_collections, collections_service, community_owner):
     )
 
     res = collections_service.read(
-        identity=community_owner.identity,
+        identity=system_identity,
         id_=c0.id,
     )
     assert res.to_dict()[c0.id]["slug"] == "new-slug-2"
@@ -329,7 +324,7 @@ def test_read_many(app, db, add_collections, collections_service, community_owne
 
     # Read two collections
     res = collections_service.read_many(
-        community_owner.identity,
+        system_identity,
         ids_=[c0.id, c1.id],
         depth=0,
     )
@@ -347,7 +342,7 @@ def test_read_all(app, db, add_collections, collections_service, community_owner
     c1 = collections[1]
 
     # Read all collections
-    res = collections_service.read_all(community_owner.identity, depth=0)
+    res = collections_service.read_all(system_identity, depth=0)
 
     res = res.to_dict()
     # At least our 2 collections should be in the result
@@ -362,15 +357,15 @@ def test_read_invalid(app, db, collections_service, community_owner):
     """Test reading a non-existing collection."""
     with pytest.raises(ValueError):
         collections_service.read(
-            identity=community_owner.identity,
+            identity=system_identity,
         )
 
 
 def test_create_tree(app, db, collections_service, community, community_owner):
     """Test creating a collection tree via service."""
     tree = collections_service.create_tree(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         data={
             "slug": "test-tree",
             "title": "Test Tree",
@@ -381,7 +376,7 @@ def test_create_tree(app, db, collections_service, community, community_owner):
     assert tree._tree.slug == "test-tree"
     assert tree._tree.title == "Test Tree"
     assert tree._tree.order == 1
-    assert str(tree._tree.community_id) == str(community.id)
+    assert str(tree._tree.namespace_id) == str(community.id)
 
 
 def test_read_tree(app, db, collections_service, community, community_owner):
@@ -390,14 +385,14 @@ def test_read_tree(app, db, collections_service, community, community_owner):
     tree = CollectionTree.create(
         title="Read Tree",
         slug="read-tree",
-        community_id=community.id,
+        namespace_id=community.id,
         order=1,
     )
 
     # Read by slug
     result = collections_service.read_tree(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         tree_slug="read-tree",
     )
 
@@ -412,14 +407,14 @@ def test_update_tree(app, db, collections_service, community, community_owner):
     tree = CollectionTree.create(
         title="Original Title",
         slug="update-tree",
-        community_id=community.id,
+        namespace_id=community.id,
         order=1,
     )
 
     # Update the tree
     updated = collections_service.update_tree(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         tree_slug="update-tree",
         data={
             "title": "Updated Title",
@@ -441,7 +436,7 @@ def test_delete_tree_without_cascade(
     tree = CollectionTree.create(
         title="Tree to Delete",
         slug="delete-tree",
-        community_id=community.id,
+        namespace_id=community.id,
         order=1,
     )
     Collection.create(
@@ -454,8 +449,8 @@ def test_delete_tree_without_cascade(
     # Try to delete without cascade should fail
     with pytest.raises(CollectionTreeHasCollections):
         collections_service.delete_tree(
-            identity=community_owner.identity,
-            community_id=community.id,
+            identity=system_identity,
+            namespace_id=community.id,
             tree_slug="delete-tree",
             cascade=False,
         )
@@ -469,7 +464,7 @@ def test_delete_tree_with_cascade(
     tree = CollectionTree.create(
         title="Tree to Delete",
         slug="delete-tree-cascade",
-        community_id=community.id,
+        namespace_id=community.id,
         order=1,
     )
     collection = Collection.create(
@@ -481,8 +476,8 @@ def test_delete_tree_with_cascade(
 
     # Delete with cascade should succeed
     collections_service.delete_tree(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         tree_slug="delete-tree-cascade",
         cascade=True,
     )
@@ -490,7 +485,7 @@ def test_delete_tree_with_cascade(
     # Verify tree and collection are deleted
 
     with pytest.raises(CollectionTreeNotFound):
-        CollectionTree.resolve(slug="delete-tree-cascade", community_id=community.id)
+        CollectionTree.resolve(slug="delete-tree-cascade", namespace_id=community.id)
 
     with pytest.raises(CollectionNotFound):
         Collection.read(id_=collection.id)
@@ -502,20 +497,20 @@ def test_list_trees(app, db, collections_service, community, community_owner):
     tree1 = CollectionTree.create(
         title="Tree 1 for List",
         slug="tree-list-1",
-        community_id=community.id,
+        namespace_id=community.id,
         order=1,
     )
     tree2 = CollectionTree.create(
         title="Tree 2 for List",
         slug="tree-list-2",
-        community_id=community.id,
+        namespace_id=community.id,
         order=2,
     )
 
     # List trees
     result = collections_service.list_trees(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
     )
 
     trees_dict = result.to_dict()
@@ -533,14 +528,14 @@ def test_duplicate_collection_slug_same_tree(
     tree = CollectionTree.create(
         title="Duplicate Test Tree",
         slug="tree-duplicate-test",
-        community_id=community.id,
+        namespace_id=community.id,
         order=1,
     )
 
     # Create first collection
     collections_service.create(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         tree_slug="tree-duplicate-test",
         data={
             "slug": "duplicate-slug",
@@ -552,8 +547,8 @@ def test_duplicate_collection_slug_same_tree(
     # Try to create second collection with same slug in same tree
     with pytest.raises(DuplicateSlugError):
         collections_service.create(
-            identity=community_owner.identity,
-            community_id=community.id,
+            identity=system_identity,
+            namespace_id=community.id,
             tree_slug="tree-duplicate-test",
             data={
                 "slug": "duplicate-slug",
@@ -570,8 +565,8 @@ def test_duplicate_tree_slug_same_community(
 
     # Create first tree
     collections_service.create_tree(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         data={
             "slug": "duplicate-tree",
             "title": "First Tree",
@@ -582,8 +577,8 @@ def test_duplicate_tree_slug_same_community(
     # Try to create second tree with same slug in same community
     with pytest.raises(DuplicateSlugError):
         collections_service.create_tree(
-            identity=community_owner.identity,
-            community_id=community.id,
+            identity=system_identity,
+            namespace_id=community.id,
             data={
                 "slug": "duplicate-tree",
                 "title": "Second Tree",
@@ -598,14 +593,14 @@ def test_collection_not_found(app, db, collections_service, community, community
     tree = CollectionTree.create(
         title="Not Found Test Tree",
         slug="tree-not-found-test",
-        community_id=community.id,
+        namespace_id=community.id,
         order=1,
     )
 
     with pytest.raises(CollectionNotFound):
         collections_service.read(
-            identity=community_owner.identity,
-            community_id=community.id,
+            identity=system_identity,
+            namespace_id=community.id,
             tree_slug="tree-not-found-test",
             slug="non-existent",
         )
@@ -618,8 +613,8 @@ def test_collection_tree_not_found(
 
     with pytest.raises(CollectionTreeNotFound):
         collections_service.read_tree(
-            identity=community_owner.identity,
-            community_id=community.id,
+            identity=system_identity,
+            namespace_id=community.id,
             tree_slug="non-existent-tree",
         )
 
@@ -634,8 +629,8 @@ def test_delete_collection_with_children_no_cascade(
 
     with pytest.raises(CollectionHasChildren):
         collections_service.delete(
-            identity=community_owner.identity,
-            community_id=community.id,
+            identity=system_identity,
+            namespace_id=community.id,
             tree_slug=parent.collection_tree.slug,
             slug=parent.slug,
             cascade=False,
@@ -654,8 +649,8 @@ def test_delete_collection_with_children_cascade(
 
     # Delete with cascade
     collections_service.delete(
-        identity=community_owner.identity,
-        community_id=community.id,
+        identity=system_identity,
+        namespace_id=community.id,
         tree_slug=parent.collection_tree.slug,
         slug=parent.slug,
         cascade=True,
@@ -670,7 +665,7 @@ def test_delete_collection_with_children_cascade(
         Collection.read(id_=child_id)
 
 
-def test_search_test_collection_records(
+def test_preview_collection_records(
     app,
     db,
     collections_service,
@@ -704,9 +699,9 @@ def test_search_test_collection_records(
     non_matching = record_factory.create_record(record_dict=rec3, community=community)
 
     # Test with collection slug and additional query
-    result = collections_service.search_test_collection_records(
-        identity=community_owner.identity,
-        community_id=community.id,
+    result = collections_service.preview_collection_records(
+        identity=system_identity,
+        namespace_id=community.id,
         tree_slug=c0.collection_tree.slug,
         slug=c0.slug,
         data={"search_query": "metadata.title:additional"},
@@ -723,7 +718,7 @@ def test_search_test_collection_records(
     ), f"Expected 1 record matching 'foo' AND 'additional', got {result.total}"
 
 
-def test_search_test_collection_records_no_slug(
+def test_preview_collection_records_no_slug(
     app,
     db,
     collections_service,
@@ -759,9 +754,9 @@ def test_search_test_collection_records_no_slug(
     non_matching = record_factory.create_record(record_dict=rec3, community=community)
 
     # Test without collection slug (tests query directly without collection filter)
-    result = collections_service.search_test_collection_records(
-        identity=community_owner.identity,
-        community_id=community.id,
+    result = collections_service.preview_collection_records(
+        identity=system_identity,
+        namespace_id=community.id,
         tree_slug=c0.collection_tree.slug,
         slug=None,
         data={"search_query": "metadata.title:test"},
@@ -776,7 +771,7 @@ def test_search_test_collection_records_no_slug(
     assert result.total == 2, f"Expected 2 records matching 'test', got {result.total}"
 
 
-def test_search_test_collection_records_optional_query(
+def test_preview_collection_records_optional_query(
     app,
     db,
     collections_service,
@@ -812,9 +807,9 @@ def test_search_test_collection_records_optional_query(
     non_matching = record_factory.create_record(record_dict=rec3, community=community)
 
     # Test with collection but no additional query (should return all records matching collection query)
-    result = collections_service.search_test_collection_records(
-        identity=community_owner.identity,
-        community_id=community.id,
+    result = collections_service.preview_collection_records(
+        identity=system_identity,
+        namespace_id=community.id,
         tree_slug=c0.collection_tree.slug,
         slug=c0.slug,
         data={},
@@ -831,15 +826,45 @@ def test_search_test_collection_records_optional_query(
     ), f"Expected 2 records matching collection query 'foo', got {result.total}"
 
 
-def test_community_id_resolution_by_slug(
+def test_preview_collection_records_invalid_query(
+    app,
+    db,
+    collections_service,
+    add_collections,
+    community,
+    community_owner,
+):
+    """Test that an invalid search query raises a field-specific ValidationError."""
+    collections = add_collections()
+    c0 = collections[0]
+
+    with pytest.raises(ValidationError) as exc_info:
+        collections_service.preview_collection_records(
+            identity=system_identity,
+            namespace_id=community.id,
+            tree_slug=c0.collection_tree.slug,
+            slug=c0.slug,
+            data={"search_query": "title:[unclosed bracket"},
+        )
+
+    errors = exc_info.value.messages
+    assert errors, "Expected a non-empty error message"
+    # The luqum parse error message should be included
+    error_str = str(errors)
+    assert (
+        "Invalid search query" in error_str
+    ), f"Expected luqum error message, got: {error_str}"
+
+
+def test_namespace_id_resolution_by_slug(
     app, db, collections_service, community, community_owner
 ):
-    """Test that community_id can be resolved from slug."""
+    """Test that namespace_id can be resolved from slug."""
     # Create tree using community slug instead of UUID
     community_slug = community._record.get("slug", community.id)
     tree = collections_service.create_tree(
-        identity=community_owner.identity,
-        community_id=community_slug,  # Use slug instead of ID
+        identity=system_identity,
+        namespace_id=community_slug,  # Use slug instead of ID
         data={
             "slug": "test-slug-resolution",
             "title": "Test Slug Resolution",
@@ -848,4 +873,4 @@ def test_community_id_resolution_by_slug(
     )
 
     assert tree._tree.slug == "test-slug-resolution"
-    assert str(tree._tree.community_id) == str(community.id)
+    assert str(tree._tree.namespace_id) == str(community.id)

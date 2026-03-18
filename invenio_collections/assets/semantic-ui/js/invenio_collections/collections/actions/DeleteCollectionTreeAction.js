@@ -8,6 +8,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { i18next } from "@translations/invenio_collections/i18next";
 import { Button, Modal, Message, Checkbox } from "semantic-ui-react";
+import { withCancel } from "react-invenio-forms";
 import { communityErrorSerializer } from "../../api/serializers";
 
 class DeleteCollectionTreeAction extends Component {
@@ -15,6 +16,10 @@ class DeleteCollectionTreeAction extends Component {
     error: "",
     cascade: false,
   };
+
+  componentWillUnmount() {
+    this.cancellableDelete && this.cancellableDelete.cancel();
+  }
 
   setGlobalError = (error) => {
     const { message } = communityErrorSerializer(error);
@@ -26,22 +31,18 @@ class DeleteCollectionTreeAction extends Component {
   };
 
   handleDelete = async () => {
-    const { collectionTree, collectionApi } = this.props;
+    const { collectionTree: { slug }, collectionApi, onSuccess } = this.props;
     const { cascade } = this.state;
 
+    this.cancellableDelete = withCancel(
+      collectionApi.deleteCollectionTree(slug, {}, null, cascade)
+    );
     try {
-      await collectionApi.delete_collection_tree(
-        collectionTree.slug,
-        {},
-        null,
-        cascade
-      );
-      this.props.onSuccess();
+      await this.cancellableDelete.promise;
+      onSuccess();
     } catch (error) {
       if (error === "UNMOUNTED") return;
-
-      const { message, errors } = communityErrorSerializer(error);
-
+      const { message } = communityErrorSerializer(error);
       if (message) {
         this.setGlobalError(error);
       }
@@ -50,7 +51,7 @@ class DeleteCollectionTreeAction extends Component {
 
   render() {
     const { error, cascade } = this.state;
-    const { hasCollections } = this.props;
+    const { hasCollections, confirmationMessage, handleCancel } = this.props;
 
     return (
       <>
@@ -61,7 +62,7 @@ class DeleteCollectionTreeAction extends Component {
               <p>{error}</p>
             </Message>
           )}
-          <p>{this.props.confirmationMessage}</p>
+          <p>{confirmationMessage}</p>
           {hasCollections && (
             <div className="rel-mt-2">
               <Message info>
@@ -94,7 +95,7 @@ class DeleteCollectionTreeAction extends Component {
         </Modal.Content>
         <Modal.Actions>
           <div className="flex justify-space-between">
-            <Button onClick={this.props.handleCancel}>{i18next.t("Cancel")}</Button>
+            <Button onClick={handleCancel}>{i18next.t("Cancel")}</Button>
             <Button
               negative
               onClick={this.handleDelete}

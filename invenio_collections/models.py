@@ -8,6 +8,7 @@
 """Collections models."""
 
 from invenio_db import db
+from invenio_i18n import gettext as _
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy_utils.types import UUIDType
@@ -56,10 +57,12 @@ class CollectionTree(db.Model, db.Timestamp):
             # Check if it's a duplicate slug error
             if "uq_collections_collection_tree_slug_namespace_id" in str(e.orig):
                 raise DuplicateSlugError(
-                    f"A collection tree with slug '{slug}' already exists in this namespace."
+                    _(
+                        f"A collection tree with slug '{slug}' already exists in this namespace."
+                    )
                 )
             # Re-raise if it's a different integrity error
-            raise
+            raise e
         return collection_tree
 
     @classmethod
@@ -97,10 +100,12 @@ class CollectionTree(db.Model, db.Timestamp):
             # Check if it's a duplicate slug error
             if "uq_collections_collection_tree_slug_namespace_id" in str(e.orig):
                 raise DuplicateSlugError(
-                    f"A collection tree with slug '{kwargs.get('slug', 'unknown')}' already exists in this namespace."
+                    _(
+                        f"A collection tree with slug '{kwargs.get('slug', 'unknown')}' already exists in this namespace."
+                    )
                 )
             # Re-raise if it's a different integrity error
-            raise
+            raise e
         return self
 
 
@@ -174,10 +179,10 @@ class Collection(db.Model, db.Timestamp):
             # Check if it's a duplicate slug error
             if "uq_collections_collection_slug_tree_id" in str(e.orig):
                 raise DuplicateSlugError(
-                    f"A collection with slug '{slug}' already exists in this tree."
+                    _(f"A collection with slug '{slug}' already exists in this tree.")
                 )
             # Re-raise if it's a different integrity error
-            raise
+            raise e
         return collection
 
     @classmethod
@@ -217,10 +222,12 @@ class Collection(db.Model, db.Timestamp):
             # Check if it's a duplicate slug error
             if "uq_collections_collection_slug_tree_id" in str(e.orig):
                 raise DuplicateSlugError(
-                    f"A collection with slug '{kwargs.get('slug', 'unknown')}' already exists in this tree."
+                    _(
+                        f"A collection with slug '{kwargs.get('slug', 'unknown')}' already exists in this tree."
+                    )
                 )
             # Re-raise if it's a different integrity error
-            raise
+            raise e
         return self
 
     @classmethod

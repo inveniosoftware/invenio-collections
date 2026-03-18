@@ -7,7 +7,7 @@
 # it under the terms of the MIT License; see LICENSE file for more details.
 """Collections service config."""
 
-from invenio_records_permissions.generators import SystemProcess, AnyUser
+from invenio_records_permissions.generators import AnyUser, SystemProcess
 from invenio_records_permissions.policies import BasePermissionPolicy
 from invenio_records_resources.services import EndpointLink
 from invenio_records_resources.services.base import ServiceConfig
