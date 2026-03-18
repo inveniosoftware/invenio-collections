@@ -10,6 +10,10 @@
 Changes
 =======
 
+Version v6.0.0 (released 2026-03-18)
+
+- change(setup): upgrade invenio-rdm-records, communities, jobs
+
 Version v5.0.1 (released 2026-03-17)
 
 - fix(setup):  remove unused administration dependency
