@@ -30,7 +30,6 @@ readme = "README.rst"
 
 requires-python = ">=3.9"
 dependencies = [
-  "invenio-communities>=25.0.0,<26.0.0",
   "invenio-rdm-records>=27.0.0,<28.0.0",
   "invenio-administration>=5.0.0,<6.0.0",
   "invenio-records-resources>=9.0.0,<10.0.0",
@@ -62,9 +61,6 @@ invenio_collections = "invenio_collections.views:create_bp"
 
 [project.entry-points."invenio_assets.webpack"]
 invenio_collections = "invenio_collections.webpack:theme"
-
-[project.entry-points."invenio_base.blueprints"]
-invenio_collections_ui = "invenio_collections.views.ui:create_ui_blueprint"
 
 [project.entry-points."invenio_celery.tasks"]
 invenio_collections = "invenio_collections.tasks"

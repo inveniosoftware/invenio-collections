@@ -114,15 +114,11 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
     @response_handler()
     def update(self):
         """Update collection."""
-        collection = self.service.read(
+        item = self.service.update(
             identity=g.identity,
             namespace_id=resource_requestctx.view_args["pid_value"],
             tree_slug=resource_requestctx.view_args["tree_slug"],
             slug=resource_requestctx.view_args["col_slug"],
-        )
-        item = self.service.update(
-            identity=g.identity,
-            collection_or_id=collection._collection,
             data=resource_requestctx.data or {},
         )
         return item.to_dict(), 200
@@ -157,23 +153,6 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
         )
         return records.to_dict(), 200
 
-    def _reduced_search_output(self, result):
-        """Reduce search output for testing."""
-        output = {"hits": {"hits": [], "total": result["hits"]["total"]}}
-        output_hits = output["hits"]["hits"]
-        for hit in result.get("hits", {}).get("hits", [])[:5]:
-            metadata = hit.get("metadata", {})
-            item = {
-                "metadata": {
-                    "resource_type": metadata.get("resource_type"),
-                    "title": metadata.get("title"),
-                    "description": metadata.get("description"),
-                    "creators": metadata.get("creators"),
-                },
-            }
-            output_hits.append(item)
-        return output
-
     @request_data
     @request_view_args
     @request_extra_args
@@ -181,11 +160,10 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
     @response_handler(many=True)
     def search_base_test_records(self):
         """Search records for a collection tree with or without existing collections and new search query."""
-        # Extract test_col_slug from extra args before passing to service
         args_dict = dict(resource_requestctx.args) if resource_requestctx.args else {}
         test_col_slug = args_dict.pop("test_col_slug", None)
 
-        records = self.service.search_test_collection_records(
+        records = self.service.preview_collection_records(
             g.identity,
             namespace_id=resource_requestctx.view_args["pid_value"],
             tree_slug=resource_requestctx.view_args["tree_slug"],
@@ -193,7 +171,7 @@ class CollectionsResource(ErrorHandlersMixin, Resource):
             data=resource_requestctx.data or {},
             params=args_dict,
         )
-        return self._reduced_search_output(records.to_dict()), 200
+        return records.to_dict(), 200
 
     @request_data
     @request_view_args

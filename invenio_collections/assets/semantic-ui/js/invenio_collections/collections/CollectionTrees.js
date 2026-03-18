@@ -8,7 +8,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Overridable from "react-overridable";
 import { i18next } from "@translations/invenio_collections/i18next";
-import CollectionTreeCardGroup from "./CollectionTreeCardGroup";
+import CollectionTreeManager from "./CollectionTreeManager";
 
 /**
  * CollectionTrees component
@@ -30,7 +30,7 @@ class CollectionTrees extends Component {
 
     return (
       <Overridable id="CollectionTrees" {...this.props}>
-        <CollectionTreeCardGroup
+        <CollectionTreeManager
           community={community}
           permissions={permissions}
           maxCollectionDepth={maxCollectionDepth}

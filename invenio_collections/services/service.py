@@ -37,6 +37,7 @@ from ..errors import (
 from .results import (
     CollectionItem,
     CollectionList,
+    CollectionSearchPreview,
     CollectionTreeItem,
     CollectionTreeList,
 )
@@ -52,19 +53,8 @@ class CollectionsService(Service):
 
     collection_cls = Collection
 
-    def _resolve_tree(
-        self, tree_id=None, tree_slug=None, namespace_id=None
-    ):
-        """Resolve tree and namespace ID.
-
-        Args:
-            tree_id: The tree ID (optional).
-            tree_slug: The tree slug (optional).
-            namespace_id: The namespace UUID (optional).
-
-        Returns:
-            tuple: (tree, namespace_id)
-        """
+    def _resolve_tree(self, tree_id=None, tree_slug=None, namespace_id=None):
+        """Resolve tree and namespace ID, returning (tree, namespace_id)."""
         if namespace_id:
             namespace_id = str(namespace_id)
 
@@ -78,14 +68,7 @@ class CollectionsService(Service):
         return ctree, namespace_id
 
     def _validate_tree_limit(self, namespace_id):
-        """Validate that adding a new tree doesn't exceed the limit.
-
-        Args:
-            namespace_id: The namespace ID to check.
-
-        Raises:
-            MaxTreesExceeded: If the tree limit would be exceeded.
-        """
+        """Raise MaxTreesExceeded if adding a new tree would exceed the configured limit."""
         max_trees = current_app.config["COLLECTIONS_MAX_TREES"]
 
         # 0 means unlimited
@@ -103,17 +86,8 @@ class CollectionsService(Service):
             raise MaxTreesExceeded(current_count, max_trees)
 
     def _validate_collection_limit(self, tree_id):
-        """Validate that adding a new collection doesn't exceed the limit.
-
-        Args:
-            tree_id: The collection tree ID to check.
-
-        Raises:
-            MaxCollectionsExceeded: If the collection limit would be exceeded.
-        """
-        max_collections = current_app.config[
-            "COLLECTIONS_MAX_COLLECTIONS_PER_TREE"
-        ]
+        """Raise MaxCollectionsExceeded if adding a collection would exceed the configured limit."""
+        max_collections = current_app.config["COLLECTIONS_MAX_COLLECTIONS_PER_TREE"]
 
         # 0 means unlimited
         if max_collections == 0:
@@ -165,18 +139,9 @@ class CollectionsService(Service):
         uow=None,
         **kwargs,
     ):
-        """Create a new collection.
+        """Create a new root collection in the given tree.
 
-        The created collection will be added to the collection tree as a root collection (no parent).
-        If a parent is needed, use the ``add`` method.
-
-        Args:
-            identity: The identity of the user.
-            data: The collection data.
-            namespace_id: The namespace UUID (required if using tree_slug).
-            tree_slug: The tree slug (either this or tree_id is required).
-            tree_id: The tree ID (either this or tree_slug is required).
-            uow: Unit of work instance.
+        To add a subcollection, use the ``add`` method instead.
         """
         if not tree_slug and not tree_id:
             raise ValueError("Either tree_slug or tree_id must be provided")
@@ -207,6 +172,8 @@ class CollectionsService(Service):
                 )
                 .scalar()
             )
+            # Gap of 10 leaves room to insert items between existing ones
+            # without requiring a full reorder of all siblings.
             data["order"] = (max_order or 0) + 10
 
         collection = self.collection_cls.create(ctree=ctree, **data, **kwargs)
@@ -232,15 +199,6 @@ class CollectionsService(Service):
         """Get a collection by ID or slug.
 
         To resolve by slug, either tree_id or tree_slug+namespace_id must be provided.
-
-        Args:
-            identity: The identity of the user.
-            id_: The collection ID.
-            slug: The collection slug.
-            namespace_id: The namespace UUID (required if using tree_slug).
-            tree_slug: The tree slug.
-            tree_id: The tree ID.
-            depth: Maximum depth for fetching nested collections (default: 2).
         """
         if namespace_id:
             namespace_id = str(namespace_id)
@@ -273,12 +231,7 @@ class CollectionsService(Service):
         )
 
     def list_trees(self, identity, namespace_id, **kwargs):
-        """Get the trees of a namespace.
-
-        Args:
-            identity: The identity of the user.
-            namespace_id: The namespace UUID (required).
-        """
+        """Get all collection trees for a namespace."""
         self.require_permission(identity, "read", namespace_id=namespace_id)
 
         namespace_id = str(namespace_id)
@@ -306,17 +259,7 @@ class CollectionsService(Service):
         uow=None,
         **kwargs,
     ):
-        """Add a subcollection to a collection.
-
-        Args:
-            identity: The identity of the user.
-            slug: The parent collection slug (required).
-            data: The new subcollection data (required).
-            namespace_id: The namespace UUID (required if using tree_slug).
-            tree_slug: The tree slug (either this or tree_id is required).
-            tree_id: The tree ID (either this or tree_slug is required).
-            uow: Unit of work instance.
-        """
+        """Add a subcollection under the collection identified by ``slug``."""
         if not tree_slug and not tree_id:
             raise ValueError("Either tree_slug or tree_id must be provided")
 
@@ -354,6 +297,8 @@ class CollectionsService(Service):
                 )
                 .scalar()
             )
+            # Gap of 10 leaves room to insert items between existing ones
+            # without requiring a full reorder of all siblings.
             data["order"] = (max_order or 0) + 10
 
         new_collection = self.collection_cls.create(parent=collection, **data, **kwargs)
@@ -365,19 +310,31 @@ class CollectionsService(Service):
         )
 
     @unit_of_work()
-    def update(self, identity, collection_or_id, data=None, uow=None):
-        """Update a collection.
-
-        Args:
-            identity: The identity of the user.
-            collection_or_id: The collection object or ID (required).
-            data: The updated collection data.
-            uow: Unit of work instance.
-        """
-        if isinstance(collection_or_id, int):
-            collection = self.collection_cls.read(id_=collection_or_id)
+    def update(
+        self,
+        identity,
+        collection_or_id=None,
+        data=None,
+        slug=None,
+        tree_slug=None,
+        namespace_id=None,
+        uow=None,
+    ):
+        """Update a collection."""
+        if collection_or_id is not None:
+            if isinstance(collection_or_id, int):
+                collection = self.collection_cls.read(id_=collection_or_id)
+            else:
+                collection = collection_or_id
+        elif slug and tree_slug:
+            ctree, namespace_id = self._resolve_tree(
+                tree_slug=tree_slug, namespace_id=namespace_id
+            )
+            collection = self.collection_cls.read(slug=slug, ctree_id=ctree.id)
         else:
-            collection = collection_or_id
+            raise ValueError(
+                "Either collection_or_id or slug+tree_slug must be provided."
+            )
 
         # Resolve namespace for permission check
         namespace_id = (
@@ -414,17 +371,7 @@ class CollectionsService(Service):
         cascade=False,
         uow=None,
     ):
-        """Delete a collection.
-
-        Args:
-            identity: The identity of the user.
-            slug: The collection slug (required).
-            tree_slug: The tree slug (either this or ctree_id required).
-            namespace_id: The namespace UUID (required if using tree_slug).
-            ctree_id: The tree ID (either this or tree_slug+namespace_id required).
-            cascade: Whether to delete child collections (default: False).
-            uow: Unit of work instance.
-        """
+        """Delete a collection, optionally cascading to its direct children."""
         ctree, namespace_id = self._resolve_tree(
             tree_id=ctree_id, tree_slug=tree_slug, namespace_id=namespace_id
         )
@@ -520,7 +467,7 @@ class CollectionsService(Service):
             )
         return res
 
-    def search_test_collection_records(
+    def preview_collection_records(
         self,
         identity,
         tree_slug,
@@ -585,7 +532,7 @@ class CollectionsService(Service):
                 "Search for collections without namespace not supported."
             )
 
-        return res
+        return CollectionSearchPreview(res)
 
     def read_tree(
         self, identity, namespace_id=None, tree_slug=None, ctree_id=None, depth=2
@@ -654,6 +601,8 @@ class CollectionsService(Service):
                 .filter(CollectionTree.model_cls.namespace_id == namespace_id)
                 .scalar()
             )
+            # Gap of 10 leaves room to insert items between existing ones
+            # without requiring a full reorder of all siblings.
             valid_data["order"] = (max_order or 0) + 10
 
         item = self.collection_tree_cls.create(namespace_id=namespace_id, **valid_data)

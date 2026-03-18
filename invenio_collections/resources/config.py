@@ -13,6 +13,7 @@ from flask_resources import (
     ResponseHandler,
     create_error_handler,
 )
+from invenio_i18n import gettext as _
 from invenio_rdm_records.resources.serializers import UIJSONSerializer
 from invenio_records_resources.resources.records.args import SearchRequestArgsSchema
 from invenio_records_resources.resources.records.headers import etag_headers
@@ -66,27 +67,33 @@ class CollectionsResourceConfig(ResourceConfig, ConfiguratorMixin):
     request_search_args = SearchRequestArgsSchema
     error_handlers = {
         CollectionNotFound: create_error_handler(
-            HTTPJSONException(code=404, description="Collection was not found.")
+            HTTPJSONException(code=404, description=_("Collection was not found."))
         ),
         CollectionTreeNotFound: create_error_handler(
-            HTTPJSONException(code=404, description="Collection tree was not found.")
+            HTTPJSONException(code=404, description=_("Collection tree was not found."))
         ),
         CollectionTreeHasCollections: create_error_handler(
             HTTPJSONException(
                 code=400,
-                description="Cannot delete collection tree until all collections have been deleted.",
+                description=_(
+                    "Cannot delete collection tree until all collections have been deleted."
+                ),
             )
         ),
         CollectionHasChildren: create_error_handler(
             HTTPJSONException(
                 code=400,
-                description="Cannot delete collection until all children have been deleted.",
+                description=_(
+                    "Cannot delete collection until all children have been deleted."
+                ),
             )
         ),
         DuplicateSlugError: create_error_handler(
             HTTPJSONException(
                 code=409,
-                description="A collection with this slug already exists in this context.",
+                description=_(
+                    "A collection with this slug already exists in this context."
+                ),
             )
         ),
         MaxDepthExceeded: create_error_handler(

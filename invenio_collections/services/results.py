@@ -99,12 +99,14 @@ class CollectionItem(ServiceItemResult):
         for anc in self._collection.ancestors:
             _a = {
                 "title": anc.title,
+                "slug": anc.slug,
                 "link": self._links_tpl.expand(self._identity, anc).get("self_html"),
             }
             res.append(_a)
         res.append(
             {
                 "title": self._collection.title,
+                "slug": self._collection.slug,
                 "link": self._links_tpl.expand(self._identity, self._collection).get(
                     "self_html"
                 ),
@@ -171,6 +173,43 @@ class CollectionTreeItem(ServiceItemResult):
             for c in self._tree.collections
         ]
         return res
+
+
+class CollectionSearchPreview:
+    """Reduced search result for previewing a collection query.
+
+    Returns at most 5 hits, each with a subset of metadata fields.
+    """
+
+    # Number of hits to include in the preview.
+    MAX_HITS = 5
+
+    # Metadata fields to include per hit.
+    METADATA_FIELDS = ("resource_type", "title", "description", "creators")
+
+    def __init__(self, search_result):
+        """Instantiate with a search result from the records service."""
+        self._result = search_result
+
+    @property
+    def total(self):
+        """Total number of matching records."""
+        return self._result.total
+
+    def to_dict(self):
+        """Serialize to a reduced dict with total count and preview hits."""
+        full = self._result.to_dict()
+        output = {"hits": {"hits": [], "total": full["hits"]["total"]}}
+        for hit in full.get("hits", {}).get("hits", [])[: self.MAX_HITS]:
+            metadata = hit.get("metadata", {})
+            output["hits"]["hits"].append(
+                {
+                    "metadata": {
+                        field: metadata.get(field) for field in self.METADATA_FIELDS
+                    }
+                }
+            )
+        return output
 
 
 class CollectionTreeList:

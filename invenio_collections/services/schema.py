@@ -18,7 +18,9 @@ def validate_search_query(query):
     try:
         luqum_parser.parse(query)
     except ParseError as e:
-        raise ValidationError(str(e)) from e
+        raise ValidationError(
+            _("Invalid search query: {error}").format(error=str(e))
+        ) from e
 
 
 class SlugField(SanitizedUnicode):

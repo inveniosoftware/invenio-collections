@@ -26,6 +26,26 @@ export const COLLECTION_TREE_VALIDATION_SCHEMA = Yup.object({
     .max(100, i18next.t("Maximum number of characters is 100")),
 });
 
+/**
+ * Build a URL for a collection within a community namespace.
+ * Uses self_html from the API links when available, falls back to
+ * constructing the URL from community slug + tree slug + collection slug.
+ */
+export const buildCollectionUrl = (collection, treeSlug, community) => {
+  if (collection.links?.self_html) {
+    return collection.links.self_html;
+  }
+  if (community?.slug && collection.slug) {
+    return `/communities/${community.slug}/collections/read/${collection.slug}`;
+  }
+  return null;
+};
+
+/**
+ * Convert a string to a URL-friendly slug.
+ * Lowercases, trims, replaces spaces and ampersands with hyphens,
+ * strips non-word characters, and collapses consecutive hyphens.
+ */
 export const generateSlug = (text) => {
   return text
     .toString()
