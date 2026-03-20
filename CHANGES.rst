@@ -10,6 +10,10 @@
 Changes
 =======
 
+Version v7.0.0 (released 2026-03-20)
+
+- change(setup): upgrade invenio-rdm-records, invenio-checks
+
 Version v6.0.0 (released 2026-03-18)
 
 - change(setup): upgrade invenio-rdm-records, communities, jobs
