@@ -7,10 +7,9 @@
 """Collections programmatic API."""
 
 from invenio_records.systemfields import ModelField
-from luqum.parser import parser as luqum_parser
 from werkzeug.utils import cached_property
 
-from .errors import CollectionNotFound, CollectionTreeNotFound, InvalidQuery
+from .errors import CollectionNotFound, CollectionTreeNotFound
 from .models import Collection as CollectionModel
 from .models import CollectionTree as CollectionTreeModel
 
@@ -36,14 +35,6 @@ class Collection:
         self.max_depth = max_depth
 
     @classmethod
-    def validate_query(cls, query):
-        """Validate the collection query."""
-        try:
-            luqum_parser.parse(query)
-        except Exception:
-            raise InvalidQuery()
-
-    @classmethod
     def create(cls, slug, title, query, ctree=None, parent=None, order=None, depth=2):
         """Create a new collection."""
         _ctree = None
@@ -56,7 +47,6 @@ class Collection:
         else:
             raise ValueError("Either parent or ctree must be set.")
 
-        Collection.validate_query(query)
         return cls(
             cls.model_cls.create(
                 slug=slug,
@@ -101,8 +91,6 @@ class Collection:
 
     def update(self, **kwargs):
         """Update the collection."""
-        if "search_query" in kwargs:
-            Collection.validate_query(kwargs["search_query"])
         self.model.update(**kwargs)
         return self
 
