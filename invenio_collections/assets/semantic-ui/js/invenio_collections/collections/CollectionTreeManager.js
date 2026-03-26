@@ -10,11 +10,11 @@ import { i18next } from "@translations/invenio_collections/i18next";
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import { withCancel } from "react-invenio-forms";
-import { Button, Grid, Icon, Message, Header } from "semantic-ui-react";
+import { Button, Grid, Icon, Message } from "semantic-ui-react";
 import ReorderableList from "./components/ReorderableList";
 import { communityErrorSerializer } from "../api/serializers";
 import { CollectionsContext } from "../api/CollectionsContextProvider";
-import CollectionTreeBrowseView from "./components/CollectionTreeBrowseView";
+import CollectionTreeSection from "./components/CollectionTreeSection";
 import PlaceholderLoader from "./components/PlaceholderLoader";
 import {
   CollectionTreeFormModal,
@@ -22,6 +22,7 @@ import {
   DeleteCollectionTreeModal,
   DeleteCollectionModal,
 } from "./modals";
+import { findCollectionBySlug, findParentCollection } from "./utils";
 
 class CollectionTreeManager extends Component {
   constructor(props) {
@@ -30,24 +31,7 @@ class CollectionTreeManager extends Component {
       isLoading: false,
       data: {},
       expandedTrees: {},
-      // Collection tree (section) modals
-      showNewTreeModal: false,
-      showEditTreeModal: false,
-      showDeleteTreeModal: false,
-      treeToEdit: null,
-      // Collection modals
-      showNewCollectionModal: false,
-      showChildCollectionModal: false,
-      showEditCollectionModal: false,
-      showDeleteCollectionModal: false,
-      selectedTreeSlug: null,
-      selectedTreeTitle: null,
-      selectedCollectionSlug: null,
-      collectionData: null,
-      collectionToDelete: null,
-      parentCollectionSlug: null,
-      parentCollectionTitle: null,
-      parentCollectionQuery: null,
+      activeModal: null, // { type, ...payload }
       // Drag state
       draggedTreeIndex: null,
       draggedOverTreeIndex: null,
@@ -81,76 +65,30 @@ class CollectionTreeManager extends Component {
     }
   };
 
-  // ── Tree (section) modal handlers ──────────────────────────────────────────
+  // ── Modal handlers ──────────────────────────────────────────────────────────
 
-  openNewTreeModal = () => this.setState({ showNewTreeModal: true });
-  closeNewTreeModal = () => this.setState({ showNewTreeModal: false });
-  handleNewTreeSuccess = () => {
-    this.closeNewTreeModal();
+  openModal = (type, payload = {}) =>
+    this.setState({ activeModal: { type, ...payload } });
+  closeModal = () => this.setState({ activeModal: null });
+
+  handleModalSuccess = () => {
+    this.closeModal();
     this.fetchData();
   };
 
-  openEditTreeModal = (tree) =>
-    this.setState({ showEditTreeModal: true, treeToEdit: tree });
-  closeEditTreeModal = () =>
-    this.setState({ showEditTreeModal: false, treeToEdit: null });
-  handleEditTreeSuccess = () => {
-    this.closeEditTreeModal();
-    this.fetchData();
-  };
-
-  openDeleteTreeModal = (tree) =>
-    this.setState({ showDeleteTreeModal: true, treeToEdit: tree });
-  closeDeleteTreeModal = () =>
-    this.setState({ showDeleteTreeModal: false, treeToEdit: null });
-  handleDeleteTreeSuccess = () => {
-    this.closeDeleteTreeModal();
-    this.fetchData();
-  };
-
-  // ── Collection modal handlers ───────────────────────────────────────────────
-
-  openNewCollectionModal = (treeId, treeSlug, treeTitle) => {
-    this.setState({
-      showNewCollectionModal: true,
-      selectedTreeSlug: treeSlug || null,
-      selectedTreeTitle: treeTitle || null,
+  openNewCollectionModal = (treeId, treeSlug, treeTitle) =>
+    this.openModal("newCollection", {
+      treeSlug: treeSlug || null,
+      treeTitle: treeTitle || null,
     });
-  };
-
-  closeNewCollectionModal = () => {
-    this.setState({
-      showNewCollectionModal: false,
-      selectedTreeSlug: null,
-      selectedTreeTitle: null,
-    });
-  };
-
-  handleNewCollectionSuccess = () => {
-    this.closeNewCollectionModal();
-    this.fetchData();
-  };
 
   openChildCollectionModal = (treeSlug, treeTitle, parentSlug, parentTitle) => {
     const { maxCollectionDepth } = this.props;
     const { data } = this.state;
-    const collectionTrees = Object.values(data);
-    const tree = collectionTrees.find((t) => t.slug === treeSlug);
-    let parentCollection = null;
-
-    if (tree) {
-      const findCollection = (collections, slug) => {
-        for (const col of collections) {
-          if (col.slug === slug) return col;
-          if (col.children && col.children.length > 0) {
-            const found = findCollection(col.children, slug);
-            if (found) return found;
-          }
-        }
-        return null;
-      };
-      parentCollection = findCollection(tree.collections, parentSlug);
-    }
+    const tree = Object.values(data).find((t) => t.slug === treeSlug);
+    const parentCollection = tree
+      ? findCollectionBySlug(tree.collections, parentSlug)
+      : null;
 
     if (parentCollection && parentCollection.depth >= maxCollectionDepth) {
       console.warn(
@@ -159,109 +97,38 @@ class CollectionTreeManager extends Component {
       return;
     }
 
-    this.setState({
-      showChildCollectionModal: true,
-      selectedTreeSlug: treeSlug,
-      selectedTreeTitle: treeTitle,
+    this.openModal("childCollection", {
+      treeSlug,
+      treeTitle,
       parentCollectionSlug: parentSlug,
       parentCollectionTitle: parentTitle,
       parentCollectionQuery: parentCollection ? parentCollection.search_query : null,
     });
   };
 
-  closeChildCollectionModal = () => {
-    this.setState({
-      showChildCollectionModal: false,
-      selectedTreeSlug: null,
-      selectedTreeTitle: null,
-      parentCollectionSlug: null,
-      parentCollectionTitle: null,
-      parentCollectionQuery: null,
-    });
-  };
-
-  handleChildCollectionSuccess = () => {
-    this.closeChildCollectionModal();
-    this.fetchData();
-  };
-
   openEditCollectionModal = (treeSlug, treeTitle, collection) => {
     const { data } = this.state;
-    const collectionTrees = Object.values(data);
-    const tree = collectionTrees.find((t) => t.slug === treeSlug);
+    const tree = Object.values(data).find((t) => t.slug === treeSlug);
     const parentCollection = tree
-      ? this.findParentCollection(tree.collections, collection.slug)
+      ? findParentCollection(tree.collections, collection.slug)
       : null;
 
-    this.setState({
-      showEditCollectionModal: true,
-      selectedTreeSlug: treeSlug,
-      selectedTreeTitle: treeTitle,
-      selectedCollectionSlug: collection.slug,
+    this.openModal("editCollection", {
+      treeSlug,
+      treeTitle,
+      collectionSlug: collection.slug,
       collectionData: collection,
       parentCollectionTitle: parentCollection ? parentCollection.title : null,
       parentCollectionQuery: parentCollection ? parentCollection.search_query : null,
     });
   };
 
-  closeEditCollectionModal = () => {
-    this.setState({
-      showEditCollectionModal: false,
-      selectedTreeSlug: null,
-      selectedTreeTitle: null,
-      selectedCollectionSlug: null,
-      collectionData: null,
-      parentCollectionTitle: null,
-      parentCollectionQuery: null,
-    });
-  };
-
-  handleEditCollectionSuccess = () => {
-    this.closeEditCollectionModal();
-    this.fetchData();
-  };
-
-  openDeleteCollectionModal = (treeSlug, collection) => {
-    this.setState({
-      showDeleteCollectionModal: true,
-      selectedTreeSlug: treeSlug,
-      selectedCollectionSlug: collection.slug,
+  openDeleteCollectionModal = (treeSlug, collection) =>
+    this.openModal("deleteCollection", {
+      treeSlug,
+      collectionSlug: collection.slug,
       collectionToDelete: collection,
     });
-  };
-
-  closeDeleteCollectionModal = () => {
-    this.setState({
-      showDeleteCollectionModal: false,
-      selectedTreeSlug: null,
-      selectedCollectionSlug: null,
-      collectionToDelete: null,
-    });
-  };
-
-  handleDeleteCollectionSuccess = () => {
-    this.closeDeleteCollectionModal();
-    this.fetchData();
-  };
-
-  // ── Helpers ─────────────────────────────────────────────────────────────────
-
-  findParentCollection = (collections, targetSlug) => {
-    for (const collectionGroup of collections) {
-      const collectionsArray = Object.values(collectionGroup).filter(
-        (item) => typeof item === "object" && item !== null && item.slug
-      );
-      const targetCollection = collectionsArray.find((col) => col.slug === targetSlug);
-      if (targetCollection) {
-        if (targetCollection.depth === 0) return null;
-        const parent = collectionsArray.find(
-          (col) => col.depth === targetCollection.depth - 1
-        );
-        return parent || null;
-      }
-    }
-    return null;
-  };
 
   // ── Drag handlers ───────────────────────────────────────────────────────────
 
@@ -338,131 +205,19 @@ class CollectionTreeManager extends Component {
     }
   };
 
-  // ── Render helpers ──────────────────────────────────────────────────────────
-
-  renderCollectionTrees() {
-    const { data, expandedTrees, draggedTreeIndex, draggedOverTreeIndex } = this.state;
-    const { community, maxCollectionDepth } = this.props;
-
-    const sortedTrees = Object.values(data).sort(
-      (a, b) => (a.order || 0) - (b.order || 0)
-    );
-
-    return sortedTrees.map((collectionTree, index) => {
-      const isExpanded = expandedTrees[collectionTree.id] || false;
-      const collections = collectionTree.collections || [];
-      const isDraggingThis = draggedTreeIndex === index;
-      const isDraggedOver =
-        draggedOverTreeIndex === index && draggedTreeIndex !== index;
-
-      return (
-        <div
-          key={collectionTree.id}
-          className={`collection-tree-section rel-mb-2 ${
-            isDraggingThis ? "dragging" : ""
-          } ${isDraggedOver ? "drag-over" : ""}`}
-          onDragOver={(e) => this.handleTreeDragOver(e, index)}
-        >
-          <Grid verticalAlign="middle" className="rel-mb-1">
-            <Grid.Column width={1} textAlign="center">
-              <div className="category-controls">
-                <Icon
-                  name="bars"
-                  className={`tree-drag-handle ${isDraggingThis ? "grabbing" : ""}`}
-                  draggable
-                  onDragStart={(e) => this.handleTreeDragStart(e, index)}
-                  onDragEnd={this.handleTreeDragEnd}
-                />
-                <Icon
-                  name={isExpanded ? "chevron down" : "chevron right"}
-                  className="category-toggle"
-                  onClick={() => this.toggleTreeExpansion(collectionTree.id)}
-                />
-              </div>
-            </Grid.Column>
-            <Grid.Column width={9}>
-              <Header as="h2" className="category-header">
-                {collectionTree.title}
-              </Header>
-            </Grid.Column>
-            <Grid.Column width={6} textAlign="right">
-              <Button
-                positive
-                size="small"
-                onClick={() =>
-                  this.openNewCollectionModal(
-                    collectionTree.id,
-                    collectionTree.slug,
-                    collectionTree.title
-                  )
-                }
-              >
-                <Icon name="plus" /> {i18next.t("New collection")}
-              </Button>
-              <Button
-                size="small"
-                onClick={() => this.openEditTreeModal(collectionTree)}
-              >
-                <Icon name="edit" /> {i18next.t("Edit section")}
-              </Button>
-              <Button
-                negative
-                size="small"
-                icon="trash"
-                title={i18next.t("Delete section")}
-                onClick={() => this.openDeleteTreeModal(collectionTree)}
-              />
-            </Grid.Column>
-          </Grid>
-
-          {isExpanded && (
-            <div className="collection-tree-content">
-              <CollectionTreeBrowseView
-                collectionTree={collectionTree}
-                collections={collections}
-                onAddCollection={this.openNewCollectionModal}
-                onAddChildCollection={this.openChildCollectionModal}
-                onEditCollection={this.openEditCollectionModal}
-                onDeleteCollection={this.openDeleteCollectionModal}
-                onEditTree={this.openEditTreeModal}
-                onDeleteTree={this.openDeleteTreeModal}
-                community={community}
-                showHeader={false}
-                maxCollectionDepth={maxCollectionDepth}
-              />
-            </div>
-          )}
-        </div>
-      );
-    });
-  }
-
   render() {
     const {
       isLoading,
       data,
+      expandedTrees,
+      draggedTreeIndex,
+      draggedOverTreeIndex,
+      activeModal,
       isReorderingTrees,
       reorderTreesError,
-      treeToEdit,
-      showNewTreeModal,
-      showEditTreeModal,
-      showDeleteTreeModal,
-      showNewCollectionModal,
-      showChildCollectionModal,
-      showEditCollectionModal,
-      showDeleteCollectionModal,
-      selectedTreeSlug,
-      selectedTreeTitle,
-      selectedCollectionSlug,
-      collectionData,
-      collectionToDelete,
-      parentCollectionSlug,
-      parentCollectionTitle,
-      parentCollectionQuery,
     } = this.state;
     const { emptyMessage, community, maxCollectionDepth } = this.props;
     const { api } = this.context;
-
     return (
       <React.Fragment>
         <Grid>
@@ -474,7 +229,7 @@ class CollectionTreeManager extends Component {
               </p>
             </Grid.Column>
             <Grid.Column width={4} textAlign="right">
-              <Button positive onClick={this.openNewTreeModal}>
+              <Button positive onClick={() => this.openModal("newTree")}>
                 <Icon name="plus" /> {i18next.t("New section")}
               </Button>
             </Grid.Column>
@@ -489,7 +244,31 @@ class CollectionTreeManager extends Component {
                     isSaving={isReorderingTrees}
                     error={reorderTreesError}
                   >
-                    {this.renderCollectionTrees()}
+                    {Object.values(data)
+                      .sort((a, b) => (a.order || 0) - (b.order || 0))
+                      .map((collectionTree, index) => (
+                        <CollectionTreeSection
+                          key={collectionTree.id}
+                          collectionTree={collectionTree}
+                          index={index}
+                          isExpanded={expandedTrees[collectionTree.id] || false}
+                          isDragging={draggedTreeIndex === index}
+                          isDraggedOver={
+                            draggedOverTreeIndex === index && draggedTreeIndex !== index
+                          }
+                          community={community}
+                          maxCollectionDepth={maxCollectionDepth}
+                          onDragStart={this.handleTreeDragStart}
+                          onDragOver={this.handleTreeDragOver}
+                          onDragEnd={this.handleTreeDragEnd}
+                          onToggleExpansion={this.toggleTreeExpansion}
+                          onOpenModal={this.openModal}
+                          onAddCollection={this.openNewCollectionModal}
+                          onAddChildCollection={this.openChildCollectionModal}
+                          onEditCollection={this.openEditCollectionModal}
+                          onDeleteCollection={this.openDeleteCollectionModal}
+                        />
+                      ))}
                   </ReorderableList>
                 )}
               </PlaceholderLoader>
@@ -498,76 +277,76 @@ class CollectionTreeManager extends Component {
         </Grid>
 
         <CollectionTreeFormModal
-          open={showNewTreeModal}
-          onClose={this.closeNewTreeModal}
-          onSuccess={this.handleNewTreeSuccess}
+          open={activeModal?.type === "newTree"}
+          onClose={this.closeModal}
+          onSuccess={this.handleModalSuccess}
           collectionTree={{}}
           maxCollectionDepth={maxCollectionDepth}
           collectionApi={api}
         />
 
         <CollectionTreeFormModal
-          open={showEditTreeModal}
-          onClose={this.closeEditTreeModal}
-          onSuccess={this.handleEditTreeSuccess}
-          collectionTree={treeToEdit || {}}
+          open={activeModal?.type === "editTree"}
+          onClose={this.closeModal}
+          onSuccess={this.handleModalSuccess}
+          collectionTree={activeModal?.tree || {}}
           maxCollectionDepth={maxCollectionDepth}
           collectionApi={api}
         />
 
         <DeleteCollectionTreeModal
-          open={showDeleteTreeModal}
-          onClose={this.closeDeleteTreeModal}
-          onSuccess={this.handleDeleteTreeSuccess}
-          collectionTree={treeToEdit}
+          open={activeModal?.type === "deleteTree"}
+          onClose={this.closeModal}
+          onSuccess={this.handleModalSuccess}
+          collectionTree={activeModal?.tree || null}
           collectionApi={api}
         />
 
         <CollectionFormModal
-          open={showNewCollectionModal}
-          onClose={this.closeNewCollectionModal}
-          onSuccess={this.handleNewCollectionSuccess}
+          open={activeModal?.type === "newCollection"}
+          onClose={this.closeModal}
+          onSuccess={this.handleModalSuccess}
           community={community}
-          collectionTreeSlug={selectedTreeSlug}
-          treeTitle={selectedTreeTitle}
+          collectionTreeSlug={activeModal?.treeSlug || null}
+          treeTitle={activeModal?.treeTitle || null}
           maxCollectionDepth={maxCollectionDepth}
           collectionApi={api}
         />
 
         <CollectionFormModal
-          open={showChildCollectionModal}
-          onClose={this.closeChildCollectionModal}
-          onSuccess={this.handleChildCollectionSuccess}
+          open={activeModal?.type === "childCollection"}
+          onClose={this.closeModal}
+          onSuccess={this.handleModalSuccess}
           community={community}
-          collectionTreeSlug={selectedTreeSlug}
-          parentCollectionSlug={parentCollectionSlug}
-          parentCollectionTitle={parentCollectionTitle}
-          parentQuery={parentCollectionQuery}
+          collectionTreeSlug={activeModal?.treeSlug || null}
+          parentCollectionSlug={activeModal?.parentCollectionSlug || null}
+          parentCollectionTitle={activeModal?.parentCollectionTitle || null}
+          parentQuery={activeModal?.parentCollectionQuery || null}
           maxCollectionDepth={maxCollectionDepth}
           collectionApi={api}
         />
 
         <CollectionFormModal
-          open={showEditCollectionModal}
-          onClose={this.closeEditCollectionModal}
-          onSuccess={this.handleEditCollectionSuccess}
+          open={activeModal?.type === "editCollection"}
+          onClose={this.closeModal}
+          onSuccess={this.handleModalSuccess}
           community={community}
-          collectionTreeSlug={selectedTreeSlug}
-          collectionSlug={selectedCollectionSlug}
-          collectionData={collectionData}
-          treeTitle={selectedTreeTitle}
-          parentCollectionTitle={parentCollectionTitle}
-          parentQuery={parentCollectionQuery}
+          collectionTreeSlug={activeModal?.treeSlug || null}
+          collectionSlug={activeModal?.collectionSlug || null}
+          collectionData={activeModal?.collectionData || null}
+          treeTitle={activeModal?.treeTitle || null}
+          parentCollectionTitle={activeModal?.parentCollectionTitle || null}
+          parentQuery={activeModal?.parentCollectionQuery || null}
           maxCollectionDepth={maxCollectionDepth}
           collectionApi={api}
         />
 
         <DeleteCollectionModal
-          open={showDeleteCollectionModal}
-          onClose={this.closeDeleteCollectionModal}
-          onSuccess={this.handleDeleteCollectionSuccess}
-          collectionTreeSlug={selectedTreeSlug}
-          collection={collectionToDelete}
+          open={activeModal?.type === "deleteCollection"}
+          onClose={this.closeModal}
+          onSuccess={this.handleModalSuccess}
+          collectionTreeSlug={activeModal?.treeSlug || null}
+          collection={activeModal?.collectionToDelete || null}
           collectionApi={api}
         />
       </React.Fragment>
