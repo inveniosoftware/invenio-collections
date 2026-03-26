@@ -37,7 +37,13 @@ class DeleteCollectionAction extends Component {
     this.setState({ error: "" });
 
     this.cancellableDelete = withCancel(
-      collectionApi.deleteCollection(collectionTreeSlug, collectionSlug, {}, null, cascade)
+      collectionApi.deleteCollection(
+        collectionTreeSlug,
+        collectionSlug,
+        {},
+        null,
+        cascade
+      )
     );
     try {
       await this.cancellableDelete.promise;

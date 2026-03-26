@@ -137,4 +137,10 @@ NestedCollectionItem.propTypes = {
   nestingLevel: PropTypes.number, // Current nesting level for indentation
 };
 
+NestedCollectionItem.defaultProps = {
+  treeSlug: null,
+  community: null,
+  nestingLevel: 0,
+};
+
 export default NestedCollectionItem;

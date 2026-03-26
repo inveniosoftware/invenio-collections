@@ -29,7 +29,10 @@ class CollectionTreeFormContainer extends Component {
     this.cancellableSubmit && this.cancellableSubmit.cancel();
   }
 
-  isEditing = () => !!this.props.collectionTree?.id;
+  isEditing = () => {
+    const { collectionTree } = this.props;
+    return !!collectionTree?.id;
+  };
 
   getInitialValues = () => {
     const { collectionTree } = this.props;
@@ -78,7 +81,11 @@ class CollectionTreeFormContainer extends Component {
   };
 
   render() {
-    const { onFormReady, handleCancel, slugGeneration: slugGenerationProp } = this.props;
+    const {
+      onFormReady,
+      handleCancel,
+      slugGeneration: slugGenerationProp,
+    } = this.props;
     const { error } = this.state;
     const slugGeneration = slugGenerationProp ?? !this.isEditing();
 
@@ -110,6 +117,7 @@ CollectionTreeFormContainer.defaultProps = {
   onSuccess: () => {},
   handleCancel: () => {},
   slugGeneration: undefined,
+  onFormReady: undefined,
 };
 
 export default CollectionTreeFormContainer;

@@ -10,7 +10,7 @@ import { i18next } from "@translations/invenio_collections/i18next";
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import { withCancel } from "react-invenio-forms";
-import { Button, Grid, Icon, Message, Modal, Header } from "semantic-ui-react";
+import { Button, Grid, Icon, Message, Header } from "semantic-ui-react";
 import ReorderableList from "./components/ReorderableList";
 import { communityErrorSerializer } from "../api/serializers";
 import { CollectionsContext } from "../api/CollectionsContextProvider";
@@ -24,13 +24,10 @@ import {
 } from "./modals";
 
 class CollectionTreeManager extends Component {
-  static contextType = CollectionsContext;
-
   constructor(props) {
     super(props);
     this.state = {
       isLoading: false,
-      error: null,
       data: {},
       expandedTrees: {},
       // Collection tree (section) modals
@@ -67,16 +64,20 @@ class CollectionTreeManager extends Component {
     this.cancellableFetch && this.cancellableFetch.cancel();
   }
 
+  static contextType = CollectionsContext;
+
   fetchData = async () => {
     const { maxCollectionDepth } = this.props;
     this.setState({ isLoading: true });
-    this.cancellableFetch = withCancel(this.context.api.getCollectionTrees(maxCollectionDepth));
+    const { api } = this.context;
+    this.cancellableFetch = withCancel(api.getCollectionTrees(maxCollectionDepth));
     try {
       const response = await this.cancellableFetch.promise;
       this.setState({ data: response.data, isLoading: false });
     } catch (error) {
-      const errorMessage = communityErrorSerializer(error);
-      this.setState({ error: errorMessage, isLoading: false });
+      if (error === "UNMOUNTED") return;
+      this.setState({ isLoading: false });
+      console.error(communityErrorSerializer(error));
     }
   };
 
@@ -84,15 +85,28 @@ class CollectionTreeManager extends Component {
 
   openNewTreeModal = () => this.setState({ showNewTreeModal: true });
   closeNewTreeModal = () => this.setState({ showNewTreeModal: false });
-  handleNewTreeSuccess = () => { this.closeNewTreeModal(); this.fetchData(); };
+  handleNewTreeSuccess = () => {
+    this.closeNewTreeModal();
+    this.fetchData();
+  };
 
-  openEditTreeModal = (tree) => this.setState({ showEditTreeModal: true, treeToEdit: tree });
-  closeEditTreeModal = () => this.setState({ showEditTreeModal: false, treeToEdit: null });
-  handleEditTreeSuccess = () => { this.closeEditTreeModal(); this.fetchData(); };
+  openEditTreeModal = (tree) =>
+    this.setState({ showEditTreeModal: true, treeToEdit: tree });
+  closeEditTreeModal = () =>
+    this.setState({ showEditTreeModal: false, treeToEdit: null });
+  handleEditTreeSuccess = () => {
+    this.closeEditTreeModal();
+    this.fetchData();
+  };
 
-  openDeleteTreeModal = (tree) => this.setState({ showDeleteTreeModal: true, treeToEdit: tree });
-  closeDeleteTreeModal = () => this.setState({ showDeleteTreeModal: false, treeToEdit: null });
-  handleDeleteTreeSuccess = () => { this.closeDeleteTreeModal(); this.fetchData(); };
+  openDeleteTreeModal = (tree) =>
+    this.setState({ showDeleteTreeModal: true, treeToEdit: tree });
+  closeDeleteTreeModal = () =>
+    this.setState({ showDeleteTreeModal: false, treeToEdit: null });
+  handleDeleteTreeSuccess = () => {
+    this.closeDeleteTreeModal();
+    this.fetchData();
+  };
 
   // ── Collection modal handlers ───────────────────────────────────────────────
 
@@ -105,14 +119,22 @@ class CollectionTreeManager extends Component {
   };
 
   closeNewCollectionModal = () => {
-    this.setState({ showNewCollectionModal: false, selectedTreeSlug: null, selectedTreeTitle: null });
+    this.setState({
+      showNewCollectionModal: false,
+      selectedTreeSlug: null,
+      selectedTreeTitle: null,
+    });
   };
 
-  handleNewCollectionSuccess = () => { this.closeNewCollectionModal(); this.fetchData(); };
+  handleNewCollectionSuccess = () => {
+    this.closeNewCollectionModal();
+    this.fetchData();
+  };
 
   openChildCollectionModal = (treeSlug, treeTitle, parentSlug, parentTitle) => {
     const { maxCollectionDepth } = this.props;
-    const collectionTrees = Object.values(this.state.data);
+    const { data } = this.state;
+    const collectionTrees = Object.values(data);
     const tree = collectionTrees.find((t) => t.slug === treeSlug);
     let parentCollection = null;
 
@@ -158,10 +180,14 @@ class CollectionTreeManager extends Component {
     });
   };
 
-  handleChildCollectionSuccess = () => { this.closeChildCollectionModal(); this.fetchData(); };
+  handleChildCollectionSuccess = () => {
+    this.closeChildCollectionModal();
+    this.fetchData();
+  };
 
   openEditCollectionModal = (treeSlug, treeTitle, collection) => {
-    const collectionTrees = Object.values(this.state.data);
+    const { data } = this.state;
+    const collectionTrees = Object.values(data);
     const tree = collectionTrees.find((t) => t.slug === treeSlug);
     const parentCollection = tree
       ? this.findParentCollection(tree.collections, collection.slug)
@@ -190,7 +216,10 @@ class CollectionTreeManager extends Component {
     });
   };
 
-  handleEditCollectionSuccess = () => { this.closeEditCollectionModal(); this.fetchData(); };
+  handleEditCollectionSuccess = () => {
+    this.closeEditCollectionModal();
+    this.fetchData();
+  };
 
   openDeleteCollectionModal = (treeSlug, collection) => {
     this.setState({
@@ -210,7 +239,10 @@ class CollectionTreeManager extends Component {
     });
   };
 
-  handleDeleteCollectionSuccess = () => { this.closeDeleteCollectionModal(); this.fetchData(); };
+  handleDeleteCollectionSuccess = () => {
+    this.closeDeleteCollectionModal();
+    this.fetchData();
+  };
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -280,16 +312,27 @@ class CollectionTreeManager extends Component {
     trees.forEach((tree, index) => {
       reorderedData[tree.slug] = { ...tree, order: (index + 1) * 10 };
     });
-    this.setState({ data: reorderedData, reorderTreesError: null, isReorderingTrees: true });
+    this.setState({
+      data: reorderedData,
+      reorderTreesError: null,
+      isReorderingTrees: true,
+    });
 
     try {
       const orderPayload = {
-        order: trees.map((tree, index) => ({ slug: tree.slug, order: (index + 1) * 10 })),
+        order: trees.map((tree, index) => ({
+          slug: tree.slug,
+          order: (index + 1) * 10,
+        })),
       };
-      await this.context.api.batchReorderTrees(orderPayload);
+      const { api } = this.context;
+      await api.batchReorderTrees(orderPayload);
     } catch (error) {
       console.error("Failed to update tree order:", error);
-      this.setState({ data, reorderTreesError: i18next.t("Failed to save new order. Please try again.") });
+      this.setState({
+        data,
+        reorderTreesError: i18next.t("Failed to save new order. Please try again."),
+      });
     } finally {
       this.setState({ isReorderingTrees: false });
     }
@@ -301,18 +344,23 @@ class CollectionTreeManager extends Component {
     const { data, expandedTrees, draggedTreeIndex, draggedOverTreeIndex } = this.state;
     const { community, maxCollectionDepth } = this.props;
 
-    const sortedTrees = Object.values(data).sort((a, b) => (a.order || 0) - (b.order || 0));
+    const sortedTrees = Object.values(data).sort(
+      (a, b) => (a.order || 0) - (b.order || 0)
+    );
 
     return sortedTrees.map((collectionTree, index) => {
       const isExpanded = expandedTrees[collectionTree.id] || false;
       const collections = collectionTree.collections || [];
       const isDraggingThis = draggedTreeIndex === index;
-      const isDraggedOver = draggedOverTreeIndex === index && draggedTreeIndex !== index;
+      const isDraggedOver =
+        draggedOverTreeIndex === index && draggedTreeIndex !== index;
 
       return (
         <div
           key={collectionTree.id}
-          className={`collection-tree-section rel-mb-2 ${isDraggingThis ? "dragging" : ""} ${isDraggedOver ? "drag-over" : ""}`}
+          className={`collection-tree-section rel-mb-2 ${
+            isDraggingThis ? "dragging" : ""
+          } ${isDraggedOver ? "drag-over" : ""}`}
           onDragOver={(e) => this.handleTreeDragOver(e, index)}
         >
           <Grid verticalAlign="middle" className="rel-mb-1">
@@ -351,7 +399,10 @@ class CollectionTreeManager extends Component {
               >
                 <Icon name="plus" /> {i18next.t("New collection")}
               </Button>
-              <Button size="small" onClick={() => this.openEditTreeModal(collectionTree)}>
+              <Button
+                size="small"
+                onClick={() => this.openEditTreeModal(collectionTree)}
+              >
                 <Icon name="edit" /> {i18next.t("Edit section")}
               </Button>
               <Button
@@ -389,7 +440,6 @@ class CollectionTreeManager extends Component {
   render() {
     const {
       isLoading,
-      error,
       data,
       isReorderingTrees,
       reorderTreesError,
@@ -435,7 +485,10 @@ class CollectionTreeManager extends Component {
                 {Object.keys(data).length === 0 ? (
                   <Message icon="info" header={emptyMessage} />
                 ) : (
-                  <ReorderableList isSaving={isReorderingTrees} error={reorderTreesError}>
+                  <ReorderableList
+                    isSaving={isReorderingTrees}
+                    error={reorderTreesError}
+                  >
                     {this.renderCollectionTrees()}
                   </ReorderableList>
                 )}

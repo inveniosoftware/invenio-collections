@@ -47,7 +47,8 @@ const CollectionChildItem = ({
   const collectionUrl = buildCollectionUrl(child, treeSlug, community);
 
   const isChildDragging = draggedChildIndex === index;
-  const isChildDraggedOver = draggedOverChildIndex === index && draggedChildIndex !== index;
+  const isChildDraggedOver =
+    draggedOverChildIndex === index && draggedChildIndex !== index;
 
   return (
     <div key={childSlug}>

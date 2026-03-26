@@ -9,7 +9,7 @@ import { CommunityLinksExtractor } from "./CommunityLinksExtractor";
 
 const ACCEPT_JSON = { Accept: "application/json" };
 const ACCEPT_JSON_CONTENT_JSON = {
-  Accept: "application/json",
+  "Accept": "application/json",
   "Content-Type": "application/json",
 };
 
@@ -83,10 +83,7 @@ export class CommunityCollectionsApi {
    */
   async createCollectionTree(payload, depth, options = {}) {
     const { data } = await this.getCollectionTrees(depth, options);
-    const maxOrder = Math.max(
-      ...Object.values(data).map(({ order }) => order || 0),
-      0
-    );
+    const maxOrder = Math.max(...Object.values(data).map(({ order }) => order || 0), 0);
     payload.order = maxOrder + 1;
     return http.post(this.endpoint, payload, { headers: ACCEPT_JSON, ...options });
   }
@@ -207,7 +204,13 @@ export class CommunityCollectionsApi {
    * @param {string|null} treeId - Tree ID (optional)
    * @param {boolean} cascade - Whether to delete child collections (default: false)
    */
-  deleteCollection(treeSlug, collectionSlug, options = {}, treeId = null, cascade = false) {
+  deleteCollection(
+    treeSlug,
+    collectionSlug,
+    options = {},
+    treeId = null,
+    cascade = false
+  ) {
     this._validateTreeIdentifier(treeSlug, treeId);
     const url = this._buildUrl(
       `${this.endpoint}/${treeSlug}/collections/${collectionSlug}`,
@@ -245,7 +248,13 @@ export class CommunityCollectionsApi {
    * @param {object} options - Custom options
    * @param {string|null} treeId - Tree ID (optional)
    */
-  previewCollectionRecords(treeSlug, collectionSlug, payload, options = {}, treeId = null) {
+  previewCollectionRecords(
+    treeSlug,
+    collectionSlug,
+    payload,
+    options = {},
+    treeId = null
+  ) {
     this._validateTreeIdentifier(treeSlug, treeId);
     const url = this._buildUrl(
       `${this.endpoint}/${treeSlug}/collections-records-test`,

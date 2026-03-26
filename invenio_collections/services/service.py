@@ -405,13 +405,7 @@ class CollectionsService(Service):
         raise LogoNotFoundError()
 
     def read_many(self, identity, ids_, depth=2):
-        """Get many collections.
-
-        Args:
-            identity: The identity of the user.
-            ids_: List of collection IDs (required).
-            depth: Maximum depth for fetching nested collections (default: 2).
-        """
+        """Get many collections by ID."""
         self.require_permission(identity, "read")
 
         if ids_ is None:
@@ -426,12 +420,7 @@ class CollectionsService(Service):
         )
 
     def read_all(self, identity, depth=2):
-        """Get all collections.
-
-        Args:
-            identity: The identity of the user.
-            depth: Maximum depth for fetching nested collections (default: 2).
-        """
+        """Get all collections."""
         self.require_permission(identity, "read")
         res = self.collection_cls.read_all(depth=depth)
         return CollectionList(
@@ -439,13 +428,7 @@ class CollectionsService(Service):
         )
 
     def search_collection_records(self, identity, collection_or_id, params=None):
-        """Search records in a collection.
-
-        Args:
-            identity: The identity of the user.
-            collection_or_id: The collection object or ID (required).
-            params: Additional search parameters.
-        """
+        """Search records in a collection."""
         params = params or {}
 
         if isinstance(collection_or_id, int):
@@ -476,16 +459,7 @@ class CollectionsService(Service):
         data=None,
         params=None,
     ):
-        """Search records for a new collection. Either with parent collections or not.
-
-        Args:
-            identity: The identity of the user.
-            tree_slug: The tree slug (required).
-            namespace_id: The namespace UUID (required).
-            slug: The collection slug (optional, for testing with existing collection).
-            data: Additional data containing search_query (optional).
-            params: Search parameters (optional).
-        """
+        """Preview records for a collection query, optionally scoped to an existing collection."""
         if not tree_slug:
             raise ValueError("tree_slug is required")
         if not namespace_id:
@@ -537,15 +511,7 @@ class CollectionsService(Service):
     def read_tree(
         self, identity, namespace_id=None, tree_slug=None, ctree_id=None, depth=2
     ):
-        """Read a collection tree.
-
-        Args:
-            identity: The identity of the user.
-            namespace_id: The namespace UUID (required if using tree_slug).
-            tree_slug: The tree slug (either this or ctree_id required).
-            ctree_id: The tree ID (either this or tree_slug required).
-            depth: Maximum depth for fetching nested collections (default: 2).
-        """
+        """Read a collection tree by slug or ID."""
         if namespace_id:
             namespace_id = str(namespace_id)
 
@@ -569,14 +535,7 @@ class CollectionsService(Service):
 
     @unit_of_work()
     def create_tree(self, identity, data, namespace_id, uow=None):
-        """Create new collection tree.
-
-        Args:
-            identity: The identity of the user.
-            data: The collection tree data.
-            namespace_id: The namespace UUID (required).
-            uow: Unit of work instance.
-        """
+        """Create a new collection tree in the given namespace."""
         if not namespace_id:
             raise ValueError("namespace_id is required")
 
@@ -620,16 +579,7 @@ class CollectionsService(Service):
     def update_tree(
         self, identity, data, tree_slug=None, tree_id=None, namespace_id=None, uow=None
     ):
-        """Update a collection tree.
-
-        Args:
-            identity: The identity of the user.
-            data: The collection tree data to update.
-            tree_slug: The slug of the tree to update.
-            tree_id: The ID of the tree to update.
-            namespace_id: The namespace UUID (required if using tree_slug).
-            uow: Unit of work instance.
-        """
+        """Update a collection tree."""
         if not tree_slug and not tree_id:
             raise ValueError("Either tree_slug or tree_id must be provided")
 
@@ -666,16 +616,7 @@ class CollectionsService(Service):
         cascade=False,
         uow=None,
     ):
-        """Delete a collection tree.
-
-        Args:
-            identity: The identity of the user.
-            tree_slug: The tree slug (either this or ctree_id required).
-            namespace_id: The namespace UUID (required if using tree_slug).
-            ctree_id: The tree ID (either this or tree_slug+namespace_id required).
-            cascade: Whether to delete all collections in tree (default: False).
-            uow: Unit of work instance.
-        """
+        """Delete a collection tree, optionally cascading to its collections."""
         ctree, namespace_id = self._resolve_tree(
             tree_id=ctree_id, tree_slug=tree_slug, namespace_id=namespace_id
         )
@@ -696,17 +637,7 @@ class CollectionsService(Service):
 
     @unit_of_work()
     def reorder_trees(self, identity, namespace_id, data, uow=None):
-        """Batch reorder collection trees.
-
-        Args:
-            identity: The identity of the user.
-            namespace_id: The namespace UUID (required).
-            data: The reorder data containing list of {slug, order} items.
-            uow: Unit of work instance.
-
-        Returns:
-            dict: Response with updated count and items list.
-        """
+        """Batch reorder collection trees within a namespace."""
         namespace_id = str(namespace_id)
 
         self.require_permission(
@@ -753,18 +684,7 @@ class CollectionsService(Service):
 
     @unit_of_work()
     def reorder_collections(self, identity, namespace_id, tree_slug, data, uow=None):
-        """Batch reorder collections within a tree.
-
-        Args:
-            identity: The identity of the user.
-            namespace_id: The namespace UUID (required).
-            tree_slug: The tree slug (required).
-            data: The reorder data containing list of {slug, order} items.
-            uow: Unit of work instance.
-
-        Returns:
-            dict: Response with updated count and items list.
-        """
+        """Batch reorder collections within a tree."""
         namespace_id = str(namespace_id)
 
         self.require_permission(
