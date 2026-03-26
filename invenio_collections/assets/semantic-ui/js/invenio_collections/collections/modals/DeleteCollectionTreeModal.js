@@ -10,7 +10,13 @@ import { Modal } from "semantic-ui-react";
 import { i18next } from "@translations/invenio_collections/i18next";
 import DeleteCollectionTreeAction from "../actions/DeleteCollectionTreeAction";
 
-const DeleteCollectionTreeModal = ({ open, onClose, onSuccess, collectionTree, collectionApi }) => (
+const DeleteCollectionTreeModal = ({
+  open,
+  onClose,
+  onSuccess,
+  collectionTree,
+  collectionApi,
+}) => (
   <Modal open={open} onClose={onClose} size="large">
     <Modal.Header>{i18next.t("Delete section")}</Modal.Header>
     <DeleteCollectionTreeAction

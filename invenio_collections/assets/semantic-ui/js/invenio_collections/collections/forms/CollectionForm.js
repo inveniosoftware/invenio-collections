@@ -7,7 +7,7 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { useFormikContext } from "formik";
-import { Button, Form, Grid, Message, Divider } from "semantic-ui-react";
+import { Button, Form, Grid, Message } from "semantic-ui-react";
 import { BaseForm, FieldLabel, TextField } from "react-invenio-forms";
 import { i18next } from "@translations/invenio_collections/i18next";
 import { generateSlug } from "../Configs";
@@ -24,12 +24,23 @@ const CollectionFormInner = ({
   community,
   parentQuery,
 }) => {
-  const { isSubmitting, isValid, handleSubmit, setFieldValue, handleChange, handleBlur, values, touched, errors } = useFormikContext();
+  const {
+    isSubmitting,
+    isValid,
+    handleSubmit,
+    setFieldValue,
+    handleChange,
+    handleBlur,
+    values,
+    touched,
+    errors,
+  } = useFormikContext();
 
   useEffect(() => {
     onFormReady?.({ isSubmitting, isValid, handleSubmit, handleCancel });
     // handleSubmit/handleCancel are stable refs; only re-notify parent
     // when the values that affect button state change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isValid, isSubmitting]);
 
   const buildFullSearchQuery = (currentQuery) => {
@@ -171,6 +182,17 @@ CollectionFormInner.propTypes = {
   parentQuery: PropTypes.string,
 };
 
+CollectionFormInner.defaultProps = {
+  onFormReady: undefined,
+  testQueryResult: null,
+  testQuerySuccess: null,
+  testQueryHits: [],
+  error: "",
+  slugGeneration: false,
+  community: null,
+  parentQuery: null,
+};
+
 const CollectionForm = ({
   initialValues,
   validationSchema,
@@ -234,6 +256,7 @@ CollectionForm.defaultProps = {
   slugGeneration: false,
   community: null,
   parentQuery: null,
+  onFormReady: undefined,
 };
 
 export default CollectionForm;

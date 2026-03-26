@@ -13,8 +13,6 @@ import { getActionMenuOptions } from "./CollectionActionMenu";
 import CollectionChildItem from "./CollectionChildItem";
 import { buildCollectionUrl } from "../Configs";
 
-
-
 const CollectionItem = ({
   collection,
   allCollections,
@@ -31,7 +29,7 @@ const CollectionItem = ({
   isDragging = false,
   maxCollectionDepth,
 }) => {
-  const { title, num_records: numRecords, slug, children: collectionChildren } = collection;
+  const { title, num_records: numRecords, children: collectionChildren } = collection;
 
   const [childrenOrder, setChildrenOrder] = useState([]);
   const [draggedChildIndex, setDraggedChildIndex] = useState(null);

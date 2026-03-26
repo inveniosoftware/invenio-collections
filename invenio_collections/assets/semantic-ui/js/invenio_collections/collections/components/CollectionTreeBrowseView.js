@@ -21,7 +21,6 @@ import { CollectionsContext } from "../../api/CollectionsContextProvider";
 import CollectionItem from "./CollectionItem";
 
 class CollectionTreeBrowseView extends Component {
-  static contextType = CollectionsContext;
   constructor(props) {
     super(props);
     this.state = {
@@ -39,10 +38,13 @@ class CollectionTreeBrowseView extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.collections !== this.props.collections) {
+    const { collections } = this.props;
+    if (prevProps.collections !== collections) {
       this.transformCollectionsForDisplay();
     }
   }
+
+  static contextType = CollectionsContext;
 
   /**
    * Transform flat collection data structure into hierarchical format for display.
@@ -143,7 +145,8 @@ class CollectionTreeBrowseView extends Component {
    */
   handleDragOver = (e, index) => {
     // Only handle drag over if we're actually dragging a parent collection
-    if (this.state.draggedIndex === null) {
+    const { draggedIndex, draggedOverIndex } = this.state;
+    if (draggedIndex === null) {
       return;
     }
 
@@ -151,7 +154,7 @@ class CollectionTreeBrowseView extends Component {
     e.stopPropagation();
     e.dataTransfer.dropEffect = "move";
 
-    if (index !== this.state.draggedOverIndex) {
+    if (index !== draggedOverIndex) {
       this.setState({ draggedOverIndex: index });
     }
   };
@@ -187,7 +190,8 @@ class CollectionTreeBrowseView extends Component {
     this.setState({ rootCollections: items, reorderError: null });
 
     // Use batch endpoint for single API call
-    if (this.context.api && collectionTree) {
+    const { api } = this.context;
+    if (api && collectionTree) {
       this.setState({ isReordering: true });
       try {
         const orderPayload = {
@@ -197,10 +201,7 @@ class CollectionTreeBrowseView extends Component {
           })),
         };
 
-        await this.context.api.batchReorderCollections(
-          collectionTree.slug,
-          orderPayload
-        );
+        await api.batchReorderCollections(collectionTree.slug, orderPayload);
       } catch (error) {
         console.error("Failed to update collection order:", error);
         // Revert on error
@@ -224,8 +225,15 @@ class CollectionTreeBrowseView extends Component {
       showHeader = false,
       maxCollectionDepth,
     } = this.props;
-    const { collectionMap, rootCollections, draggedIndex, draggedOverIndex, isReordering, reorderError } =
-      this.state;
+    const { api } = this.context;
+    const {
+      collectionMap,
+      rootCollections,
+      draggedIndex,
+      draggedOverIndex,
+      isReordering,
+      reorderError,
+    } = this.state;
 
     if (!collectionTree) {
       return null;
@@ -289,41 +297,41 @@ class CollectionTreeBrowseView extends Component {
           </Message>
         ) : (
           <ReorderableList isSaving={isReordering} error={reorderError}>
-              <Grid relaxed stackable>
-            {rootCollections.map((collection, index) => {
-              const isCollectionDragging = draggedIndex === index;
-              const isCollectionDraggedOver =
-                draggedOverIndex === index && draggedIndex !== index;
+            <Grid relaxed stackable>
+              {rootCollections.map((collection, index) => {
+                const isCollectionDragging = draggedIndex === index;
+                const isCollectionDraggedOver =
+                  draggedOverIndex === index && draggedIndex !== index;
 
-              return (
-                <Grid.Column
-                  width={4}
-                  key={collection.slug}
-                  className={`collection-grid-column collection-card ${
-                    isCollectionDragging ? "dragging" : ""
-                  } ${isCollectionDraggedOver ? "drag-over" : ""}`}
-                  onDragOver={(e) => this.handleDragOver(e, index)}
-                >
-                  <CollectionItem
-                    collection={collection}
-                    allCollections={collectionMap}
-                    onEdit={this.handleEdit}
-                    onDelete={this.handleDelete}
-                    onAddChild={this.handleAddChild}
-                    collectionApi={this.context.api}
-                    treeSlug={collectionTree.slug}
-                    community={community}
-                    isDraggable
-                    dragIndex={index}
-                    onDragStart={this.handleDragStart}
-                    onDragEnd={this.handleDragEnd}
-                    isDragging={draggedIndex === index}
-                    maxCollectionDepth={maxCollectionDepth}
-                  />
-                </Grid.Column>
-              );
-            })}
-              </Grid>
+                return (
+                  <Grid.Column
+                    width={4}
+                    key={collection.slug}
+                    className={`collection-grid-column collection-card ${
+                      isCollectionDragging ? "dragging" : ""
+                    } ${isCollectionDraggedOver ? "drag-over" : ""}`}
+                    onDragOver={(e) => this.handleDragOver(e, index)}
+                  >
+                    <CollectionItem
+                      collection={collection}
+                      allCollections={collectionMap}
+                      onEdit={this.handleEdit}
+                      onDelete={this.handleDelete}
+                      onAddChild={this.handleAddChild}
+                      collectionApi={api}
+                      treeSlug={collectionTree.slug}
+                      community={community}
+                      isDraggable
+                      dragIndex={index}
+                      onDragStart={this.handleDragStart}
+                      onDragEnd={this.handleDragEnd}
+                      isDragging={draggedIndex === index}
+                      maxCollectionDepth={maxCollectionDepth}
+                    />
+                  </Grid.Column>
+                );
+              })}
+            </Grid>
           </ReorderableList>
         )}
       </Container>
@@ -348,6 +356,11 @@ CollectionTreeBrowseView.propTypes = {
   community: PropTypes.object,
   showHeader: PropTypes.bool,
   maxCollectionDepth: PropTypes.number.isRequired,
+};
+
+CollectionTreeBrowseView.defaultProps = {
+  community: null,
+  showHeader: false,
 };
 
 export default CollectionTreeBrowseView;

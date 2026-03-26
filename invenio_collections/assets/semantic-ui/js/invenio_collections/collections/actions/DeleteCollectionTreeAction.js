@@ -31,7 +31,11 @@ class DeleteCollectionTreeAction extends Component {
   };
 
   handleDelete = async () => {
-    const { collectionTree: { slug }, collectionApi, onSuccess } = this.props;
+    const {
+      collectionTree: { slug },
+      collectionApi,
+      onSuccess,
+    } = this.props;
     const { cascade } = this.state;
 
     this.cancellableDelete = withCancel(

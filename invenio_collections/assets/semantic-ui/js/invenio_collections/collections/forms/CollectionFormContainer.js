@@ -34,7 +34,10 @@ class CollectionFormContainer extends Component {
     this.cancellableSubmit && this.cancellableSubmit.cancel();
   }
 
-  isEditing = () => !!this.props.collectionSlug;
+  isEditing = () => {
+    const { collectionSlug } = this.props;
+    return !!collectionSlug;
+  };
 
   getInitialValues = () => {
     if (this.isEditing()) {
@@ -61,11 +64,7 @@ class CollectionFormContainer extends Component {
 
     const contextSlug = collectionSlug || parentCollectionSlug;
     const apiCall = contextSlug
-      ? collectionApi.previewCollectionRecords(
-          collectionTreeSlug,
-          contextSlug,
-          values
-        )
+      ? collectionApi.previewCollectionRecords(collectionTreeSlug, contextSlug, values)
       : collectionApi.previewBaseCollectionRecords(collectionTreeSlug, values);
 
     this.cancellableTest = withCancel(apiCall);
@@ -99,7 +98,11 @@ class CollectionFormContainer extends Component {
 
     let apiCall;
     if (this.isEditing()) {
-      apiCall = collectionApi.updateCollection(collectionTreeSlug, collectionSlug, payload);
+      apiCall = collectionApi.updateCollection(
+        collectionTreeSlug,
+        collectionSlug,
+        payload
+      );
     } else if (parentCollectionSlug) {
       apiCall = collectionApi.addCollection(
         collectionTreeSlug,
@@ -188,6 +191,9 @@ CollectionFormContainer.defaultProps = {
   onSuccess: () => {},
   handleCancel: () => {},
   slugGeneration: undefined,
+  community: null,
+  parentQuery: null,
+  onFormReady: undefined,
 };
 
 export default CollectionFormContainer;

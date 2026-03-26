@@ -7,7 +7,7 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { Formik } from "formik";
-import { Button, Form, Grid, Message, Divider } from "semantic-ui-react";
+import { Form, Grid, Message } from "semantic-ui-react";
 import { FieldLabel, TextField } from "react-invenio-forms";
 import { i18next } from "@translations/invenio_collections/i18next";
 import { generateSlug } from "../Configs";
@@ -24,7 +24,10 @@ const CollectionTreeFormInner = ({
 }) => {
   useEffect(() => {
     onFormReady?.({ isSubmitting, isValid, handleSubmit, handleCancel });
-  }, [isValid, isSubmitting, handleSubmit, handleCancel, onFormReady]);
+    // handleSubmit/handleCancel are stable refs; only re-notify parent
+    // when the values that affect button state change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isValid, isSubmitting]);
 
   return (
     <Form onSubmit={handleSubmit} className="communities-collection-tree">
@@ -49,11 +52,7 @@ const CollectionTreeFormInner = ({
               fluid
               fieldPath="title"
               label={
-                <FieldLabel
-                  htmlFor="title"
-                  icon="group"
-                  label={i18next.t("Title")}
-                />
+                <FieldLabel htmlFor="title" icon="group" label={i18next.t("Title")} />
               }
               onChange={
                 slugGeneration
@@ -71,11 +70,7 @@ const CollectionTreeFormInner = ({
               fluid
               fieldPath="slug"
               label={
-                <FieldLabel
-                  htmlFor="slug"
-                  icon="group"
-                  label={i18next.t("Slug")}
-                />
+                <FieldLabel htmlFor="slug" icon="group" label={i18next.t("Slug")} />
               }
             />
           </Grid.Column>
@@ -83,6 +78,23 @@ const CollectionTreeFormInner = ({
       </Grid>
     </Form>
   );
+};
+
+CollectionTreeFormInner.propTypes = {
+  isSubmitting: PropTypes.bool.isRequired,
+  isValid: PropTypes.bool.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+  setFieldValue: PropTypes.func.isRequired,
+  handleCancel: PropTypes.func.isRequired,
+  error: PropTypes.string,
+  slugGeneration: PropTypes.bool,
+  onFormReady: PropTypes.func,
+};
+
+CollectionTreeFormInner.defaultProps = {
+  error: "",
+  slugGeneration: false,
+  onFormReady: undefined,
 };
 
 const CollectionTreeForm = ({
@@ -129,6 +141,7 @@ CollectionTreeForm.propTypes = {
 CollectionTreeForm.defaultProps = {
   error: "",
   slugGeneration: false,
+  onFormReady: undefined,
 };
 
 export default CollectionTreeForm;
