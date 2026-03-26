@@ -7,10 +7,13 @@
 # it under the terms of the MIT License; see LICENSE file for more details.
 """Collections models."""
 
-from invenio_communities.communities.records.models import CommunityMetadata
 from invenio_db import db
+from invenio_i18n import gettext as _
 from sqlalchemy import UniqueConstraint
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy_utils.types import UUIDType
+
+from .errors import DuplicateSlugError
 
 
 # CollectionTree Table
@@ -20,18 +23,17 @@ class CollectionTree(db.Model, db.Timestamp):
     __tablename__ = "collections_collection_tree"
 
     __table_args__ = (
-        # Unique constraint on slug and community_id. Slugs should be unique within a community.
+        # Unique constraint on slug and namespace_id. Slugs should be unique within a namespace.
         UniqueConstraint(
             "slug",
-            "community_id",
-            name="uq_collections_collection_tree_slug_community_id",
+            "namespace_id",
+            name="uq_collections_collection_tree_slug_namespace_id",
         ),
     )
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    community_id = db.Column(
+    namespace_id = db.Column(
         UUIDType,
-        db.ForeignKey(CommunityMetadata.id, ondelete="RESTRICT"),
         nullable=True,
         index=True,
     )
@@ -41,16 +43,26 @@ class CollectionTree(db.Model, db.Timestamp):
 
     # Relationship to Collection
     collections = db.relationship("Collection", back_populates="collection_tree")
-    community = db.relationship(CommunityMetadata, backref="collection_trees")
 
     @classmethod
-    def create(cls, title, slug, community_id=None, order=None):
+    def create(cls, title, slug, namespace_id=None, order=None):
         """Create a new collection tree."""
-        with db.session.begin_nested():
-            collection_tree = cls(
-                title=title, slug=slug, community_id=community_id, order=order
-            )
-            db.session.add(collection_tree)
+        try:
+            with db.session.begin_nested():
+                collection_tree = cls(
+                    title=title, slug=slug, namespace_id=namespace_id, order=order
+                )
+                db.session.add(collection_tree)
+        except IntegrityError as e:
+            # Check if it's a duplicate slug error
+            if "uq_collections_collection_tree_slug_namespace_id" in str(e.orig):
+                raise DuplicateSlugError(
+                    _(
+                        f"A collection tree with slug '{slug}' already exists in this namespace."
+                    )
+                )
+            # Re-raise if it's a different integrity error
+            raise e
         return collection_tree
 
     @classmethod
@@ -59,16 +71,16 @@ class CollectionTree(db.Model, db.Timestamp):
         return cls.query.get(id_)
 
     @classmethod
-    def get_by_slug(cls, slug, community_id):
+    def get_by_slug(cls, slug, namespace_id):
         """Get a collection tree by slug."""
         return cls.query.filter(
-            cls.slug == slug, cls.community_id == community_id
+            cls.slug == slug, cls.namespace_id == namespace_id
         ).one_or_none()
 
     @classmethod
-    def get_community_trees(cls, community_id):
-        """Get all collection trees of a community."""
-        return cls.query.filter(cls.community_id == community_id).order_by(cls.order)
+    def get_namespace_trees(cls, namespace_id):
+        """Get all collection trees of a namespace."""
+        return cls.query.filter(cls.namespace_id == namespace_id).order_by(cls.order)
 
     @classmethod
     def get_collections(cls, model, max_depth):
@@ -76,6 +88,25 @@ class CollectionTree(db.Model, db.Timestamp):
         return Collection.query.filter(
             Collection.tree_id == model.id, Collection.depth < max_depth
         ).order_by(Collection.path, Collection.order)
+
+    def update(self, **kwargs):
+        """Update a collection tree."""
+        try:
+            with db.session.begin_nested():
+                for key, value in kwargs.items():
+                    setattr(self, key, value)
+                db.session.flush()
+        except IntegrityError as e:
+            # Check if it's a duplicate slug error
+            if "uq_collections_collection_tree_slug_namespace_id" in str(e.orig):
+                raise DuplicateSlugError(
+                    _(
+                        f"A collection tree with slug '{kwargs.get('slug', 'unknown')}' already exists in this namespace."
+                    )
+                )
+            # Re-raise if it's a different integrity error
+            raise e
+        return self
 
 
 # Collection Table
@@ -117,32 +148,41 @@ class Collection(db.Model, db.Timestamp):
     def create(cls, slug, path, title, search_query, ctree_or_id, **kwargs):
         """Create a new collection."""
         depth = len([int(part) for part in path.split(",") if part.strip()])
-        with db.session.begin_nested():
-            if isinstance(ctree_or_id, CollectionTree):
-                collection = cls(
-                    slug=slug,
-                    path=path,
-                    title=title,
-                    search_query=search_query,
-                    collection_tree=ctree_or_id,
-                    depth=depth,
-                    **kwargs,
+        try:
+            with db.session.begin_nested():
+                if isinstance(ctree_or_id, CollectionTree):
+                    collection = cls(
+                        slug=slug,
+                        path=path,
+                        title=title,
+                        search_query=search_query,
+                        collection_tree=ctree_or_id,
+                        depth=depth,
+                        **kwargs,
+                    )
+                elif isinstance(ctree_or_id, int):
+                    collection = cls(
+                        slug=slug,
+                        path=path,
+                        title=title,
+                        search_query=search_query,
+                        tree_id=ctree_or_id,
+                        depth=depth,
+                        **kwargs,
+                    )
+                else:
+                    raise ValueError(
+                        "Either `collection_tree` or `collection_tree_id` must be provided."
+                    )
+                db.session.add(collection)
+        except IntegrityError as e:
+            # Check if it's a duplicate slug error
+            if "uq_collections_collection_slug_tree_id" in str(e.orig):
+                raise DuplicateSlugError(
+                    _(f"A collection with slug '{slug}' already exists in this tree.")
                 )
-            elif isinstance(ctree_or_id, int):
-                collection = cls(
-                    slug=slug,
-                    path=path,
-                    title=title,
-                    search_query=search_query,
-                    tree_id=ctree_or_id,
-                    depth=depth,
-                    **kwargs,
-                )
-            else:
-                raise ValueError(
-                    "Either `collection_tree` or `collection_tree_id` must be provided."
-                )
-            db.session.add(collection)
+            # Re-raise if it's a different integrity error
+            raise e
         return collection
 
     @classmethod
@@ -173,8 +213,22 @@ class Collection(db.Model, db.Timestamp):
 
     def update(self, **kwargs):
         """Update a collection."""
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+        try:
+            with db.session.begin_nested():
+                for key, value in kwargs.items():
+                    setattr(self, key, value)
+                db.session.flush()
+        except IntegrityError as e:
+            # Check if it's a duplicate slug error
+            if "uq_collections_collection_slug_tree_id" in str(e.orig):
+                raise DuplicateSlugError(
+                    _(
+                        f"A collection with slug '{kwargs.get('slug', 'unknown')}' already exists in this tree."
+                    )
+                )
+            # Re-raise if it's a different integrity error
+            raise e
+        return self
 
     @classmethod
     def get_children(cls, model):

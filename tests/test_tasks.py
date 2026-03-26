@@ -17,13 +17,13 @@ def test_update_collections_size(app, db, record_factory, minimal_record, commun
     tree = CollectionTree.create(
         title="Tree 1",
         order=10,
-        community_id=community.id,
+        namespace_id=community.id,
         slug="tree-1",
     )
 
     collection = Collection.create(
         title="My Collection",
-        query="metadata.title:foo",
+        search_query="metadata.title:foo",
         slug="my-collection",
         ctree=tree,
     )
