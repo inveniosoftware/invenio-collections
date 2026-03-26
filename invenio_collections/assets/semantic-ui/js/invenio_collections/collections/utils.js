@@ -14,9 +14,42 @@ import _mapValues from "lodash/mapValues";
 import _pickBy from "lodash/pickBy";
 
 /**
+ * Recursively find a collection by slug within a nested collections array.
+ */
+export const findCollectionBySlug = (collections, slug) => {
+  for (const col of collections) {
+    if (col.slug === slug) return col;
+    if (col.children && col.children.length > 0) {
+      const found = findCollectionBySlug(col.children, slug);
+      if (found) return found;
+    }
+  }
+  return null;
+};
+
+/**
+ * Find the parent of a collection identified by targetSlug within a collection tree.
+ * Returns null if the collection is at depth 0 or not found.
+ */
+export const findParentCollection = (collections, targetSlug) => {
+  for (const collectionGroup of collections) {
+    const collectionsArray = Object.values(collectionGroup).filter(
+      (item) => typeof item === "object" && item !== null && item.slug
+    );
+    const targetCollection = collectionsArray.find((col) => col.slug === targetSlug);
+    if (targetCollection) {
+      if (targetCollection.depth === 0) return null;
+      const parent = collectionsArray.find(
+        (col) => col.depth === targetCollection.depth - 1
+      );
+      return parent || null;
+    }
+  }
+  return null;
+};
+
+/**
  * Remove empty values from an object or array recursively
- * @param {*} obj - The object or array to process
- * @returns {*} - The object or array with empty values removed
  */
 export const removeEmptyValues = (obj) => {
   if (_isArray(obj)) {
