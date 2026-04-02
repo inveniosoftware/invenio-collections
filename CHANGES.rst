@@ -10,6 +10,11 @@
 Changes
 =======
 
+Version v8.0.1 (released 2026-04-02)
+
+- fix(translations): add package-lock.json so the pypi-publish workflow
+  can run ``npm ci`` in the translations directory
+
 Version v8.0.0 (released 2026-04-02)
 
 - breaking(api): rename ``community_id`` to ``namespace_id`` across the service,
