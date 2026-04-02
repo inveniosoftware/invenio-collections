@@ -1,5 +1,5 @@
 ..
-    Copyright (C) 2015 CERN.
+    Copyright (C) 2015-2026 CERN.
     Copyright (C) 2025 Ubiquity Press.
     Copyright (C) 2025-2026 Graz University of Technology.
 
@@ -9,6 +9,26 @@
 
 Changes
 =======
+
+Version v8.0.0 (released 2026-04-02)
+
+- breaking(api): rename ``community_id`` to ``namespace_id`` across the service,
+  resource, and data model to decouple collections from invenio-communities;
+  includes an Alembic migration to rename the column
+- breaking(config): permission policy is now resolved via
+  ``COLLECTIONS_PERMISSION_POLICY``; standalone deployments fall back to a
+  system-process-only default
+- feat(service): add tree and collection reordering endpoints with batch
+  update support
+- feat(service): enforce configurable limits on trees per namespace,
+  collections per tree, and maximum nesting depth
+- feat(ui): add full CRUD settings UI for managing collection trees and
+  collections, including create, edit, delete, reorder, and drag-and-drop
+- feat(ui): add i18n infrastructure and translation scaffolding
+- feat(ui): add ESLint with ``@inveniosoftware/eslint-config-invenio`` and
+  JS linter GitHub Actions job
+- fix(results): include ``slug`` in breadcrumb data so templates can build
+  URLs without relying on ``self_html``
 
 Version v7.0.0 (released 2026-03-20)
 
