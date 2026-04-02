@@ -10,6 +10,10 @@
 Changes
 =======
 
+Version v8.0.2 (released 2026-04-02)
+
+- chore(translations): populate boilderplate for translations
+
 Version v8.0.1 (released 2026-04-02)
 
 - fix(translations): add package-lock.json so the pypi-publish workflow
