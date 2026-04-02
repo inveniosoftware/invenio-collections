@@ -80,7 +80,7 @@ def resource_type_v(app, resource_type_type):
                 "csl": "dataset",
                 "datacite_general": "Dataset",
                 "datacite_type": "",
-                "openaire_resourceType": "21",
+                "openaire_resourceType": "0021",
                 "openaire_type": "dataset",
                 "eurepo": "info:eu-repo/semantics/other",
                 "schema.org": "https://schema.org/Dataset",
