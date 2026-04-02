@@ -10,6 +10,11 @@
 Changes
 =======
 
+Version v8.0.2 (released 2026-04-02)
+
+- fix(translations): add missing scripts required by the 
+  npm scripts during the pypi-publish workflow
+
 Version v8.0.1 (released 2026-04-02)
 
 - fix(translations): add package-lock.json so the pypi-publish workflow
