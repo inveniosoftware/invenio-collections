@@ -1,7 +1,38 @@
 {
   "name": "invenio-collections-ui",
   "config": {
-    "languages": ["en"]
+    "languages": [
+      "en",
+      "ar",
+      "bg",
+      "ca",
+      "cs",
+      "da",
+      "de",
+      "el",
+      "es",
+      "et",
+      "fa",
+      "fr",
+      "hr",
+      "hu",
+      "it",
+      "ja",
+      "ka",
+      "ko",
+      "lt",
+      "no",
+      "pl",
+      "pt",
+      "ro",
+      "ru",
+      "sk",
+      "sv",
+      "tr",
+      "uk",
+      "zh_CN",
+      "zh_TW"
+    ]
   },
   "devDependencies": {
     "i18next-conv": "^10.2.0",
@@ -10,6 +41,7 @@
   },
   "scripts": {
     "extract_messages": "i18next-scanner --config i18next-scanner.config.js '../../js/**/*.{js,jsx}' '!../../js/**/node_modules/**'",
+    "postextract_messages": "node scripts/postExtractMessages.js",
     "compile_catalog": "node ./scripts/compileCatalog.js",
     "init_catalog": "node ./scripts/initCatalog"
   }
