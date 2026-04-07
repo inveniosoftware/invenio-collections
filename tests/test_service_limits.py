@@ -9,18 +9,11 @@
 import pytest
 from invenio_access.permissions import system_identity
 
-from invenio_collections.api import Collection, CollectionTree
+from invenio_collections.api import CollectionTree
 from invenio_collections.errors import MaxCollectionsExceeded, MaxTreesExceeded
-from invenio_collections.proxies import current_collections
 
 
-@pytest.fixture()
-def collections_service():
-    """Get collections service fixture."""
-    return current_collections.service
-
-
-def test_max_trees_limit(app, db, collections_service, community, community_owner):
+def test_max_trees_limit(app, db, collections_service, community):
     """Test that tree creation respects the maximum trees limit."""
     # Set a low limit for testing
     app.config["COLLECTIONS_MAX_TREES"] = 2
@@ -55,9 +48,7 @@ def test_max_trees_limit(app, db, collections_service, community, community_owne
     assert "already has 2 categories" in str(exc_info.value)
 
 
-def test_max_collections_limit(
-    app, db, collections_service, community, community_owner
-):
+def test_max_collections_limit(app, db, collections_service, community):
     """Test that collection creation respects the maximum collections limit."""
     # Set a low limit for testing
     app.config["COLLECTIONS_MAX_COLLECTIONS_PER_TREE"] = 3
@@ -129,7 +120,7 @@ def test_max_collections_limit(
 
 
 def test_max_collections_limit_with_subcollections(
-    app, db, collections_service, community, community_owner
+    app, db, collections_service, community
 ):
     """Test that subcollection creation also respects the limit."""
     # Set a low limit for testing
@@ -183,7 +174,7 @@ def test_max_collections_limit_with_subcollections(
         )
 
 
-def test_unlimited_trees(app, db, collections_service, community, community_owner):
+def test_unlimited_trees(app, db, collections_service, community):
     """Test that setting max trees to 0 allows unlimited trees."""
     # Set to unlimited
     app.config["COLLECTIONS_MAX_TREES"] = 0
@@ -198,9 +189,7 @@ def test_unlimited_trees(app, db, collections_service, community, community_owne
         assert tree._tree.slug == f"tree-{i}"
 
 
-def test_unlimited_collections(
-    app, db, collections_service, community, community_owner
-):
+def test_unlimited_collections(app, db, collections_service, community):
     """Test that setting max collections to 0 allows unlimited collections."""
     # Set to unlimited
     app.config["COLLECTIONS_MAX_COLLECTIONS_PER_TREE"] = 0
@@ -228,7 +217,7 @@ def test_unlimited_collections(
         assert coll._collection.slug == f"collection-{i}"
 
 
-def test_error_messages(app, db, collections_service, community, community_owner):
+def test_error_messages(app, db, collections_service, community):
     """Test that error messages contain the correct information."""
     # Test tree limit error message
     app.config["COLLECTIONS_MAX_TREES"] = 1

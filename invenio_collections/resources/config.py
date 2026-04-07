@@ -14,7 +14,6 @@ from flask_resources import (
     create_error_handler,
 )
 from invenio_i18n import gettext as _
-from invenio_rdm_records.resources.serializers import UIJSONSerializer
 from invenio_records_resources.resources.records.args import SearchRequestArgsSchema
 from invenio_records_resources.resources.records.headers import etag_headers
 from invenio_records_resources.services.base.config import ConfiguratorMixin
@@ -117,7 +116,4 @@ class CollectionsResourceConfig(ResourceConfig, ConfiguratorMixin):
     }
     response_handlers = {
         "application/json": ResponseHandler(JSONSerializer(), headers=etag_headers),
-        "application/vnd.inveniordm.v1+json": ResponseHandler(
-            UIJSONSerializer(), headers=etag_headers
-        ),
     }
