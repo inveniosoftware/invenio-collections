@@ -11,7 +11,6 @@ import os
 from flask import current_app, url_for
 from invenio_db import db
 from invenio_db.uow import ModelDeleteOp
-from invenio_rdm_records.proxies import current_community_records_service
 from invenio_records_resources.services import (
     LinksTemplate,
     ServiceSchemaWrapper,
@@ -47,9 +46,10 @@ from .schema import BatchReorderSchema, validate_search_query
 class CollectionsService(Service):
     """Collections service."""
 
-    def __init__(self, config):
+    def __init__(self, config, records_service):
         """Instantiate the service with the given config."""
         self.config = config
+        self.records_service = records_service
 
     collection_cls = Collection
 
@@ -438,9 +438,12 @@ class CollectionsService(Service):
 
         collection_namespace_id = collection.collection_tree.namespace_id
         if collection_namespace_id:
-            res = current_community_records_service.search(
+            res = self.records_service.search(
                 identity,
+                # kept for convenience with external community search services
                 community_id=str(collection_namespace_id),
+                # add this as generic argument for non-community aware search services
+                namespace_id=str(collection_namespace_id),
                 extra_filter=collection.query,
                 params=params,
             )
@@ -495,9 +498,12 @@ class CollectionsService(Service):
         params = params or {}
 
         if ctree.namespace_id:
-            res = current_community_records_service.search(
+            res = self.records_service.search(
                 identity,
+                # kept for convenience with external community search services
                 community_id=str(ctree.namespace_id),
+                # add this as generic argument for non-community aware search services
+                namespace_id=str(ctree.namespace_id),
                 extra_filter=new_search_query,
                 params=params,
             )
