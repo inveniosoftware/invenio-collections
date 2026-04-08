@@ -10,6 +10,25 @@
 Changes
 =======
 
+Version v8.1.0 (released 2026-04-08)
+
+- breaking(ext): service and resource initialization removed from
+  ``InvenioCollections.init_app``. Consuming modules (e.g.
+  ``invenio-rdm-records``, ``invenio-app-rdm``) are now responsible for
+  constructing and wiring ``CollectionsService`` and ``CollectionsResource``
+- breaking(service): ``CollectionsService.__init__`` now requires a
+  ``records_service`` keyword argument. The hard dependency on
+  ``invenio-rdm-records`` proxy is removed
+- breaking(resource): ``CollectionsResourceConfig`` no longer includes the
+  ``UIJSONSerializer`` response handler. RDM-specific serialization is
+  provided by ``RDMCollectionsResourceConfig`` in ``invenio-rdm-records``
+- breaking(tasks): ``update_collections_size`` Celery task and its registration
+   moved to ``invenio_rdm_records.collections.tasks``
+- breaking(entrypoints): ``invenio_base.api_blueprints`` entry point removed.
+  Blueprint registration is now the responsibility of the consuming module
+- breaking(dependencies): ``invenio-rdm-records`` removed from package
+  dependencies
+
 Version v8.0.2 (released 2026-04-02)
 
 - chore(translations): populate boilderplate for translations
