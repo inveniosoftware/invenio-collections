@@ -1,7 +1,9 @@
 # SPDX-FileCopyrightText: 2024 CERN.
+# SPDX-FileCopyrightText: 2026 KTH Royal Institute of Technology.
 # SPDX-License-Identifier: MIT
 """Collections schema."""
 
+from flask_babel import gettext
 from flask_babel import lazy_gettext as _
 from luqum.exceptions import ParseError
 from luqum.parser import parser as luqum_parser
@@ -15,7 +17,7 @@ def validate_search_query(query):
         luqum_parser.parse(query)
     except ParseError as e:
         raise ValidationError(
-            _("Invalid search query: {error}").format(error=str(e))
+            gettext("Invalid search query: %(error)s", error=str(e))
         ) from e
 
 
