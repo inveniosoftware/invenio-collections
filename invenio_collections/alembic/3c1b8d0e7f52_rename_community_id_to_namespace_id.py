@@ -18,10 +18,17 @@ depends_on = None
 
 def upgrade():
     """Upgrade database."""
+    #
+    # Drop the foreign key constraint on community_id if it exists.
+    # Older databases will have the constraint, we have commented
+    # it out in newer versions of the schema to break dependency to
+    # the communities table.
+    #
     op.drop_constraint(
         "fk_collections_collection_tree_community_id_communities_1eb3",
         "collections_collection_tree",
         type_="foreignkey",
+        if_exists=True,
     )
 
     op.drop_index(
