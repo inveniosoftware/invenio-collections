@@ -36,7 +36,7 @@ export const buildCollectionUrl = (collection, treeSlug, community) => {
     return collection.links.self_html;
   }
   if (community?.slug && collection.slug) {
-    return `/communities/${community.slug}/collections/read/${collection.slug}`;
+    return `/communities/${community.slug}/collections/${treeSlug}/${collection.slug}`;
   }
   return null;
 };
