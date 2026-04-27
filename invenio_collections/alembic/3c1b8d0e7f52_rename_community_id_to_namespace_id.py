@@ -90,11 +90,15 @@ def downgrade():
         ["community_id"],
     )
 
-    op.create_foreign_key(
-        "fk_collections_collection_tree_community_id_communities_1eb3",
-        "collections_collection_tree",
-        "communities_metadata",
-        ["community_id"],
-        ["id"],
-        ondelete="SET NULL",
-    )
+    #
+    # Note: we are not dependent anymore on communities,
+    # so we do not create the foreign key constraint on downgrade.
+    #
+    # op.create_foreign_key(
+    #     "fk_collections_collection_tree_community_id_communities_1eb3",
+    #     "collections_collection_tree",
+    #     "communities_metadata",
+    #     ["community_id"],
+    #     ["id"],
+    #     ondelete="SET NULL",
+    # )
