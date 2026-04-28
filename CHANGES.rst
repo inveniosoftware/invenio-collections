@@ -10,6 +10,10 @@
 Changes
 =======
 
+Version v8.1.1 (released 2026-04-28)
+
+- fix: correct URL for collection
+
 Version v8.1.0 (released 2026-04-08)
 
 - breaking(ext): service and resource initialization removed from
