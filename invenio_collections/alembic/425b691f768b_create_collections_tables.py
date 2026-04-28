@@ -30,14 +30,20 @@ def upgrade():
         sa.Column("title", sa.String(length=255), nullable=False),
         sa.Column("order", sa.Integer(), nullable=True),
         sa.Column("slug", sa.String(length=255), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["community_id"],
-            ["communities_metadata.id"],
-            name=op.f(
-                "fk_collections_collection_tree_community_id_communities_metadata"
-            ),
-            ondelete="SET NULL",
-        ),
+        #
+        # Note: we are not dependent anymore on communities,
+        # so we can drop the foreign key constraint. The next
+        # migration (rename_community_id_to_namespace_id) drops
+        # this constraint.
+        #
+        # sa.ForeignKeyConstraint(
+        #     ["community_id"],
+        #     ["communities_metadata.id"],
+        #     name=op.f(
+        #         "fk_collections_collection_tree_community_id_communities_metadata"
+        #     ),
+        #     ondelete="SET NULL",
+        # ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_collections_collection_tree")),
         sa.UniqueConstraint(
             "slug",
