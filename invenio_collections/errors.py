@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2024 CERN.
+# Copyright (C) 2026 KTH Royal Institute of Technology.
 #
 # Invenio-Collections is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -50,8 +51,10 @@ class MaxDepthExceeded(CollectionError):
         self.max_depth = max_depth
         super().__init__(
             _(
-                f"Cannot create collection at depth {current_depth + 1}. "
-                f"Maximum depth is {max_depth} (allowing depths 0-{max_depth})."
+                "Cannot create collection at depth %(current_depth)s. "
+                "Maximum depth is %(max_depth)s (allowing depths 0-%(max_depth)s).",
+                current_depth=current_depth + 1,
+                max_depth=max_depth,
             )
         )
 
@@ -65,8 +68,10 @@ class MaxTreesExceeded(CollectionError):
         self.max_trees = max_trees
         super().__init__(
             _(
-                f"Cannot create category. Namespace already has {current_count} categories. "
-                f"Maximum allowed is {max_trees}."
+                "Cannot create category. Namespace already has %(current_count)s categories. "
+                "Maximum allowed is %(max_trees)s.",
+                current_count=current_count,
+                max_trees=max_trees,
             )
         )
 
@@ -80,7 +85,9 @@ class MaxCollectionsExceeded(CollectionError):
         self.max_collections = max_collections
         super().__init__(
             _(
-                f"Cannot create collection. Category already has {current_count} collections. "
-                f"Maximum allowed is {max_collections}."
+                "Cannot create collection. Category already has %(current_count)s collections. "
+                "Maximum allowed is %(max_collections)s.",
+                current_count=current_count,
+                max_collections=max_collections,
             )
         )

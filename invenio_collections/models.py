@@ -2,6 +2,7 @@
 #
 # Copyright (C) 2024 CERN.
 # Copyright (C) 2025 Graz University of Technology.
+# Copyright (C) 2026 KTH Royal Institute of Technology.
 #
 # Invenio-Collections is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -58,7 +59,8 @@ class CollectionTree(db.Model, db.Timestamp):
             if "uq_collections_collection_tree_slug_namespace_id" in str(e.orig):
                 raise DuplicateSlugError(
                     _(
-                        f"A collection tree with slug '{slug}' already exists in this namespace."
+                        "A collection tree with slug '%(slug)s' already exists in this namespace.",
+                        slug=slug,
                     )
                 )
             # Re-raise if it's a different integrity error
@@ -101,7 +103,8 @@ class CollectionTree(db.Model, db.Timestamp):
             if "uq_collections_collection_tree_slug_namespace_id" in str(e.orig):
                 raise DuplicateSlugError(
                     _(
-                        f"A collection tree with slug '{kwargs.get('slug', 'unknown')}' already exists in this namespace."
+                        "A collection tree with slug '%(slug)s' already exists in this namespace.",
+                        slug=kwargs.get("slug", "unknown"),
                     )
                 )
             # Re-raise if it's a different integrity error
@@ -179,7 +182,10 @@ class Collection(db.Model, db.Timestamp):
             # Check if it's a duplicate slug error
             if "uq_collections_collection_slug_tree_id" in str(e.orig):
                 raise DuplicateSlugError(
-                    _(f"A collection with slug '{slug}' already exists in this tree.")
+                    _(
+                        "A collection with slug '%(slug)s' already exists in this tree.",
+                        slug=slug,
+                    )
                 )
             # Re-raise if it's a different integrity error
             raise e
@@ -223,7 +229,8 @@ class Collection(db.Model, db.Timestamp):
             if "uq_collections_collection_slug_tree_id" in str(e.orig):
                 raise DuplicateSlugError(
                     _(
-                        f"A collection with slug '{kwargs.get('slug', 'unknown')}' already exists in this tree."
+                        "A collection with slug '%(slug)s' already exists in this tree.",
+                        slug=kwargs.get("slug", "unknown"),
                     )
                 )
             # Re-raise if it's a different integrity error

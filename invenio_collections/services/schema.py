@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2024 CERN.
+# Copyright (C) 2026 KTH Royal Institute of Technology.
 #
 # Invenio-Collections is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
 """Collections schema."""
 
+from flask_babel import gettext
 from flask_babel import lazy_gettext as _
 from luqum.exceptions import ParseError
 from luqum.parser import parser as luqum_parser
@@ -19,7 +21,7 @@ def validate_search_query(query):
         luqum_parser.parse(query)
     except ParseError as e:
         raise ValidationError(
-            _("Invalid search query: {error}").format(error=str(e))
+            gettext("Invalid search query: %(error)s", error=str(e))
         ) from e
 
 
