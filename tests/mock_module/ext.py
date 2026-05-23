@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 CERN.
+# SPDX-License-Identifier: MIT
+
 """Mock extension for collections tests."""
 
 from unittest.mock import MagicMock

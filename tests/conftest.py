@@ -1,12 +1,8 @@
-# -*- coding: utf-8 -*-
-#
-# Copyright (C) 2015 CERN.
-# Copyright (C) 2025 Ubiquity Press.
-# Copyright (C) 2025 Graz University of Technology.
-# Copyright (C) 2025 Northwestern University.
-#
-# Invenio-Collections is free software; you can redistribute it and/or modify
-# it under the terms of the MIT License; see LICENSE file for more details.
+# SPDX-FileCopyrightText: 2015 CERN.
+# SPDX-FileCopyrightText: 2025 Ubiquity Press.
+# SPDX-FileCopyrightText: 2025 Graz University of Technology.
+# SPDX-FileCopyrightText: 2025 Northwestern University.
+# SPDX-License-Identifier: MIT
 #
 """Pytest configuration.
 
