@@ -1,6 +1,7 @@
 #
 # This file is part of Invenio.
 # Copyright (C) 2016-2018 CERN.
+# Copyright (C) 2026 CESNET z.s.p.o.
 #
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -18,10 +19,17 @@ depends_on = None
 
 def upgrade():
     """Upgrade database."""
+    #
+    # Drop the foreign key constraint on community_id if it exists.
+    # Older databases will have the constraint, we have commented
+    # it out in newer versions of the schema to break dependency to
+    # the communities table.
+    #
     op.drop_constraint(
         "fk_collections_collection_tree_community_id_communities_1eb3",
         "collections_collection_tree",
         type_="foreignkey",
+        if_exists=True,
     )
 
     op.drop_index(
@@ -83,11 +91,15 @@ def downgrade():
         ["community_id"],
     )
 
-    op.create_foreign_key(
-        "fk_collections_collection_tree_community_id_communities_1eb3",
-        "collections_collection_tree",
-        "communities_metadata",
-        ["community_id"],
-        ["id"],
-        ondelete="SET NULL",
-    )
+    #
+    # Note: we are not dependent anymore on communities,
+    # so we do not create the foreign key constraint on downgrade.
+    #
+    # op.create_foreign_key(
+    #     "fk_collections_collection_tree_community_id_communities_1eb3",
+    #     "collections_collection_tree",
+    #     "communities_metadata",
+    #     ["community_id"],
+    #     ["id"],
+    #     ondelete="SET NULL",
+    # )
