@@ -10,6 +10,11 @@
 Changes
 =======
 
+Version v9.0.0 (released 2026-05-29)
+
+- chore(setup): bump dependencies
+- fix: alembic migrations
+
 Version v8.1.1 (released 2026-04-28)
 
 - fix: correct URL for collection
