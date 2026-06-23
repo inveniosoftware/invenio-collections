@@ -64,6 +64,9 @@ invenio_collections = "invenio_collections:alembic"
 [project.entry-points."invenio_db.models"]
 invenio_collections = "invenio_collections.models"
 
+[project.entry-points."invenio_i18n.translations"]
+messages = "invenio_collections"
+
 # Tools in alphabetical order
 [tool.babel.compile_catalog]
 directory = "invenio_collections/translations/"
@@ -72,7 +75,7 @@ use_fuzzy = true
 [tool.babel.extract_messages]
 copyright_holder = "CERN"
 msgid_bugs_address = "info@inveniosoftware.org"
-mapping_file = "babel.ini"
+mapping_file = "pyproject.toml"
 output_file = "invenio_collections/translations/messages.pot"
 add_comments = "NOTE"
 
@@ -80,18 +83,23 @@ add_comments = "NOTE"
 input_file = "invenio_collections/translations/messages.pot"
 output_dir = "invenio_collections/translations/"
 
-[tool.babel.javascript]
-"**.js" = { encoding = "utf-8", extract_messages = ["$_", "jQuery._"] }
+# see https://babel.pocoo.org/en/latest/messages.html#toml-configuration-format
+[tool.babel]
+[[tool.babel.mappings]]
+method = "javascript"
+pattern = "**.js"
+encoding = "utf-8"
+extract_messages = "$._, jQuery._"
 
-[tool.babel.jinja2]
-"**/templates/**.html" = { encoding = "utf-8" }
+[[tool.babel.mappings]]
+method = "python"
+pattern = "**.py"
+encoding = "utf-8"
 
-[tool.babel.python]
-"**.py" = { encoding = "utf-8" }
-
-[tool.babel.update_catalog]
-input_file = "invenio_collections/translations/messages.pot"
-output_dir = "invenio_collections/translations/"
+[[tool.babel.mappings]]
+method = "jinja2"
+pattern = "**/templates/**.html"
+encoding = "utf-8"
 
 [tool.hatch.version]
 path = "invenio_collections/__init__.py"
@@ -115,4 +123,3 @@ testpaths = [
 filterwarnings = [
     "ignore::marshmallow.warnings.RemovedInMarshmallow4Warning",
 ]
-

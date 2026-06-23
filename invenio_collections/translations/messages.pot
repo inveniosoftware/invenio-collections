@@ -1,0 +1,89 @@
+# Translations template for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-06-23 13:25+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: invenio_collections/errors.py:50
+#, python-format
+msgid ""
+"Cannot create collection at depth %(current_depth)s. Maximum depth is "
+"%(max_depth)s (allowing depths 0-%(max_depth)s)."
+msgstr ""
+
+#: invenio_collections/errors.py:67
+#, python-format
+msgid ""
+"Cannot create category. Namespace already has %(current_count)s "
+"categories. Maximum allowed is %(max_trees)s."
+msgstr ""
+
+#: invenio_collections/errors.py:84
+#, python-format
+msgid ""
+"Cannot create collection. Category already has %(current_count)s "
+"collections. Maximum allowed is %(max_collections)s."
+msgstr ""
+
+#: invenio_collections/models.py:58 invenio_collections/models.py:102
+#, python-format
+msgid "A collection tree with slug '%(slug)s' already exists in this namespace."
+msgstr ""
+
+#: invenio_collections/models.py:182 invenio_collections/models.py:228
+#, python-format
+msgid "A collection with slug '%(slug)s' already exists in this tree."
+msgstr ""
+
+#: invenio_collections/resources/config.py:65
+msgid "Collection was not found."
+msgstr ""
+
+#: invenio_collections/resources/config.py:68
+msgid "Collection tree was not found."
+msgstr ""
+
+#: invenio_collections/resources/config.py:74
+msgid "Cannot delete collection tree until all collections have been deleted."
+msgstr ""
+
+#: invenio_collections/resources/config.py:82
+msgid "Cannot delete collection until all children have been deleted."
+msgstr ""
+
+#: invenio_collections/resources/config.py:90
+msgid "A collection with this slug already exists in this context."
+msgstr ""
+
+#: invenio_collections/services/schema.py:20
+#, python-format
+msgid "Invalid search query: %(error)s"
+msgstr ""
+
+#: invenio_collections/services/schema.py:35
+msgid "Slug: letters, numbers, underscores, or hyphens only."
+msgstr ""
+
+#: invenio_collections/services/schema.py:48
+#: invenio_collections/services/schema.py:61
+#: invenio_collections/services/schema.py:77
+msgid "Order must be non-negative."
+msgstr ""
+
+#: invenio_collections/services/schema.py:87
+msgid "At least one item required."
+msgstr ""
+
