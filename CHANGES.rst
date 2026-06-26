@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version v9.0.3 (released 2026-06-26)
+
+- fix(i18n): Transifex project main config 
+
 Version v9.0.2 (released 2026-06-26)
 
 - i18n: fix outdated transifex config for UI
