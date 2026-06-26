@@ -1,30 +1,11 @@
-# -*- coding: utf-8 -*-
 #
-# This file is part of Invenio.
-# Copyright (C) 2015 CERN.
+# SPDX-FileCopyrightText: 2025-2026 CERN.
+# SPDX-FileCopyrightText: 2026 KTH Royal Institute of Technology.
+# SPDX-License-Identifier: MIT
 #
-# Invenio is free software; you can redistribute it
-# and/or modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of the
-# License, or (at your option) any later version.
-#
-# Invenio is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Invenio; if not, write to the
-# Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-# MA 02111-1307, USA.
-#
-# In applying this license, CERN does not
-# waive the privileges and immunities granted to it by virtue of its status
-# as an Intergovernmental Organization or submit itself to any jurisdiction.
 
 
-# TODO: Transifex integration
-#
+# Translate python strings
 # 1) Create message catalog:
 #    $ pybabel extract -F pyproject.toml -o invenio_collections/translations/messages.pot invenio_collections
 #    $ pybabel init -i invenio_collections/translations/messages.pot -d invenio_collections/translations -l <lang>
@@ -41,10 +22,39 @@
 #    $ tx pull -a
 
 [main]
-host = https://www.transifex.com
+host = https://app.transifex.com
 
 [invenio.invenio-collections-messages]
 file_filter = invenio_collections/translations/<lang>/LC_MESSAGES/messages.po
 source_file = invenio_collections/translations/messages.pot
+source_lang = en
+type = PO
+
+# Translate JavaScript strings
+# 1) Navigate to the directory:
+#    cd invenio_collections/assets/semantic-ui/translations/invenio_collections
+# 2) Install i18n dev dependencies
+#    npm install
+# 3) Add a new language
+#    npm run init_catalog lang <lang>
+# 4) Extract translation keys/values
+#    $ npm run extract_messages
+# 5) Install the transifex-client
+#    see: https://developers.transifex.com/docs/cli#transifex-client
+# 6) Push source (.pot) and translations (.po) to Transifex
+#    Navigate to the root of the invenio_collections repository
+#    $ tx push -s -t
+# 7) Pull translations for a single language from Transifex
+#    $ tx pull -l <lang>
+# 8) Pull translations for all languages from Transifex
+#    $ tx pull -a
+# 9) Compile .po files for all languages
+#    $ npm run compile_catalog
+# 10) Convert .po file for a single language
+#    $ npm run compile_catalog lang <lang>
+
+[o:inveniosoftware:p:invenio:r:invenio-collections-messages-ui]
+file_filter = invenio_collections/assets/semantic-ui/translations/invenio_collections/messages/<lang>/messages.po
+source_file = invenio_collections/assets/semantic-ui/translations/invenio_collections/translations.pot
 source_lang = en
 type = PO
