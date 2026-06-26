@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version v9.0.2 (released 2026-06-26)
+
+- i18n: fix outdated transifex config for UI
+
 Version v9.0.1 (released 2026-06-26)
 
 - fix(i18n): support pyproject extraction
