@@ -2,10 +2,18 @@
     SPDX-FileCopyrightText: 2015-2026 CERN.
     SPDX-FileCopyrightText: 2025 Ubiquity Press.
     SPDX-FileCopyrightText: 2025-2026 Graz University of Technology.
+    SPDX-FileCopyrightText: 2026 KTH Royal Institute of Technology.
     SPDX-License-Identifier: MIT
 
 Changes
 =======
+
+Version v9.0.1 (released 2026-06-26)
+
+- fix(i18n): support pyproject extraction
+- i18n: update string format to use %()s instead
+- chore(git-blame): ignore SPDX license header commit
+- chore(licenses): update license headers to use SPDX
 
 Version v9.0.0 (released 2026-05-29)
 
