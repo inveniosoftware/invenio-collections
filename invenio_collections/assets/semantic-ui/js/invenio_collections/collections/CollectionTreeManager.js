@@ -5,7 +5,7 @@
 
 import { i18next } from "@translations/invenio_collections/i18next";
 import PropTypes from "prop-types";
-import React, { Component } from "react";
+import { Component, Fragment } from "react";
 import { withCancel } from "react-invenio-forms";
 import { Button, Grid, Icon, Message } from "semantic-ui-react";
 import ReorderableList from "./components/ReorderableList";
@@ -216,7 +216,7 @@ class CollectionTreeManager extends Component {
     const { emptyMessage, community, maxCollectionDepth } = this.props;
     const { api } = this.context;
     return (
-      <React.Fragment>
+      <Fragment>
         <Grid>
           <Grid.Row>
             <Grid.Column width={12}>
@@ -346,7 +346,7 @@ class CollectionTreeManager extends Component {
           collection={activeModal?.collectionToDelete || null}
           collectionApi={api}
         />
-      </React.Fragment>
+      </Fragment>
     );
   }
 }
