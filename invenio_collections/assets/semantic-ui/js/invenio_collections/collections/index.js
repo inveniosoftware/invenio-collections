@@ -3,8 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { OverridableContext, overrideStore } from "react-overridable";
 import { CollectionsContextProvider } from "../api/CollectionsContextProvider";
 import CollectionTrees from "./CollectionTrees";
@@ -15,7 +14,7 @@ const permissions = JSON.parse(domContainer.dataset.permissions);
 const maxCollectionDepth = JSON.parse(domContainer.dataset.maxCollectionDepth);
 const overriddenComponents = overrideStore.getAll();
 
-ReactDOM.render(
+createRoot(domContainer).render(
   <OverridableContext.Provider value={overriddenComponents}>
     <CollectionsContextProvider community={community}>
       <CollectionTrees
@@ -24,6 +23,5 @@ ReactDOM.render(
         maxCollectionDepth={maxCollectionDepth}
       />
     </CollectionsContextProvider>
-  </OverridableContext.Provider>,
-  domContainer
+  </OverridableContext.Provider>
 );

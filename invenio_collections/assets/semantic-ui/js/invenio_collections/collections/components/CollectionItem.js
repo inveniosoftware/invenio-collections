@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Grid, Header, Label, Dropdown, Icon, Container } from "semantic-ui-react";
 import { i18next } from "@translations/invenio_collections/i18next";
@@ -18,9 +18,9 @@ const CollectionItem = ({
   onEdit,
   onDelete,
   onAddChild,
-  collectionApi,
-  treeSlug,
-  community,
+  collectionApi = null,
+  treeSlug = null,
+  community = null,
   isDraggable = false,
   dragIndex = null,
   onDragStart = null,
@@ -232,17 +232,6 @@ CollectionItem.propTypes = {
   onDragEnd: PropTypes.func,
   isDragging: PropTypes.bool,
   maxCollectionDepth: PropTypes.number.isRequired,
-};
-
-CollectionItem.defaultProps = {
-  collectionApi: null,
-  treeSlug: null,
-  community: null,
-  isDraggable: false,
-  dragIndex: null,
-  onDragStart: null,
-  onDragEnd: null,
-  isDragging: false,
 };
 
 export default CollectionItem;
