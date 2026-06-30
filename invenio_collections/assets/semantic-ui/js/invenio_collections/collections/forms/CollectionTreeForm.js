@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import PropTypes from "prop-types";
 import { Formik } from "formik";
 import { Form, Grid, Message } from "semantic-ui-react";
@@ -17,9 +17,9 @@ const CollectionTreeFormInner = ({
   handleSubmit,
   setFieldValue,
   handleCancel,
-  error,
-  slugGeneration,
-  onFormReady,
+  error = "",
+  slugGeneration = false,
+  onFormReady = undefined,
 }) => {
   useEffect(() => {
     onFormReady?.({ isSubmitting, isValid, handleSubmit, handleCancel });
@@ -90,20 +90,14 @@ CollectionTreeFormInner.propTypes = {
   onFormReady: PropTypes.func,
 };
 
-CollectionTreeFormInner.defaultProps = {
-  error: "",
-  slugGeneration: false,
-  onFormReady: undefined,
-};
-
 const CollectionTreeForm = ({
   initialValues,
   validationSchema,
   onSubmit,
   handleCancel,
-  error,
-  slugGeneration,
-  onFormReady,
+  error = "",
+  slugGeneration = false,
+  onFormReady = undefined,
 }) => (
   <Formik
     initialValues={initialValues}
@@ -135,12 +129,6 @@ CollectionTreeForm.propTypes = {
   error: PropTypes.string,
   slugGeneration: PropTypes.bool,
   onFormReady: PropTypes.func,
-};
-
-CollectionTreeForm.defaultProps = {
-  error: "",
-  slugGeneration: false,
-  onFormReady: undefined,
 };
 
 export default CollectionTreeForm;

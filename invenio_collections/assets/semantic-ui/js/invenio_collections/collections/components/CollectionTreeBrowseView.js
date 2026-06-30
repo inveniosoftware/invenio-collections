@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import React, { Component } from "react";
+import { Component } from "react";
 import PropTypes from "prop-types";
 import {
   Grid,
@@ -220,7 +220,7 @@ class CollectionTreeBrowseView extends Component {
       onAddCollection,
       onEditTree,
       onDeleteTree,
-      community,
+      community = null,
       showHeader = false,
       maxCollectionDepth,
     } = this.props;
@@ -355,11 +355,6 @@ CollectionTreeBrowseView.propTypes = {
   community: PropTypes.object,
   showHeader: PropTypes.bool,
   maxCollectionDepth: PropTypes.number.isRequired,
-};
-
-CollectionTreeBrowseView.defaultProps = {
-  community: null,
-  showHeader: false,
 };
 
 export default CollectionTreeBrowseView;
