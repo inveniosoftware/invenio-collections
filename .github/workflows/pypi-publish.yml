@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2025 Ubiquity Press.
+# Copyright (C) 2026 KTH Royal Institute of Technology.
 #
 # invenio-collections is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -17,3 +18,6 @@ jobs:
   build-n-publish:
     uses: inveniosoftware/workflows/.github/workflows/pypi-publish.yml@master
     secrets: inherit
+    with:
+      babel-compile-catalog: true
+      backend-package-path: invenio_collections
