@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version v10.0.2 (released 2026-07-16)
+
+- fix(babel): initialize a message catalog for `pybabel compile` to work
+
 Version v10.0.1 (released 2026-07-16)
 
 - fix(ci): update publish for backend i18n (#137)
