@@ -2,10 +2,20 @@
     SPDX-FileCopyrightText: 2015-2026 CERN.
     SPDX-FileCopyrightText: 2025 Ubiquity Press.
     SPDX-FileCopyrightText: 2025-2026 Graz University of Technology.
+    SPDX-FileCopyrightText: 2026 TU Wien.
     SPDX-License-Identifier: MIT
 
 Changes
 =======
+
+Version v10.0.1 (released 2026-07-16)
+
+- fix(ci): update publish for backend i18n (#137)
+- fix(i18n): update Transifex config
+- i18n: fix outdated transifex config for UI
+- fix(i18n): support pyproject extraction
+- i18n: update string format to use %()s instead
+- chore(licenses): fix some SPDX license headers
 
 Version v10.0.0 (released 2026-06-16)
 
