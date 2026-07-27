@@ -1,0 +1,179 @@
+# Translators:
+# Tibor Simko <tibor.simko@cern.ch>, 2026
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: i18next-conv\n"
+"POT-Creation-Date: 2026-06-26T12:03:58.842Z\n"
+"PO-Revision-Date: 2026-06-26 11:27+0000\n"
+"Last-Translator: Tibor Simko <tibor.simko@cern.ch>, 2026\n"
+"Language-Team: Georgian (https://app.transifex.com/inveniosoftware/teams/23537/ka/)\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ka\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"mime-version: 1.0\n"
+
+msgid "Error"
+msgstr "შეცდომა"
+
+msgid "This collection has child collections"
+msgstr ""
+
+msgid ""
+"You must check the option below to delete this collection along with all its"
+" child collections."
+msgstr ""
+
+msgid "Delete this collection and all its children"
+msgstr ""
+
+msgid "Warning"
+msgstr "გაფრთხილება"
+
+msgid ""
+"This will permanently delete this collection and ALL of its child "
+"collections. This action cannot be undone."
+msgstr ""
+
+msgid "Cancel"
+msgstr "გაუქმება"
+
+msgid "Delete"
+msgstr "წაშლა"
+
+msgid "This category contains collections"
+msgstr ""
+
+msgid ""
+"You must check the option below to delete the category along with all its "
+"collections."
+msgstr ""
+
+msgid "Delete this category and all its collections"
+msgstr ""
+
+msgid ""
+"This will permanently delete this category and ALL of its collections. This "
+"action cannot be undone."
+msgstr ""
+
+msgid "Failed to save new order. Please try again."
+msgstr ""
+
+msgid "Collections"
+msgstr "კოლექციები"
+
+msgid "Collections must be organized into sections."
+msgstr ""
+
+msgid "New section"
+msgstr ""
+
+msgid "There are no sections."
+msgstr ""
+
+msgid "Edit"
+msgstr "რედაქტირება"
+
+msgid "Add Child"
+msgstr ""
+
+msgid "Collections for"
+msgstr ""
+
+msgid "New collection"
+msgstr ""
+
+msgid "Edit Category"
+msgstr ""
+
+msgid "Delete Category"
+msgstr ""
+
+msgid "No collections found for"
+msgstr ""
+
+msgid "Edit section"
+msgstr ""
+
+msgid "Delete section"
+msgstr ""
+
+msgid "Saving order..."
+msgstr ""
+
+msgid "Title is required"
+msgstr ""
+
+msgid "Maximum number of characters is 255"
+msgstr ""
+
+msgid "Slug is required"
+msgstr ""
+
+msgid "Maximum number of characters is 100"
+msgstr ""
+
+msgid "Search query is required"
+msgstr ""
+
+msgid "Title"
+msgstr "სათაური"
+
+msgid "Slug"
+msgstr ""
+
+msgid "Search Query"
+msgstr ""
+
+msgid "Test Query"
+msgstr ""
+
+msgid "Total Hits: "
+msgstr ""
+
+msgid "Showing"
+msgstr ""
+
+msgid "example results:"
+msgstr ""
+
+msgid "View Full Results"
+msgstr ""
+
+msgid "Edit collection in"
+msgstr ""
+
+msgid "Edit collection"
+msgstr ""
+
+msgid "Add child collection in"
+msgstr ""
+
+msgid "Add child collection"
+msgstr ""
+
+msgid "Create new collection in"
+msgstr ""
+
+msgid "Create new collection"
+msgstr ""
+
+msgid "Save"
+msgstr "დამახსოვრება"
+
+msgid "Create new section"
+msgstr ""
+
+msgid "Delete Collection"
+msgstr ""
+
+msgid ""
+"Are you sure you want to delete this collection? This action cannot be "
+"undone."
+msgstr ""
+
+msgid ""
+"Are you sure you want to delete this section? This action cannot be undone."
+msgstr ""
