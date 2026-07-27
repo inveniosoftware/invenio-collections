@@ -1,0 +1,107 @@
+# Translations template for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+# 
+# Translators:
+# Sarah Wiechers, 2026
+# Adienne Karsten-Welker, 2026
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-06-26 12:03+0000\n"
+"PO-Revision-Date: 2026-06-26 11:41+0000\n"
+"Last-Translator: Adienne Karsten-Welker, 2026\n"
+"Language-Team: German (https://app.transifex.com/inveniosoftware/teams/23537/de/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+"Language: de\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: invenio_collections/errors.py:50
+#, python-format
+msgid ""
+"Cannot create collection at depth %(current_depth)s. Maximum depth is "
+"%(max_depth)s (allowing depths 0-%(max_depth)s)."
+msgstr ""
+"Sammlung kann auf Ebene %(current_depth)s nicht erstellt werden. Die "
+"maximale Tiefe beträgt %(max_depth)s (zulässige Ebenen: 0–%(max_depth)s)."
+
+#: invenio_collections/errors.py:67
+#, python-format
+msgid ""
+"Cannot create category. Namespace already has %(current_count)s categories. "
+"Maximum allowed is %(max_trees)s."
+msgstr ""
+"Kategorie kann nicht erstellt werden. Der Namespace enthält bereits "
+"%(current_count)s Kategorien. Maximal zulässig sind %(max_trees)s."
+
+#: invenio_collections/errors.py:84
+#, python-format
+msgid ""
+"Cannot create collection. Category already has %(current_count)s "
+"collections. Maximum allowed is %(max_collections)s."
+msgstr ""
+"Sammlung kann nicht erstellt werden. Kategorie hat bereits %(current_count)s"
+" Sammlungen. Maximal zulässig sind %(max_collections)s."
+
+#: invenio_collections/models.py:58 invenio_collections/models.py:102
+#, python-format
+msgid ""
+"A collection tree with slug '%(slug)s' already exists in this namespace."
+msgstr ""
+"Ein Sammlungsbaum mit dem Slug „%(slug)s“ existiert bereits in diesem "
+"Namespace."
+
+#: invenio_collections/models.py:182 invenio_collections/models.py:228
+#, python-format
+msgid "A collection with slug '%(slug)s' already exists in this tree."
+msgstr ""
+"Eine Sammlung mit dem Slug „%(slug)s“ existiert bereits in diesem Baum."
+
+#: invenio_collections/resources/config.py:65
+msgid "Collection was not found."
+msgstr "Sammlung wurde nicht gefunden."
+
+#: invenio_collections/resources/config.py:68
+msgid "Collection tree was not found."
+msgstr "Sammlungsbaum wurde nicht gefunden."
+
+#: invenio_collections/resources/config.py:74
+msgid "Cannot delete collection tree until all collections have been deleted."
+msgstr ""
+"Sammlungsbaum kann erst gelöscht werden, wenn alle Sammlungen gelöscht "
+"wurden."
+
+#: invenio_collections/resources/config.py:82
+msgid "Cannot delete collection until all children have been deleted."
+msgstr ""
+"Sammlung kann erst gelöscht werden, wenn alle Unterelemente gelöscht wurden."
+
+#: invenio_collections/resources/config.py:90
+msgid "A collection with this slug already exists in this context."
+msgstr "Eine Sammlung mit diesem Slug existiert bereits in diesem Kontext."
+
+#: invenio_collections/services/schema.py:20
+#, python-format
+msgid "Invalid search query: %(error)s"
+msgstr "Ungültige Suchanfrage: %(error)s"
+
+#: invenio_collections/services/schema.py:35
+msgid "Slug: letters, numbers, underscores, or hyphens only."
+msgstr "Slug: nur Buchstaben, Zahlen, Unterstriche oder Bindestriche."
+
+#: invenio_collections/services/schema.py:48
+#: invenio_collections/services/schema.py:61
+#: invenio_collections/services/schema.py:77
+msgid "Order must be non-negative."
+msgstr "Reihenfolge darf nicht negativ sein."
+
+#: invenio_collections/services/schema.py:87
+msgid "At least one item required."
+msgstr "Mindestens ein Eintrag erforderlich."

@@ -1,0 +1,100 @@
+# Translations template for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+# 
+# Translators:
+# Suthep Yonphimai <tomztt@gmail.com>, 2026
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-06-26 12:03+0000\n"
+"PO-Revision-Date: 2026-06-26 11:41+0000\n"
+"Last-Translator: Suthep Yonphimai <tomztt@gmail.com>, 2026\n"
+"Language-Team: Thai (https://app.transifex.com/inveniosoftware/teams/23537/th/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+"Language: th\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: invenio_collections/errors.py:50
+#, python-format
+msgid ""
+"Cannot create collection at depth %(current_depth)s. Maximum depth is "
+"%(max_depth)s (allowing depths 0-%(max_depth)s)."
+msgstr ""
+"ไม่สามารถสร้างคอลเลกชันที่ระดับความลึก %(current_depth)s ได้ "
+"ความลึกสูงสุดคือ %(max_depth)s (อนุญาตระดับ 0-%(max_depth)s)"
+
+#: invenio_collections/errors.py:67
+#, python-format
+msgid ""
+"Cannot create category. Namespace already has %(current_count)s categories. "
+"Maximum allowed is %(max_trees)s."
+msgstr ""
+"ไม่สามารถสร้างหมวดหมู่ได้ Namespace มี %(current_count)s หมวดหมู่อยู่แล้ว "
+"สูงสุดที่อนุญาตคือ %(max_trees)s"
+
+#: invenio_collections/errors.py:84
+#, python-format
+msgid ""
+"Cannot create collection. Category already has %(current_count)s "
+"collections. Maximum allowed is %(max_collections)s."
+msgstr ""
+"ไม่สามารถสร้างคอลเลกชันได้ หมวดหมู่มี %(current_count)s คอลเลกชันอยู่แล้ว "
+"สูงสุดที่อนุญาตคือ %(max_collections)s"
+
+#: invenio_collections/models.py:58 invenio_collections/models.py:102
+#, python-format
+msgid ""
+"A collection tree with slug '%(slug)s' already exists in this namespace."
+msgstr "โครงสร้างคอลเลกชันที่มี slug '%(slug)s' มีอยู่แล้วใน namespace นี้"
+
+#: invenio_collections/models.py:182 invenio_collections/models.py:228
+#, python-format
+msgid "A collection with slug '%(slug)s' already exists in this tree."
+msgstr "คอลเลกชันที่มี slug '%(slug)s' มีอยู่แล้วในโครงสร้างนี้"
+
+#: invenio_collections/resources/config.py:65
+msgid "Collection was not found."
+msgstr "ไม่พบคอลเลกชัน"
+
+#: invenio_collections/resources/config.py:68
+msgid "Collection tree was not found."
+msgstr "ไม่พบโครงสร้างคอลเลกชัน"
+
+#: invenio_collections/resources/config.py:74
+msgid "Cannot delete collection tree until all collections have been deleted."
+msgstr "ไม่สามารถลบโครงสร้างคอลเลกชันได้จนกว่าจะลบคอลเลกชันทั้งหมดแล้ว"
+
+#: invenio_collections/resources/config.py:82
+msgid "Cannot delete collection until all children have been deleted."
+msgstr "ไม่สามารถลบคอลเลกชันได้จนกว่าจะลบคอลเลกชันย่อยทั้งหมดแล้ว"
+
+#: invenio_collections/resources/config.py:90
+msgid "A collection with this slug already exists in this context."
+msgstr "คอลเลกชันที่มี slug นี้มีอยู่แล้วในบริบทนี้"
+
+#: invenio_collections/services/schema.py:20
+#, python-format
+msgid "Invalid search query: %(error)s"
+msgstr "คำค้นหาไม่ถูกต้อง: %(error)s"
+
+#: invenio_collections/services/schema.py:35
+msgid "Slug: letters, numbers, underscores, or hyphens only."
+msgstr "Slug: ตัวอักษร ตัวเลข ขีดล่าง หรือขีดกลางเท่านั้น"
+
+#: invenio_collections/services/schema.py:48
+#: invenio_collections/services/schema.py:61
+#: invenio_collections/services/schema.py:77
+msgid "Order must be non-negative."
+msgstr "ลำดับต้องไม่เป็นค่าลบ"
+
+#: invenio_collections/services/schema.py:87
+msgid "At least one item required."
+msgstr "ต้องมีอย่างน้อยหนึ่งรายการ"

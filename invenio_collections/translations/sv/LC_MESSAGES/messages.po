@@ -1,0 +1,102 @@
+# Translations template for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+# 
+# Translators:
+# Sam Arbid, 2026
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-06-26 12:03+0000\n"
+"PO-Revision-Date: 2026-06-26 11:41+0000\n"
+"Last-Translator: Sam Arbid, 2026\n"
+"Language-Team: Swedish (https://app.transifex.com/inveniosoftware/teams/23537/sv/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+"Language: sv\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: invenio_collections/errors.py:50
+#, python-format
+msgid ""
+"Cannot create collection at depth %(current_depth)s. Maximum depth is "
+"%(max_depth)s (allowing depths 0-%(max_depth)s)."
+msgstr ""
+"Kan inte skapa samling på djup %(current_depth)s. Maximalt djup är "
+"%(max_depth)s (tillåter djup 0-%(max_depth)s)."
+
+#: invenio_collections/errors.py:67
+#, python-format
+msgid ""
+"Cannot create category. Namespace already has %(current_count)s categories. "
+"Maximum allowed is %(max_trees)s."
+msgstr ""
+"Kan inte skapa kategori. Namnområdet har redan %(current_count)s kategorier."
+" Högsta tillåtna antal är %(max_trees)s."
+
+#: invenio_collections/errors.py:84
+#, python-format
+msgid ""
+"Cannot create collection. Category already has %(current_count)s "
+"collections. Maximum allowed is %(max_collections)s."
+msgstr ""
+"Kan inte skapa samling. Kategorin har redan %(current_count)s samlingar. "
+"Högsta tillåtna antal är %(max_collections)s."
+
+#: invenio_collections/models.py:58 invenio_collections/models.py:102
+#, python-format
+msgid ""
+"A collection tree with slug '%(slug)s' already exists in this namespace."
+msgstr ""
+"Ett samlingsträd med sluggen '%(slug)s' finns redan i detta namnområde."
+
+#: invenio_collections/models.py:182 invenio_collections/models.py:228
+#, python-format
+msgid "A collection with slug '%(slug)s' already exists in this tree."
+msgstr "En samling med sluggen '%(slug)s' finns redan i detta träd."
+
+#: invenio_collections/resources/config.py:65
+msgid "Collection was not found."
+msgstr "Samlingen hittades inte."
+
+#: invenio_collections/resources/config.py:68
+msgid "Collection tree was not found."
+msgstr "Samlingsträdet hittades inte."
+
+#: invenio_collections/resources/config.py:74
+msgid "Cannot delete collection tree until all collections have been deleted."
+msgstr "Kan inte radera samlingsträdet förrän alla samlingar har raderats."
+
+#: invenio_collections/resources/config.py:82
+msgid "Cannot delete collection until all children have been deleted."
+msgstr ""
+"Kan inte radera samlingen förrän alla underordnade objekt har raderats."
+
+#: invenio_collections/resources/config.py:90
+msgid "A collection with this slug already exists in this context."
+msgstr "En samling med denna slug finns redan i detta sammanhang."
+
+#: invenio_collections/services/schema.py:20
+#, python-format
+msgid "Invalid search query: %(error)s"
+msgstr "Ogiltig sökfråga: %(error)s"
+
+#: invenio_collections/services/schema.py:35
+msgid "Slug: letters, numbers, underscores, or hyphens only."
+msgstr "Slug: endast bokstäver, siffror, understreck eller bindestreck."
+
+#: invenio_collections/services/schema.py:48
+#: invenio_collections/services/schema.py:61
+#: invenio_collections/services/schema.py:77
+msgid "Order must be non-negative."
+msgstr "Ordningen får inte vara negativ."
+
+#: invenio_collections/services/schema.py:87
+msgid "At least one item required."
+msgstr "Minst ett objekt krävs."
