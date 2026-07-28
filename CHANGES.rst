@@ -8,6 +8,12 @@
 Changes
 =======
 
+Version v9.1.0 (released 2026-07-28)
+
+- fix(build): include mo files
+- i18n: pulled translations
+- chore(licenses): fix some SPDX license headers
+
 Version v9.0.3 (released 2026-06-26)
 
 - fix(i18n): Transifex project main config 
