@@ -1,13 +1,14 @@
 # Translators:
 # Tibor Simko <tibor.simko@cern.ch>, 2026
 # Zacharias Zacharodimos <zacharias.zacharodimos@cern.ch>, 2026
+# Jesús Martín <jesusmartin@sallep.net>, 2026
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: i18next-conv\n"
 "POT-Creation-Date: 2026-06-26T12:03:58.842Z\n"
 "PO-Revision-Date: 2026-06-26 11:27+0000\n"
-"Last-Translator: Zacharias Zacharodimos <zacharias.zacharodimos@cern.ch>, 2026\n"
+"Last-Translator: Jesús Martín <jesusmartin@sallep.net>, 2026\n"
 "Language-Team: Spanish (https://app.transifex.com/inveniosoftware/teams/23537/es/)\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,15 +20,17 @@ msgid "Error"
 msgstr "Error"
 
 msgid "This collection has child collections"
-msgstr ""
+msgstr "Esta colección tiene colecciones hijas."
 
 msgid ""
 "You must check the option below to delete this collection along with all its"
 " child collections."
 msgstr ""
+"Debe marcar la opción que aparece a continuación para eliminar esta "
+"colección junto con todas sus subcolecciones."
 
 msgid "Delete this collection and all its children"
-msgstr ""
+msgstr "Eliminar esta colección y todos sus elementos secundarios."
 
 msgid "Warning"
 msgstr "Atención"
@@ -36,6 +39,8 @@ msgid ""
 "This will permanently delete this collection and ALL of its child "
 "collections. This action cannot be undone."
 msgstr ""
+"Esto eliminará permanentemente esta colección y TODAS sus subcolecciones. "
+"Esta acción no se puede deshacer."
 
 msgid "Cancel"
 msgstr "Cancelar"
@@ -44,137 +49,145 @@ msgid "Delete"
 msgstr "Eliminar"
 
 msgid "This category contains collections"
-msgstr ""
+msgstr "Esta categoría contiene colecciones"
 
 msgid ""
 "You must check the option below to delete the category along with all its "
 "collections."
 msgstr ""
+"Debe marcar la opción que aparece a continuación para eliminar la categoría "
+"junto con todas sus colecciones."
 
 msgid "Delete this category and all its collections"
-msgstr ""
+msgstr "Eliminar esta categoría y todas sus colecciones"
 
 msgid ""
 "This will permanently delete this category and ALL of its collections. This "
 "action cannot be undone."
 msgstr ""
+"Esto eliminará permanentemente esta categoría y TODAS sus colecciones. Esta "
+"acción no se puede deshacer."
 
 msgid "Failed to save new order. Please try again."
-msgstr ""
+msgstr "No se pudo guardar el nuevo pedido. Inténtelo de nuevo."
 
 msgid "Collections"
 msgstr "Colecciones"
 
 msgid "Collections must be organized into sections."
-msgstr ""
+msgstr "Las colecciones deben organizarse en secciones."
 
 msgid "New section"
-msgstr ""
+msgstr "Nueva sección"
 
 msgid "There are no sections."
-msgstr ""
+msgstr "No hay secciones."
 
 msgid "Edit"
 msgstr "Editar"
 
 msgid "Add Child"
-msgstr ""
+msgstr "Añadir hijo"
 
 msgid "Collections for"
-msgstr ""
+msgstr "Colecciones para"
 
 msgid "New collection"
 msgstr "Nueva colección"
 
 msgid "Edit Category"
-msgstr ""
+msgstr "Editar categoría"
 
 msgid "Delete Category"
-msgstr ""
+msgstr "Borrar categoría"
 
 msgid "No collections found for"
-msgstr ""
+msgstr "No se encontraron colecciones para"
 
 msgid "Edit section"
-msgstr ""
+msgstr "Editar sección"
 
 msgid "Delete section"
-msgstr ""
+msgstr "Borrar sección"
 
 msgid "Saving order..."
-msgstr ""
+msgstr "Guardando orden..."
 
 msgid "Title is required"
-msgstr ""
+msgstr "Se requiere título"
 
 msgid "Maximum number of characters is 255"
-msgstr ""
+msgstr "El número máximo de caracteres es 255."
 
 msgid "Slug is required"
-msgstr ""
+msgstr "El slug es requerido"
 
 msgid "Maximum number of characters is 100"
-msgstr ""
+msgstr "El número máximo de caracteres es 100"
 
 msgid "Search query is required"
-msgstr ""
+msgstr "Se requiere una consulta de búsqueda."
 
 msgid "Title"
 msgstr "Título"
 
 msgid "Slug"
-msgstr ""
+msgstr "Slug"
 
 msgid "Search Query"
-msgstr ""
+msgstr "Consulta de búsqueda"
 
 msgid "Test Query"
-msgstr ""
+msgstr "Consulta de prueba"
 
 msgid "Total Hits: "
-msgstr ""
+msgstr "Visitas totales:"
 
 msgid "Showing"
-msgstr ""
+msgstr "Mostrando"
 
 msgid "example results:"
-msgstr ""
+msgstr "resultados de ejemplo:"
 
 msgid "View Full Results"
-msgstr ""
+msgstr "Ver resultados completos"
 
 msgid "Edit collection in"
-msgstr ""
+msgstr "Editar colección en"
 
 msgid "Edit collection"
-msgstr ""
+msgstr "Editar colección"
 
 msgid "Add child collection in"
-msgstr ""
+msgstr "Añadir colección hija en"
 
 msgid "Add child collection"
-msgstr ""
+msgstr "Añadir colección hija"
 
 msgid "Create new collection in"
-msgstr ""
+msgstr "Crear nueva colección en"
 
 msgid "Create new collection"
-msgstr ""
+msgstr "Crear nueva colección"
 
 msgid "Save"
 msgstr "Guardar"
 
 msgid "Create new section"
-msgstr ""
+msgstr "Crear nueva sección"
 
 msgid "Delete Collection"
-msgstr ""
+msgstr "Borrar colección"
 
 msgid ""
 "Are you sure you want to delete this collection? This action cannot be "
 "undone."
 msgstr ""
+"¿Está seguro de que desea eliminar esta colección? Esta acción no se puede "
+"deshacer."
 
 msgid ""
 "Are you sure you want to delete this section? This action cannot be undone."
 msgstr ""
+"¿Está seguro de que desea eliminar esta sección? Esta acción no se puede "
+"deshacer."
