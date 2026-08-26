@@ -8,6 +8,11 @@
 Changes
 =======
 
+Version v9.1.1 (released 2026-08-26)
+
+- i18n: pulled translations
+- fix(ci): update publish for backend i18n (#137)
+
 Version v9.1.0 (released 2026-07-28)
 
 - fix(build): include mo files
