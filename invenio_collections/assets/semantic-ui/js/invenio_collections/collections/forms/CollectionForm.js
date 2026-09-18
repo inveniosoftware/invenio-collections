@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import PropTypes from "prop-types";
 import { useFormikContext } from "formik";
 import { Button, Form, Grid, Message } from "semantic-ui-react";
@@ -13,15 +13,15 @@ import { generateSlug } from "../Configs";
 
 const CollectionFormInner = ({
   handleCancel,
-  onFormReady,
+  onFormReady = undefined,
   onTest,
-  testQueryResult,
-  testQuerySuccess,
+  testQueryResult = null,
+  testQuerySuccess = null,
   testQueryHits,
-  error,
-  slugGeneration,
-  community,
-  parentQuery,
+  error = "",
+  slugGeneration = false,
+  community = null,
+  parentQuery = null,
 }) => {
   const {
     isSubmitting,
@@ -174,22 +174,11 @@ CollectionFormInner.propTypes = {
   onTest: PropTypes.func.isRequired,
   testQueryResult: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   testQuerySuccess: PropTypes.bool,
-  testQueryHits: PropTypes.array,
+  testQueryHits: PropTypes.array.isRequired,
   error: PropTypes.string,
   slugGeneration: PropTypes.bool,
   community: PropTypes.object,
   parentQuery: PropTypes.string,
-};
-
-CollectionFormInner.defaultProps = {
-  onFormReady: undefined,
-  testQueryResult: null,
-  testQuerySuccess: null,
-  testQueryHits: [],
-  error: "",
-  slugGeneration: false,
-  community: null,
-  parentQuery: null,
 };
 
 const CollectionForm = ({
@@ -198,14 +187,14 @@ const CollectionForm = ({
   onSubmit,
   onTest,
   handleCancel,
-  testQueryResult,
-  testQuerySuccess,
-  testQueryHits,
-  error,
-  slugGeneration,
-  community,
-  parentQuery,
-  onFormReady,
+  testQueryResult = null,
+  testQuerySuccess = null,
+  testQueryHits = [],
+  error = "",
+  slugGeneration = false,
+  community = null,
+  parentQuery = null,
+  onFormReady = undefined,
 }) => (
   <BaseForm
     onSubmit={onSubmit}
@@ -245,17 +234,6 @@ CollectionForm.propTypes = {
   community: PropTypes.object,
   parentQuery: PropTypes.string,
   onFormReady: PropTypes.func,
-};
-
-CollectionForm.defaultProps = {
-  testQueryResult: null,
-  testQuerySuccess: null,
-  testQueryHits: [],
-  error: "",
-  slugGeneration: false,
-  community: null,
-  parentQuery: null,
-  onFormReady: undefined,
 };
 
 export default CollectionForm;

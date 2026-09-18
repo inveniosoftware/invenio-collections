@@ -3,12 +3,11 @@
  * SPDX-License-Identifier: MIT
  */
 
-import React from "react";
 import PropTypes from "prop-types";
 import { Dimmer, Loader, Message } from "semantic-ui-react";
 import { i18next } from "@translations/invenio_collections/i18next";
 
-const ReorderableList = ({ isSaving, error, children }) => (
+const ReorderableList = ({ isSaving = false, error = null, children }) => (
   <>
     {error && (
       <Message negative className="rel-mb-1">
@@ -28,11 +27,6 @@ ReorderableList.propTypes = {
   isSaving: PropTypes.bool,
   error: PropTypes.string,
   children: PropTypes.node.isRequired,
-};
-
-ReorderableList.defaultProps = {
-  isSaving: false,
-  error: null,
 };
 
 export default ReorderableList;

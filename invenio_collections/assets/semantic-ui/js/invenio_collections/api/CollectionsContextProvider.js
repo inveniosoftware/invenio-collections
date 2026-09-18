@@ -4,10 +4,10 @@
  */
 
 import { CommunityCollectionsApi } from "./api";
-import React, { Component } from "react";
+import { Component, createContext } from "react";
 import PropTypes from "prop-types";
 
-export const CollectionsContext = React.createContext({ api: undefined });
+export const CollectionsContext = createContext({ api: undefined });
 
 export class CollectionsContextProvider extends Component {
   constructor(props) {

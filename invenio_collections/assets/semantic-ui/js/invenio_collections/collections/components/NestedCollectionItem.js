@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import React, { useState, useEffect, memo } from "react";
+import { useState, useEffect, memo } from "react";
 import PropTypes from "prop-types";
 import { Container, Header, Label, Dropdown } from "semantic-ui-react";
 import { getActionMenuOptions } from "./CollectionActionMenu";
@@ -14,7 +14,7 @@ import { buildCollectionUrl } from "../Configs";
  * Displays collection information with edit/delete/add actions and
  * recursively renders all descendant collections with visual indentation.
  *
- * Wrapped with React.memo so that re-renders are skipped when props haven't
+ * Wrapped with memo so that re-renders are skipped when props haven't
  * changed. This matters because the parent re-renders on every drag event and
  * collections can be deeply nested.
  */
@@ -26,9 +26,9 @@ const NestedCollectionItem = memo(
     onDelete,
     onAddChild,
     maxCollectionDepth,
-    treeSlug,
-    community,
-    nestingLevel = 1,
+    treeSlug = null,
+    community = null,
+    nestingLevel = 0,
   }) => {
     const { title, num_records: numRecords, children } = collection;
 
@@ -134,12 +134,6 @@ NestedCollectionItem.propTypes = {
   treeSlug: PropTypes.string,
   community: PropTypes.object,
   nestingLevel: PropTypes.number, // Current nesting level for indentation
-};
-
-NestedCollectionItem.defaultProps = {
-  treeSlug: null,
-  community: null,
-  nestingLevel: 0,
 };
 
 export default NestedCollectionItem;

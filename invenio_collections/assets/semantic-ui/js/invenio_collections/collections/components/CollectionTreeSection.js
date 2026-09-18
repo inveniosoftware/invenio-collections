@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-import React from "react";
 import PropTypes from "prop-types";
 import { Button, Grid, Icon, Header } from "semantic-ui-react";
 import { i18next } from "@translations/invenio_collections/i18next";
@@ -15,7 +14,7 @@ const CollectionTreeSection = ({
   isExpanded,
   isDragging,
   isDraggedOver,
-  community,
+  community = null,
   maxCollectionDepth,
   onDragStart,
   onDragOver,
@@ -131,10 +130,6 @@ CollectionTreeSection.propTypes = {
   onAddChildCollection: PropTypes.func.isRequired,
   onEditCollection: PropTypes.func.isRequired,
   onDeleteCollection: PropTypes.func.isRequired,
-};
-
-CollectionTreeSection.defaultProps = {
-  community: null,
 };
 
 export default CollectionTreeSection;

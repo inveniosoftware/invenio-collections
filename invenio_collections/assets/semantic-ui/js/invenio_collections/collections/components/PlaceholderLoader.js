@@ -3,11 +3,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-import React from "react";
 import PropTypes from "prop-types";
 import { Grid, Placeholder } from "semantic-ui-react";
 
-const PlaceholderLoader = ({ size, isLoading, children }) => {
+const PlaceholderLoader = ({ size = 5, isLoading, children }) => {
   const PlaceholderItem = () => (
     <Grid.Column width={3}>
       <Placeholder>
@@ -39,10 +38,6 @@ PlaceholderLoader.propTypes = {
   size: PropTypes.number,
   isLoading: PropTypes.bool.isRequired,
   children: PropTypes.node.isRequired,
-};
-
-PlaceholderLoader.defaultProps = {
-  size: 5,
 };
 
 export default PlaceholderLoader;

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import React, { useState } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
 import { Button, Modal } from "semantic-ui-react";
 import { i18next } from "@translations/invenio_collections/i18next";
