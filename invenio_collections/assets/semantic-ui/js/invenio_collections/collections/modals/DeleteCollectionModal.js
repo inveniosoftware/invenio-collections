@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-import React from "react";
 import PropTypes from "prop-types";
 import { Modal } from "semantic-ui-react";
 import { i18next } from "@translations/invenio_collections/i18next";
@@ -13,8 +12,8 @@ const DeleteCollectionModal = ({
   open,
   onClose,
   onSuccess,
-  collectionTreeSlug,
-  collection,
+  collectionTreeSlug = null,
+  collection = null,
   collectionApi,
 }) => (
   <Modal open={open} onClose={onClose} size="large">
@@ -40,11 +39,6 @@ DeleteCollectionModal.propTypes = {
   collectionTreeSlug: PropTypes.string,
   collection: PropTypes.object,
   collectionApi: PropTypes.object.isRequired,
-};
-
-DeleteCollectionModal.defaultProps = {
-  collectionTreeSlug: null,
-  collection: null,
 };
 
 export default DeleteCollectionModal;

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import React, { Component } from "react";
+import { Component } from "react";
 import PropTypes from "prop-types";
 import { i18next } from "@translations/invenio_collections/i18next";
 import { Button, Modal, Message, Checkbox } from "semantic-ui-react";
@@ -30,7 +30,12 @@ class DeleteCollectionAction extends Component {
   };
 
   handleDelete = async () => {
-    const { collectionTreeSlug, collectionSlug, collectionApi, onSuccess } = this.props;
+    const {
+      collectionTreeSlug,
+      collectionSlug,
+      collectionApi,
+      onSuccess = () => {},
+    } = this.props;
     const { cascade } = this.state;
 
     this.setState({ error: "" });
@@ -60,7 +65,11 @@ class DeleteCollectionAction extends Component {
 
   render() {
     const { error, cascade } = this.state;
-    const { hasChildren, confirmationMessage, handleCancel } = this.props;
+    const {
+      hasChildren = false,
+      confirmationMessage,
+      handleCancel = () => {},
+    } = this.props;
 
     return (
       <>
@@ -127,12 +136,6 @@ DeleteCollectionAction.propTypes = {
   handleCancel: PropTypes.func,
   confirmationMessage: PropTypes.string.isRequired,
   collectionApi: PropTypes.object.isRequired,
-};
-
-DeleteCollectionAction.defaultProps = {
-  hasChildren: false,
-  onSuccess: () => {},
-  handleCancel: () => {},
 };
 
 export default DeleteCollectionAction;

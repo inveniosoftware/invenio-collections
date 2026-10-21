@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-import React from "react";
 import PropTypes from "prop-types";
 import { Container, Header, Icon, Label, Dropdown } from "semantic-ui-react";
 import { getActionMenuOptions } from "./CollectionActionMenu";
@@ -22,10 +21,10 @@ const CollectionChildItem = ({
   onDelete,
   onAddChild,
   maxCollectionDepth,
-  treeSlug,
-  community,
-  draggedChildIndex,
-  draggedOverChildIndex,
+  treeSlug = null,
+  community = null,
+  draggedChildIndex = null,
+  draggedOverChildIndex = null,
   onDragStart,
   onDragEnd,
   onDragOver,
@@ -150,13 +149,6 @@ CollectionChildItem.propTypes = {
   onDragStart: PropTypes.func.isRequired,
   onDragEnd: PropTypes.func.isRequired,
   onDragOver: PropTypes.func.isRequired,
-};
-
-CollectionChildItem.defaultProps = {
-  treeSlug: null,
-  community: null,
-  draggedChildIndex: null,
-  draggedOverChildIndex: null,
 };
 
 export default CollectionChildItem;

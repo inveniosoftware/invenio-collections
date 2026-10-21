@@ -5,7 +5,7 @@
 
 import _cloneDeep from "lodash/cloneDeep";
 import _defaultsDeep from "lodash/defaultsDeep";
-import React, { Component } from "react";
+import { Component } from "react";
 import PropTypes from "prop-types";
 import { withCancel } from "react-invenio-forms";
 import { communityErrorSerializer } from "../../api/serializers";
@@ -49,7 +49,12 @@ class CollectionTreeFormContainer extends Component {
 
   onSubmit = async (values, { setSubmitting, setFieldError }) => {
     setSubmitting(true);
-    const { collectionTree, maxCollectionDepth, collectionApi, onSuccess } = this.props;
+    const {
+      collectionTree,
+      maxCollectionDepth,
+      collectionApi,
+      onSuccess = () => {},
+    } = this.props;
 
     const apiCall = this.isEditing()
       ? collectionApi.updateCollectionTree(collectionTree.slug, {
@@ -81,8 +86,8 @@ class CollectionTreeFormContainer extends Component {
 
   render() {
     const {
-      onFormReady,
-      handleCancel,
+      onFormReady = undefined,
+      handleCancel = () => {},
       slugGeneration: slugGenerationProp,
     } = this.props;
     const { error } = this.state;
@@ -110,13 +115,6 @@ CollectionTreeFormContainer.propTypes = {
   slugGeneration: PropTypes.bool,
   collectionApi: PropTypes.object.isRequired,
   onFormReady: PropTypes.func,
-};
-
-CollectionTreeFormContainer.defaultProps = {
-  onSuccess: () => {},
-  handleCancel: () => {},
-  slugGeneration: undefined,
-  onFormReady: undefined,
 };
 
 export default CollectionTreeFormContainer;

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import React, { Component } from "react";
+import { Component } from "react";
 import PropTypes from "prop-types";
 import { withCancel } from "react-invenio-forms";
 import { communityErrorSerializer } from "../../api/serializers";
@@ -92,7 +92,7 @@ class CollectionFormContainer extends Component {
       parentCollectionSlug,
       maxCollectionDepth,
       collectionApi,
-      onSuccess,
+      onSuccess = () => {},
     } = this.props;
 
     let apiCall;
@@ -136,10 +136,10 @@ class CollectionFormContainer extends Component {
 
   render() {
     const {
-      community,
-      parentQuery,
-      onFormReady,
-      handleCancel,
+      community = null,
+      parentQuery = null,
+      onFormReady = undefined,
+      handleCancel = () => {},
       slugGeneration: slugGenerationProp,
     } = this.props;
     const { testQueryResult, testQuerySuccess, testQueryHits, error } = this.state;
@@ -181,18 +181,6 @@ CollectionFormContainer.propTypes = {
   community: PropTypes.object,
   parentQuery: PropTypes.string,
   onFormReady: PropTypes.func,
-};
-
-CollectionFormContainer.defaultProps = {
-  collectionSlug: null,
-  collectionData: null,
-  parentCollectionSlug: null,
-  onSuccess: () => {},
-  handleCancel: () => {},
-  slugGeneration: undefined,
-  community: null,
-  parentQuery: null,
-  onFormReady: undefined,
 };
 
 export default CollectionFormContainer;
