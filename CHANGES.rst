@@ -8,6 +8,12 @@
 Changes
 =======
 
+Version v11.0.0 (released 2026-11-10)
+
+- chore(setup): bump dependencies
+- feat: upgrade to react 18
+- fix: LegacyAPIWarning
+
 Version v10.0.3 (released 2026-08-04)
 
 - fix(build): include mo files
