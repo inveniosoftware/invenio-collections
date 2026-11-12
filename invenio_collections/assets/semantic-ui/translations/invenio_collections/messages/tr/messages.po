@@ -1,0 +1,190 @@
+# Translators:
+# Berat Aldemir <berataldemir@gmail.com>, 2026
+# Ben Translation and Interpreting Services <info@bentercume.com>, 2026
+# Furkan Kalkan <furkan.kalkan3@gmail.com>, 2026
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: i18next-conv\n"
+"POT-Creation-Date: 2026-06-26T12:03:58.842Z\n"
+"PO-Revision-Date: 2026-06-26 11:27+0000\n"
+"Last-Translator: Furkan Kalkan <furkan.kalkan3@gmail.com>, 2026\n"
+"Language-Team: Turkish (https://app.transifex.com/inveniosoftware/teams/23537/tr/)\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: tr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"mime-version: 1.0\n"
+
+msgid "Error"
+msgstr "Hata"
+
+msgid "This collection has child collections"
+msgstr "Bu koleksiyonun alt koleksiyonları var"
+
+msgid ""
+"You must check the option below to delete this collection along with all its"
+" child collections."
+msgstr ""
+"Bu koleksiyonu ve tüm alt koleksiyonlarını silmek için aşağıdaki seçeneği "
+"işaretlemeniz gerekir."
+
+msgid "Delete this collection and all its children"
+msgstr "Bu koleksiyonu ve tüm alt öğelerini silin"
+
+msgid "Warning"
+msgstr "Uyarı"
+
+msgid ""
+"This will permanently delete this collection and ALL of its child "
+"collections. This action cannot be undone."
+msgstr ""
+"Bu, bu koleksiyonu ve TÜM alt koleksiyonlarını kalıcı olarak silecektir. Bu "
+"işlem geri alınamaz."
+
+msgid "Cancel"
+msgstr "İptal"
+
+msgid "Delete"
+msgstr "Sil"
+
+msgid "This category contains collections"
+msgstr "Bu kategori koleksiyonları içerir"
+
+msgid ""
+"You must check the option below to delete the category along with all its "
+"collections."
+msgstr ""
+"Kategoriyi tüm koleksiyonlarıyla birlikte silmek için aşağıdaki seçeneği "
+"işaretlemeniz gerekir."
+
+msgid "Delete this category and all its collections"
+msgstr "Bu kategoriyi ve tüm koleksiyonlarını silin"
+
+msgid ""
+"This will permanently delete this category and ALL of its collections. This "
+"action cannot be undone."
+msgstr ""
+"Bu, bu kategoriyi ve TÜM koleksiyonlarını kalıcı olarak silecektir. Bu işlem"
+" geri alınamaz."
+
+msgid "Failed to save new order. Please try again."
+msgstr "Yeni sıralama kaydedilemedi. Lütfen tekrar deneyin."
+
+msgid "Collections"
+msgstr "Koleksiyonlar"
+
+msgid "Collections must be organized into sections."
+msgstr "Koleksiyonlar bölümler halinde düzenlenmelidir."
+
+msgid "New section"
+msgstr "Yeni bölüm"
+
+msgid "There are no sections."
+msgstr "Bölüm yok."
+
+msgid "Edit"
+msgstr "Düzenle"
+
+msgid "Add Child"
+msgstr "Alt Öğe Ekle"
+
+msgid "Collections for"
+msgstr "Koleksiyonlar"
+
+msgid "New collection"
+msgstr "Yeni koleksiyon"
+
+msgid "Edit Category"
+msgstr "Kategoriyi Düzenle"
+
+msgid "Delete Category"
+msgstr "Kategoriyi Sil"
+
+msgid "No collections found for"
+msgstr "Hiçbir koleksiyon bulunamadı"
+
+msgid "Edit section"
+msgstr "Bölümü düzenle"
+
+msgid "Delete section"
+msgstr "Bölümü sil"
+
+msgid "Saving order..."
+msgstr "Sıralama kaydediliyor..."
+
+msgid "Title is required"
+msgstr "Başlık zorunludur"
+
+msgid "Maximum number of characters is 255"
+msgstr "Maksimum karakter sayısı 255'tir"
+
+msgid "Slug is required"
+msgstr "Kısa isim zorunludur"
+
+msgid "Maximum number of characters is 100"
+msgstr "Maksimum karakter sayısı 100'dür"
+
+msgid "Search query is required"
+msgstr "Arama sorgusu zorunludur"
+
+msgid "Title"
+msgstr "Başlık"
+
+msgid "Slug"
+msgstr "Kısa isim"
+
+msgid "Search Query"
+msgstr "Arama Sorgusu"
+
+msgid "Test Query"
+msgstr "Sorguyu Test Et"
+
+msgid "Total Hits: "
+msgstr "Bulunan:"
+
+msgid "Showing"
+msgstr "Gösteriliyor"
+
+msgid "example results:"
+msgstr "örnek sonuçlar:"
+
+msgid "View Full Results"
+msgstr "Tüm Sonuçları Görüntüle"
+
+msgid "Edit collection in"
+msgstr "Koleksiyonu düzenle"
+
+msgid "Edit collection"
+msgstr "Koleksiyonu düzenle"
+
+msgid "Add child collection in"
+msgstr "Şunun içinde alt koleksiyon oluştur"
+
+msgid "Add child collection"
+msgstr "Alt koleksiyon ekle"
+
+msgid "Create new collection in"
+msgstr "Şunun içinde yeni koleksiyon oluştur"
+
+msgid "Create new collection"
+msgstr "Yeni koleksiyon oluştur"
+
+msgid "Save"
+msgstr "Kaydet"
+
+msgid "Create new section"
+msgstr "Yeni bölüm oluştur"
+
+msgid "Delete Collection"
+msgstr "Koleksiyonu Sil"
+
+msgid ""
+"Are you sure you want to delete this collection? This action cannot be "
+"undone."
+msgstr ""
+"Bu koleksiyonu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
+
+msgid ""
+"Are you sure you want to delete this section? This action cannot be undone."
+msgstr "Bu bölümü silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
