@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2026-06-26T10:50:23.538Z\n"
-"PO-Revision-Date: 2026-06-26T10:50:23.538Z\n"
+"POT-Creation-Date: 2026-11-13T21:19:28.824Z\n"
+"PO-Revision-Date: 2026-11-13T21:19:28.825Z\n"
 "Language: en\n"
 
 msgid "Error"
@@ -82,9 +82,6 @@ msgstr "Edit"
 msgid "Add Child"
 msgstr "Add Child"
 
-msgid "Collections for"
-msgstr "Collections for"
-
 msgid "New collection"
 msgstr "New collection"
 
@@ -93,9 +90,6 @@ msgstr "Edit Category"
 
 msgid "Delete Category"
 msgstr "Delete Category"
-
-msgid "No collections found for"
-msgstr "No collections found for"
 
 msgid "Edit section"
 msgstr "Edit section"
@@ -136,12 +130,6 @@ msgstr "Test Query"
 msgid "Total Hits: "
 msgstr "Total Hits: "
 
-msgid "Showing"
-msgstr "Showing"
-
-msgid "example results:"
-msgstr "example results:"
-
 msgid "View Full Results"
 msgstr "View Full Results"
 
@@ -181,3 +169,14 @@ msgstr ""
 
 msgid "Are you sure you want to delete this section? This action cannot be undone."
 msgstr "Are you sure you want to delete this section? This action cannot be undone."
+
+msgid "Collections for \"{{title}}\""
+msgstr "Collections for \"{{title}}\""
+
+msgid "No collections found for \"{{title}}\""
+msgstr "No collections found for \"{{title}}\""
+
+msgid "Showing {{count}} example results:"
+msgid_plural "Showing {{count}} example results:"
+msgstr[0] "Showing {{count}} example results:"
+msgstr[1] "Showing {{count}} example results:"
