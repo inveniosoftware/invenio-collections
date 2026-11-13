@@ -18,11 +18,9 @@
   "There are no sections.": "There are no sections.",
   "Edit": "Edit",
   "Add Child": "Add Child",
-  "Collections for": "Collections for",
   "New collection": "New collection",
   "Edit Category": "Edit Category",
   "Delete Category": "Delete Category",
-  "No collections found for": "No collections found for",
   "Edit section": "Edit section",
   "Delete section": "Delete section",
   "Saving order...": "Saving order...",
@@ -36,8 +34,6 @@
   "Search Query": "Search Query",
   "Test Query": "Test Query",
   "Total Hits: ": "Total Hits: ",
-  "Showing": "Showing",
-  "example results:": "example results:",
   "View Full Results": "View Full Results",
   "Edit collection in": "Edit collection in",
   "Edit collection": "Edit collection",
@@ -49,5 +45,9 @@
   "Create new section": "Create new section",
   "Delete Collection": "Delete Collection",
   "Are you sure you want to delete this collection? This action cannot be undone.": "Are you sure you want to delete this collection? This action cannot be undone.",
-  "Are you sure you want to delete this section? This action cannot be undone.": "Are you sure you want to delete this section? This action cannot be undone."
+  "Are you sure you want to delete this section? This action cannot be undone.": "Are you sure you want to delete this section? This action cannot be undone.",
+  "Collections for \"{{title}}\"": "Collections for \"{{title}}\"",
+  "No collections found for \"{{title}}\"": "No collections found for \"{{title}}\"",
+  "Showing {{count}} example results:_one": "Showing {{count}} example results:",
+  "Showing {{count}} example results:_other": "Showing {{count}} example results:"
 }

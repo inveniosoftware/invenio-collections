@@ -1,5 +1,6 @@
 /*
  * SPDX-FileCopyrightText: 2026 CERN.
+ * SPDX-FileCopyrightText: 2026 KTH Royal Institute of Technology.
  * SPDX-License-Identifier: MIT
  */
 
@@ -245,7 +246,9 @@ class CollectionTreeBrowseView extends Component {
             <Grid verticalAlign="middle" className="rel-mb-2">
               <Grid.Column width={10}>
                 <Header as="h2">
-                  {i18next.t("Collections for")} "{collectionTree.title}"
+                  {i18next.t('Collections for "{{title}}"', {
+                    title: collectionTree.title,
+                  })}
                 </Header>
               </Grid.Column>
               <Grid.Column width={6} textAlign="right">
@@ -276,7 +279,9 @@ class CollectionTreeBrowseView extends Component {
         {rootCollections.length === 0 ? (
           <Message info>
             <Message.Header>
-              {i18next.t("No collections found for")} "{collectionTree.title}"
+              {i18next.t('No collections found for "{{title}}"', {
+                title: collectionTree.title,
+              })}
             </Message.Header>
             <Message.Content className="rel-mt-2">
               <Button
