@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2026 CERN.
+# SPDX-FileCopyrightText: 2026 KTH Royal Institute of Technology.
 # SPDX-License-Identifier: MIT
 
 """JS/CSS bundles for invenio-collections."""
@@ -18,13 +19,13 @@ theme = WebpackThemeBundle(
                 "@semantic-ui-react/css-patch": "^1.0.0",
                 "axios": "^1.7.7",
                 "formik": "^2.4.9",
-                "i18next": "^20.3.0",
-                "i18next-browser-languagedetector": "^6.1.0",
+                "i18next": "^27.1.1",
+                "i18next-browser-languagedetector": "^8.3.0",
                 "lodash": "^4.17.0",
                 "prop-types": "^15.7.0",
                 "react": "^18.3.1",
                 "react-dom": "^18.3.1",
-                "react-i18next": "^11.11.0",
+                "react-i18next": "^18.0.1",
                 "react-invenio-forms": "^5.0.0",
                 "semantic-ui-css": "^2.5.0",
                 "semantic-ui-react": "^3.0.0-beta.2",

@@ -1,0 +1,195 @@
+# Translators:
+# Hermann Schranzhofer <hermann.schranzhofer@tugraz.at>, 2026
+# Tibor Simko <tibor.simko@cern.ch>, 2026
+# Sarah Wiechers, 2026
+# Adienne Karsten-Welker, 2026
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: i18next-conv\n"
+"POT-Creation-Date: 2026-06-26T12:03:58.842Z\n"
+"PO-Revision-Date: 2026-06-26 11:27+0000\n"
+"Last-Translator: Adienne Karsten-Welker, 2026\n"
+"Language-Team: German (https://app.transifex.com/inveniosoftware/teams/23537/de/)\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"mime-version: 1.0\n"
+
+msgid "Error"
+msgstr "Fehler"
+
+msgid "This collection has child collections"
+msgstr "Diese Sammlung hat untergeordnete Sammlungen"
+
+msgid ""
+"You must check the option below to delete this collection along with all its"
+" child collections."
+msgstr ""
+"Aktivieren Sie die Option unten, um diese Sammlung zusammen mit allen "
+"untergeordneten Sammlungen zu löschen."
+
+msgid "Delete this collection and all its children"
+msgstr "Diese Sammlung und alle untergeordneten Sammlungen löschen"
+
+msgid "Warning"
+msgstr "Warnung"
+
+msgid ""
+"This will permanently delete this collection and ALL of its child "
+"collections. This action cannot be undone."
+msgstr ""
+"Dies löscht diese Sammlung und ALLE ihre untergeordneten Sammlungen "
+"dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden."
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Delete"
+msgstr "Löschen"
+
+msgid "This category contains collections"
+msgstr "Diese Kategorie enthält Sammlungen"
+
+msgid ""
+"You must check the option below to delete the category along with all its "
+"collections."
+msgstr ""
+"Aktivieren Sie die Option unten, um diese Kategorie zusammen mit allen "
+"enthaltenen Sammlungen zu löschen."
+
+msgid "Delete this category and all its collections"
+msgstr "Diese Kategorie und alle ihre Sammlungen löschen"
+
+msgid ""
+"This will permanently delete this category and ALL of its collections. This "
+"action cannot be undone."
+msgstr ""
+"Dies löscht diese Kategorie und ALLE ihre Sammlungen dauerhaft. Diese Aktion"
+" kann nicht rückgängig gemacht werden."
+
+msgid "Failed to save new order. Please try again."
+msgstr ""
+"Speichern der neuen Reihenfolge fehlgeschlagen. Bitte erneut versuchen."
+
+msgid "Collections"
+msgstr "Sammlungen"
+
+msgid "Collections must be organized into sections."
+msgstr "Sammlungen müssen einer Kategorie zugeordnet sein."
+
+msgid "New section"
+msgstr "Neuer Abschnitt"
+
+msgid "There are no sections."
+msgstr "Es sind keine Abschnitte vorhanden."
+
+msgid "Edit"
+msgstr "Bearbeiten"
+
+msgid "Add Child"
+msgstr "Untergeordnetes Element hinzufügen"
+
+msgid "Collections for"
+msgstr "Sammlungen für"
+
+msgid "New collection"
+msgstr "Neue Sammlung"
+
+msgid "Edit Category"
+msgstr "Kategorie bearbeiten"
+
+msgid "Delete Category"
+msgstr "Kategorie löschen"
+
+msgid "No collections found for"
+msgstr "Keine Sammlungen gefunden für"
+
+msgid "Edit section"
+msgstr "Abschnitt bearbeiten"
+
+msgid "Delete section"
+msgstr "Abschnitt löschen"
+
+msgid "Saving order..."
+msgstr "Reihenfolge wird gespeichert ..."
+
+msgid "Title is required"
+msgstr "Titel ist erforderlich"
+
+msgid "Maximum number of characters is 255"
+msgstr "Maximal 255 Zeichen erlaubt"
+
+msgid "Slug is required"
+msgstr "Slug ist erforderlich"
+
+msgid "Maximum number of characters is 100"
+msgstr "Maximal 100 Zeichen erlaubt"
+
+msgid "Search query is required"
+msgstr "Bitte geben Sie eine Suchanfrage ein"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Slug"
+msgstr "Slug"
+
+msgid "Search Query"
+msgstr "Suchanfrage"
+
+msgid "Test Query"
+msgstr "Anfrage testen"
+
+msgid "Total Hits: "
+msgstr "Gesamttreffer:"
+
+msgid "Showing"
+msgstr "Zeige"
+
+msgid "example results:"
+msgstr "Beispielergebnisse:"
+
+msgid "View Full Results"
+msgstr "Alle Ergebnisse anzeigen"
+
+msgid "Edit collection in"
+msgstr "Sammlung bearbeiten in"
+
+msgid "Edit collection"
+msgstr "Sammlung bearbeiten"
+
+msgid "Add child collection in"
+msgstr "Untergeordnete Sammlung hinzufügen in"
+
+msgid "Add child collection"
+msgstr "Untergeordnete Sammlung hinzufügen"
+
+msgid "Create new collection in"
+msgstr "Neue Sammlung erstellen in"
+
+msgid "Create new collection"
+msgstr "Neue Sammlung erstellen"
+
+msgid "Save"
+msgstr "Speichern"
+
+msgid "Create new section"
+msgstr "Neuen Abschnitt erstellen"
+
+msgid "Delete Collection"
+msgstr "Sammlung löschen"
+
+msgid ""
+"Are you sure you want to delete this collection? This action cannot be "
+"undone."
+msgstr ""
+"Sind Sie sicher, dass Sie diese Sammlung löschen möchten? Diese Aktion kann "
+"nicht rückgängig gemacht werden."
+
+msgid ""
+"Are you sure you want to delete this section? This action cannot be undone."
+msgstr ""
+"Sind Sie sicher, dass Sie diesen Abschnitt löschen möchten? Diese Aktion "
+"kann nicht rückgängig gemacht werden."

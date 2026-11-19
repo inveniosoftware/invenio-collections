@@ -1,0 +1,191 @@
+# Translators:
+# Jiří Kunčar <jiri.kuncar@gmail.com>, 2026
+# daniela.hornickova, 2026
+# Tibor Simko <tibor.simko@cern.ch>, 2026
+# Mirek Simek <miroslav.simek@gmail.com>, 2026
+# Ondřej Ruml, 2026
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: i18next-conv\n"
+"POT-Creation-Date: 2026-06-26T12:03:58.842Z\n"
+"PO-Revision-Date: 2026-06-26 11:27+0000\n"
+"Last-Translator: Ondřej Ruml, 2026\n"
+"Language-Team: Czech (https://app.transifex.com/inveniosoftware/teams/23537/cs/)\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: cs\n"
+"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n <= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
+"mime-version: 1.0\n"
+
+msgid "Error"
+msgstr "Chyba"
+
+msgid "This collection has child collections"
+msgstr "Tato kolekce má podřízené kolekce"
+
+msgid ""
+"You must check the option below to delete this collection along with all its"
+" child collections."
+msgstr ""
+"Chcete-li smazat tuto kolekci spolu se všemi jejími podřízenými kolekcemi, "
+"musíte zaškrtnout níže uvedenou možnost."
+
+msgid "Delete this collection and all its children"
+msgstr "Smazat tuto kolekci a všechny její podřízené kolekce"
+
+msgid "Warning"
+msgstr "Varování"
+
+msgid ""
+"This will permanently delete this collection and ALL of its child "
+"collections. This action cannot be undone."
+msgstr ""
+"Tím trvale smažete tuto kolekci a VŠECHNY její podřízené kolekce. Tuto akci "
+"nelze vrátit zpět."
+
+msgid "Cancel"
+msgstr "Zrušit"
+
+msgid "Delete"
+msgstr "Smazat"
+
+msgid "This category contains collections"
+msgstr "Tato kategorie obsahuje kolekce"
+
+msgid ""
+"You must check the option below to delete the category along with all its "
+"collections."
+msgstr ""
+"Chcete-li smazat tuto kategorii spolu se všemi jejími kolekcemi, musíte "
+"zaškrtnout níže uvedenou možnost."
+
+msgid "Delete this category and all its collections"
+msgstr "Smazat tuto kategorii a všechny její kolekce"
+
+msgid ""
+"This will permanently delete this category and ALL of its collections. This "
+"action cannot be undone."
+msgstr ""
+"Tím trvale smažete tuto kategorii a VŠECHNY její kolekce. Tuto akci nelze "
+"vrátit zpět."
+
+msgid "Failed to save new order. Please try again."
+msgstr "Nepodařilo se uložit nové pořadí. Zkuste to prosím znovu."
+
+msgid "Collections"
+msgstr "Kolekce"
+
+msgid "Collections must be organized into sections."
+msgstr "Kolekce musí být uspořádány do sekcí."
+
+msgid "New section"
+msgstr "Nová sekce"
+
+msgid "There are no sections."
+msgstr "Nejsou k dispozici žádné sekce."
+
+msgid "Edit"
+msgstr "Upravit"
+
+msgid "Add Child"
+msgstr "Přidat podřízenou kolekci"
+
+msgid "Collections for"
+msgstr "Kolekce pro"
+
+msgid "New collection"
+msgstr "Nová kolekce"
+
+msgid "Edit Category"
+msgstr "Upravit kategorii"
+
+msgid "Delete Category"
+msgstr "Smazat kategorii"
+
+msgid "No collections found for"
+msgstr "Nebyly nalezeny žádné kolekce pro"
+
+msgid "Edit section"
+msgstr "Upravit sekci"
+
+msgid "Delete section"
+msgstr "Smazat sekci"
+
+msgid "Saving order..."
+msgstr "Ukládá se pořadí..."
+
+msgid "Title is required"
+msgstr "Název je povinný"
+
+msgid "Maximum number of characters is 255"
+msgstr "Maximální počet znaků je 255"
+
+msgid "Slug is required"
+msgstr "Slug je povinný"
+
+msgid "Maximum number of characters is 100"
+msgstr "Maximální počet znaků je 100"
+
+msgid "Search query is required"
+msgstr "Vyhledávací výraz je povinný"
+
+msgid "Title"
+msgstr "Název"
+
+msgid "Slug"
+msgstr "Slug"
+
+msgid "Search Query"
+msgstr "Vyhledávací výraz"
+
+msgid "Test Query"
+msgstr "Otestovat dotaz"
+
+msgid "Total Hits: "
+msgstr "Celkový počet výsledků: "
+
+msgid "Showing"
+msgstr "Zobrazeno"
+
+msgid "example results:"
+msgstr "ukázkových výsledků:"
+
+msgid "View Full Results"
+msgstr "Zobrazit všechny výsledky"
+
+msgid "Edit collection in"
+msgstr "Upravit kolekci v"
+
+msgid "Edit collection"
+msgstr "Upravit kolekci"
+
+msgid "Add child collection in"
+msgstr "Přidat podřízenou kolekci do"
+
+msgid "Add child collection"
+msgstr "Přidat podřízenou kolekci"
+
+msgid "Create new collection in"
+msgstr "Vytvořit novou kolekci v"
+
+msgid "Create new collection"
+msgstr "Vytvořit novou kolekci"
+
+msgid "Save"
+msgstr "Uložit"
+
+msgid "Create new section"
+msgstr "Vytvořit novou sekci"
+
+msgid "Delete Collection"
+msgstr "Smazat kolekci"
+
+msgid ""
+"Are you sure you want to delete this collection? This action cannot be "
+"undone."
+msgstr "Opravdu chcete smazat tuto kolekci? Tuto akci nelze vrátit zpět."
+
+msgid ""
+"Are you sure you want to delete this section? This action cannot be undone."
+msgstr "Opravdu chcete smazat tuto sekci? Tuto akci nelze vrátit zpět."

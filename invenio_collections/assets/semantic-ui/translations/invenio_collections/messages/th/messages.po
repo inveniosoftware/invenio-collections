@@ -1,0 +1,187 @@
+# Translators:
+# Suthep Yonphimai <tomztt@gmail.com>, 2026
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: i18next-conv\n"
+"POT-Creation-Date: 2026-06-26T12:03:58.842Z\n"
+"PO-Revision-Date: 2026-06-26 11:27+0000\n"
+"Last-Translator: Suthep Yonphimai <tomztt@gmail.com>, 2026\n"
+"Language-Team: Thai (https://app.transifex.com/inveniosoftware/teams/23537/th/)\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: th\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"mime-version: 1.0\n"
+
+msgid "Error"
+msgstr "ข้อผิดพลาด"
+
+msgid "This collection has child collections"
+msgstr "คอลเลกชันนี้มีคอลเลกชันย่อย"
+
+msgid ""
+"You must check the option below to delete this collection along with all its"
+" child collections."
+msgstr ""
+"คุณต้องเลือกตัวเลือกด้านล่างเพื่อลบคอลเลกชันนี้พร้อมกับคอลเลกชันย่อยทั้งหมด"
+
+msgid "Delete this collection and all its children"
+msgstr "ลบคอลเลกชันนี้และคอลเลกชันย่อยทั้งหมด"
+
+msgid "Warning"
+msgstr "คำเตือน"
+
+msgid ""
+"This will permanently delete this collection and ALL of its child "
+"collections. This action cannot be undone."
+msgstr ""
+"การดำเนินการนี้จะลบคอลเลกชันนี้และคอลเลกชันย่อยทั้งหมดอย่างถาวร "
+"ไม่สามารถยกเลิกได้"
+
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+msgid "Delete"
+msgstr "ลบ"
+
+msgid "This category contains collections"
+msgstr "หมวดหมู่นี้มีคอลเลกชัน"
+
+msgid ""
+"You must check the option below to delete the category along with all its "
+"collections."
+msgstr ""
+"คุณต้องเลือกตัวเลือกด้านล่างเพื่อลบหมวดหมู่นี้พร้อมกับคอลเลกชันทั้งหมด"
+
+msgid "Delete this category and all its collections"
+msgstr "ลบหมวดหมู่นี้และคอลเลกชันทั้งหมด"
+
+msgid ""
+"This will permanently delete this category and ALL of its collections. This "
+"action cannot be undone."
+msgstr ""
+"การดำเนินการนี้จะลบหมวดหมู่นี้และคอลเลกชันทั้งหมดอย่างถาวร "
+"ไม่สามารถยกเลิกได้"
+
+msgid "Failed to save new order. Please try again."
+msgstr "ไม่สามารถบันทึกลำดับใหม่ได้ โปรดลองอีกครั้ง"
+
+msgid "Collections"
+msgstr "คอลเลกชัน"
+
+msgid "Collections must be organized into sections."
+msgstr "คอลเลกชันต้องจัดเป็นหมวดหมู่"
+
+msgid "New section"
+msgstr "หมวดหมู่ใหม่"
+
+msgid "There are no sections."
+msgstr "ไม่มีหมวดหมู่"
+
+msgid "Edit"
+msgstr "แก้ไข"
+
+msgid "Add Child"
+msgstr "เพิ่มรายการย่อย"
+
+msgid "Collections for"
+msgstr "คอลเลกชันสำหรับ"
+
+msgid "New collection"
+msgstr "คอลเลกชันใหม่"
+
+msgid "Edit Category"
+msgstr "แก้ไขหมวดหมู่"
+
+msgid "Delete Category"
+msgstr "ลบหมวดหมู่"
+
+msgid "No collections found for"
+msgstr "ไม่พบคอลเลกชันสำหรับ"
+
+msgid "Edit section"
+msgstr "แก้ไขหมวดหมู่"
+
+msgid "Delete section"
+msgstr "ลบหมวดหมู่"
+
+msgid "Saving order..."
+msgstr "กำลังบันทึกลำดับ..."
+
+msgid "Title is required"
+msgstr "ชื่อเรื่องเป็นสิ่งจำเป็น"
+
+msgid "Maximum number of characters is 255"
+msgstr "จำนวนตัวอักษรสูงสุดคือ 255"
+
+msgid "Slug is required"
+msgstr "Slug เป็นสิ่งจำเป็น"
+
+msgid "Maximum number of characters is 100"
+msgstr "จำนวนตัวอักษรสูงสุดคือ 100"
+
+msgid "Search query is required"
+msgstr "คำค้นหาเป็นสิ่งจำเป็น"
+
+msgid "Title"
+msgstr "ชื่อเรื่อง"
+
+msgid "Slug"
+msgstr "Slug"
+
+msgid "Search Query"
+msgstr "คำค้นหา"
+
+msgid "Test Query"
+msgstr "ทดสอบคำค้นหา"
+
+msgid "Total Hits: "
+msgstr "จำนวนผลลัพธ์ทั้งหมด: "
+
+msgid "Showing"
+msgstr "แสดง"
+
+msgid "example results:"
+msgstr "ตัวอย่างผลลัพธ์:"
+
+msgid "View Full Results"
+msgstr "ดูผลลัพธ์ทั้งหมด"
+
+msgid "Edit collection in"
+msgstr "แก้ไขคอลเลกชันใน"
+
+msgid "Edit collection"
+msgstr "แก้ไขคอลเลกชัน"
+
+msgid "Add child collection in"
+msgstr "เพิ่มคอลเลกชันย่อยใน"
+
+msgid "Add child collection"
+msgstr "เพิ่มคอลเลกชันย่อย"
+
+msgid "Create new collection in"
+msgstr "สร้างคอลเลกชันใหม่ใน"
+
+msgid "Create new collection"
+msgstr "สร้างคอลเลกชันใหม่"
+
+msgid "Save"
+msgstr "บันทึก"
+
+msgid "Create new section"
+msgstr "สร้างหมวดหมู่ใหม่"
+
+msgid "Delete Collection"
+msgstr "ลบคอลเลกชัน"
+
+msgid ""
+"Are you sure you want to delete this collection? This action cannot be "
+"undone."
+msgstr ""
+"คุณแน่ใจหรือไม่ว่าต้องการลบคอลเลกชันนี้? การดำเนินการนี้ไม่สามารถยกเลิกได้"
+
+msgid ""
+"Are you sure you want to delete this section? This action cannot be undone."
+msgstr ""
+"คุณแน่ใจหรือไม่ว่าต้องการลบหมวดหมู่นี้? การดำเนินการนี้ไม่สามารถยกเลิกได้"

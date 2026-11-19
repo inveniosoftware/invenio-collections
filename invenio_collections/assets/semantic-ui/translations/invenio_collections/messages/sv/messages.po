@@ -1,0 +1,193 @@
+# Translators:
+# Tibor Simko <tibor.simko@cern.ch>, 2026
+# Sam Arbid, 2026
+# Mattias Vesterlund, 2026
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: i18next-conv\n"
+"POT-Creation-Date: 2026-06-26T12:03:58.842Z\n"
+"PO-Revision-Date: 2026-06-26 11:27+0000\n"
+"Last-Translator: Mattias Vesterlund, 2026\n"
+"Language-Team: Swedish (https://app.transifex.com/inveniosoftware/teams/23537/sv/)\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: sv\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"mime-version: 1.0\n"
+
+msgid "Error"
+msgstr "Fel"
+
+msgid "This collection has child collections"
+msgstr "Denna samling har underordnade samlingar"
+
+msgid ""
+"You must check the option below to delete this collection along with all its"
+" child collections."
+msgstr ""
+"Du måste markera alternativet nedan för att radera denna samling tillsammans"
+" med alla dess underordnade samlingar."
+
+msgid "Delete this collection and all its children"
+msgstr "Radera denna samling och alla dess underordnade samlingar"
+
+msgid "Warning"
+msgstr "Varning"
+
+msgid ""
+"This will permanently delete this collection and ALL of its child "
+"collections. This action cannot be undone."
+msgstr ""
+"Detta kommer att permanent radera denna samling och ALLA dess underordnade "
+"samlingar. Denna åtgärd kan inte ångras."
+
+msgid "Cancel"
+msgstr "Avbryt"
+
+msgid "Delete"
+msgstr "Radera"
+
+msgid "This category contains collections"
+msgstr "Denna kategori innehåller samlingar"
+
+msgid ""
+"You must check the option below to delete the category along with all its "
+"collections."
+msgstr ""
+"Du måste markera alternativet nedan för att radera kategorin tillsammans med"
+" alla dess samlingar."
+
+msgid "Delete this category and all its collections"
+msgstr "Radera denna kategori och alla dess samlingar"
+
+msgid ""
+"This will permanently delete this category and ALL of its collections. This "
+"action cannot be undone."
+msgstr ""
+"Detta kommer att permanent radera denna kategori och ALLA dess samlingar. "
+"Denna åtgärd kan inte ångras."
+
+msgid "Failed to save new order. Please try again."
+msgstr "Det gick inte att spara den nya ordningen. Försök igen."
+
+msgid "Collections"
+msgstr "Samlingar"
+
+msgid "Collections must be organized into sections."
+msgstr "Samlingar måste organiseras i sektioner."
+
+msgid "New section"
+msgstr "Ny sektion"
+
+msgid "There are no sections."
+msgstr "Det finns inga sektioner."
+
+msgid "Edit"
+msgstr "Redigera"
+
+msgid "Add Child"
+msgstr "Lägg till underordnad"
+
+msgid "Collections for"
+msgstr "Samlingar för"
+
+msgid "New collection"
+msgstr "Ny samling"
+
+msgid "Edit Category"
+msgstr "Redigera kategori"
+
+msgid "Delete Category"
+msgstr "Radera kategori"
+
+msgid "No collections found for"
+msgstr "Inga samlingar hittades för"
+
+msgid "Edit section"
+msgstr "Redigera sektion"
+
+msgid "Delete section"
+msgstr "Radera sektion"
+
+msgid "Saving order..."
+msgstr "Sparar ordning..."
+
+msgid "Title is required"
+msgstr "Titel krävs"
+
+msgid "Maximum number of characters is 255"
+msgstr "Maximalt antal tecken är 255"
+
+msgid "Slug is required"
+msgstr "Slug krävs"
+
+msgid "Maximum number of characters is 100"
+msgstr "Maximalt antal tecken är 100"
+
+msgid "Search query is required"
+msgstr "Sökfråga krävs"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Slug"
+msgstr "Slug"
+
+msgid "Search Query"
+msgstr "Sökfråga"
+
+msgid "Test Query"
+msgstr "Testa sökfråga"
+
+msgid "Total Hits: "
+msgstr "Totalt antal träffar: "
+
+msgid "Showing"
+msgstr "Visar"
+
+msgid "example results:"
+msgstr "exempelresultat:"
+
+msgid "View Full Results"
+msgstr "Visa fullständiga resultat"
+
+msgid "Edit collection in"
+msgstr "Redigera samling i"
+
+msgid "Edit collection"
+msgstr "Redigera samling"
+
+msgid "Add child collection in"
+msgstr "Lägg till underordnad samling i"
+
+msgid "Add child collection"
+msgstr "Lägg till underordnad samling"
+
+msgid "Create new collection in"
+msgstr "Skapa ny samling i"
+
+msgid "Create new collection"
+msgstr "Skapa ny samling"
+
+msgid "Save"
+msgstr "Spara"
+
+msgid "Create new section"
+msgstr "Skapa ny sektion"
+
+msgid "Delete Collection"
+msgstr "Radera samling"
+
+msgid ""
+"Are you sure you want to delete this collection? This action cannot be "
+"undone."
+msgstr ""
+"Är du säker på att du vill radera denna samling? Denna åtgärd kan inte "
+"ångras."
+
+msgid ""
+"Are you sure you want to delete this section? This action cannot be undone."
+msgstr ""
+"Är du säker på att du vill radera denna sektion? Denna åtgärd kan inte "
+"ångras."
