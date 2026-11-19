@@ -1,0 +1,187 @@
+# Translators:
+# Tibor Simko <tibor.simko@cern.ch>, 2026
+# Bessem Aamira <bessemamira@gmail.com>, 2026
+# Salaheddine Ben Ali <salaheddine.benali@cnudst.tn>, 2026
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: i18next-conv\n"
+"POT-Creation-Date: 2026-06-26T12:03:58.842Z\n"
+"PO-Revision-Date: 2026-06-26 11:27+0000\n"
+"Last-Translator: Salaheddine Ben Ali <salaheddine.benali@cnudst.tn>, 2026\n"
+"Language-Team: Arabic (https://app.transifex.com/inveniosoftware/teams/23537/ar/)\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ar\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"mime-version: 1.0\n"
+
+msgid "Error"
+msgstr "خطأ"
+
+msgid "This collection has child collections"
+msgstr " تحتوي هذه المجموعة على مجموعات فرعية."
+
+msgid ""
+"You must check the option below to delete this collection along with all its"
+" child collections."
+msgstr " يجب تحديد الخيار أدناه لحذف هذه المجموعة مع جميع مجموعاتها الفرعية."
+
+msgid "Delete this collection and all its children"
+msgstr " حذف هذه المجموعة وجميع مجموعاتها الفرعية"
+
+msgid "Warning"
+msgstr "تحذير"
+
+msgid ""
+"This will permanently delete this collection and ALL of its child "
+"collections. This action cannot be undone."
+msgstr ""
+" سيؤدي هذا إلى حذف هذه المجموعة وجميع مجموعاتها الفرعية نهائيًا. لا يمكن "
+"التراجع عن هذا الإجراء."
+
+msgid "Cancel"
+msgstr "إلغاء"
+
+msgid "Delete"
+msgstr "حذف"
+
+msgid "This category contains collections"
+msgstr " تحتوي هذه الفئة على مجموعات."
+
+msgid ""
+"You must check the option below to delete the category along with all its "
+"collections."
+msgstr " يجب تحديد الخيار أدناه لحذف الفئة مع جميع مجموعاتها."
+
+msgid "Delete this category and all its collections"
+msgstr " حذف هذه الفئة وجميع مجموعاتها"
+
+msgid ""
+"This will permanently delete this category and ALL of its collections. This "
+"action cannot be undone."
+msgstr ""
+" سيؤدي هذا إلى حذف هذه الفئة وجميع مجموعاتها نهائيًا. لا يمكن التراجع عن هذا"
+" الإجراء."
+
+msgid "Failed to save new order. Please try again."
+msgstr " فشل حفظ الترتيب الجديد. يُرجى المحاولة مرة أخرى."
+
+msgid "Collections"
+msgstr "المجموعات"
+
+msgid "Collections must be organized into sections."
+msgstr " يجب تنظيم المجموعات ضمن أقسام."
+
+msgid "New section"
+msgstr " قسم جديد"
+
+msgid "There are no sections."
+msgstr " لا توجد أقسام."
+
+msgid "Edit"
+msgstr "تعديل"
+
+msgid "Add Child"
+msgstr " إضافة فرع"
+
+msgid "Collections for"
+msgstr " مجموعات خاصة بـ"
+
+msgid "New collection"
+msgstr " مجموعة جديدة"
+
+msgid "Edit Category"
+msgstr " تعديل الفئة"
+
+msgid "Delete Category"
+msgstr " حذف الفئة"
+
+msgid "No collections found for"
+msgstr " لم يتم العثور على أي مجموعات لـ"
+
+msgid "Edit section"
+msgstr " تعديل القسم"
+
+msgid "Delete section"
+msgstr " حذف القسم"
+
+msgid "Saving order..."
+msgstr " جارٍ حفظ الترتيب..."
+
+msgid "Title is required"
+msgstr "  العنوان مطلوب"
+
+msgid "Maximum number of characters is 255"
+msgstr " الحد الأقصى لعدد الأحرف هو 255."
+
+msgid "Slug is required"
+msgstr " الرابط المختصر Slug مطلوب"
+
+msgid "Maximum number of characters is 100"
+msgstr "الحد الأقصى لعدد الأحرف هو 100"
+
+msgid "Search query is required"
+msgstr " يجب إدخال عبارة البحث"
+
+msgid "Title"
+msgstr "عنوان"
+
+msgid "Slug"
+msgstr " الرابط المختصر"
+
+msgid "Search Query"
+msgstr " عبارة البحث"
+
+msgid "Test Query"
+msgstr " عبارة بحث تجريبية"
+
+msgid "Total Hits: "
+msgstr " إجمالي النتائج:"
+
+msgid "Showing"
+msgstr " عرض"
+
+msgid "example results:"
+msgstr " أمثلة على النتائج:"
+
+msgid "View Full Results"
+msgstr " عرض جميع النتائج"
+
+msgid "Edit collection in"
+msgstr " تعديل المجموعة في"
+
+msgid "Edit collection"
+msgstr " تعديل المجموعة"
+
+msgid "Add child collection in"
+msgstr " إضافة مجموعة فرعية في"
+
+msgid "Add child collection"
+msgstr " إضافة مجموعة فرعية"
+
+msgid "Create new collection in"
+msgstr " إنشاء مجموعة جديدة في"
+
+msgid "Create new collection"
+msgstr " إنشاء مجموعة جديدة"
+
+msgid "Save"
+msgstr "حفظ"
+
+msgid "Create new section"
+msgstr " إنشاء قسم جديد"
+
+msgid "Delete Collection"
+msgstr " حذف المجموعة"
+
+msgid ""
+"Are you sure you want to delete this collection? This action cannot be "
+"undone."
+msgstr ""
+" هل أنت متأكد من رغبتك في حذف هذه المجموعة؟ لا يمكن التراجع عن هذا الإجراء."
+
+msgid ""
+"Are you sure you want to delete this section? This action cannot be undone."
+msgstr ""
+" هل أنت متأكد من رغبتك في حذف هذ القسم؟ لا يمكن التراجع عن هذا الإجراء."

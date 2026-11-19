@@ -70,8 +70,6 @@ messages = "invenio_collections"
 # Tools in alphabetical order
 [tool.babel.compile_catalog]
 directory = "invenio_collections/translations/"
-use_fuzzy = true
-
 [tool.babel.extract_messages]
 copyright_holder = "CERN"
 msgid_bugs_address = "info@inveniosoftware.org"
@@ -85,6 +83,10 @@ output_dir = "invenio_collections/translations/"
 
 # see https://babel.pocoo.org/en/latest/messages.html#toml-configuration-format
 [tool.babel]
+[[tool.babel.mappings]]
+method = "ignore"
+pattern = "**/node_modules/**"
+
 [[tool.babel.mappings]]
 method = "javascript"
 pattern = "**.js"
