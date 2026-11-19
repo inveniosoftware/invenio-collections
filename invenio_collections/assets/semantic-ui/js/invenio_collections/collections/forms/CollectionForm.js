@@ -1,5 +1,6 @@
 /*
  * SPDX-FileCopyrightText: 2026 CERN.
+ * SPDX-FileCopyrightText: 2026 KTH Royal Institute of Technology.
  * SPDX-License-Identifier: MIT
  */
 
@@ -135,8 +136,9 @@ const CollectionFormInner = ({
           {testQuerySuccess === true && testQueryHits.length > 0 && (
             <div className="rel-mt-1">
               <em>
-                {i18next.t("Showing")} {testQueryHits.length}{" "}
-                {i18next.t("example results:")}
+                {i18next.t("Showing {{count}} example results:", {
+                  count: testQueryHits.length,
+                })}
               </em>
             </div>
           )}
