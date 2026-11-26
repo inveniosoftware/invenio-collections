@@ -28,7 +28,7 @@ keywords = ["invenio", "inveniordm", "rdm", "collections"]
 license = {file = "LICENSE"}
 readme = "README.rst"
 
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = [
   "invenio-administration>=8.0.0,<9.0.0",
   "invenio-records-resources>=11.0.0,<12.0.0",
